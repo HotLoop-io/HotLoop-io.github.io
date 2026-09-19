@@ -7,7 +7,7 @@ import { z } from 'astro/zod';
  *
  * Both product repos already fail their own build when a claim outruns its
  * evidence: Flow's tests fail if a partially compatible node does not say what
- * is missing, and the Gateway's tests fail if the protocol catalogue advertises
+ * is missing, and the Gateway's tests fail if the protocol catalog advertises
  * a driver that is not compiled in. These refinements do the same thing for the
  * website, so the site cannot drift further in the flattering direction than
  * the repos it describes.

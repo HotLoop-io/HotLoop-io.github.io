@@ -135,9 +135,8 @@ const notDone = [
           <p>
             Node-RED puts a <code>setImmediate</code> between every wire hop, and that queue has no ceiling. A fast
             source outruns a slow sink, the queue grows, and the pod gets OOM-killed with nothing in the log to explain
-            it. <a href="https://github.com/node-red/node-red/issues/855">node-red#855</a> has been open since 2016.
-            Every inbox in Flow is bounded, with a policy per node: block, drop the newest, drop the oldest, or raise
-            it to a Catch node and let the flow decide.
+            it. Every inbox in Flow is bounded, with a policy per node: block, drop the newest, drop the oldest, or
+            raise it to a Catch node and let the flow decide.
           </p>
         </article>
         <article class="card reveal">
@@ -155,8 +154,9 @@ const notDone = [
             <code>node:vm</code> module is not a security mechanism. Do not use it to run untrusted code.”</a>
             Node-RED's trust model is that anyone who can deploy a flow already owns the box, which is fine on a Pi in a
             workshop and not fine on a customer's plant floor. It is not hypothetical either:
-            <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-41656">CVE-2025-41656</a> is unauthenticated remote code
-            execution against a default Node-RED, reached by deploying a flow with an <code>exec</code> node in it.
+            <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-41656">CVE-2025-41656</a> records unauthenticated remote
+            command execution, rated critical, because authentication for the Node-RED server is not configured by
+            default.
           </p>
         </article>
         <article class="card reveal">

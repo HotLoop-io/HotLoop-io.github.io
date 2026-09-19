@@ -177,7 +177,7 @@
       "PROFINET, EtherCAT, HART, BACnet/IP, DNP3, FINS, MELSEC/SLMP, CANopen, and FANUC FOCAS are not spoken natively, and there is no driver for them. That is a deliberate choice, not a gap waiting to be filled with a stub.",
       "Sites running these protocols almost always already have a gateway that re-publishes on OPC UA or Modbus, such as a PROFINET IO controller with an OPC UA server, a HART multiplexer with a Modbus map, or a BACnet/IP to Modbus bridge. Point a device at that endpoint and configure it as OPC UA or Modbus.",
       "Writing nine more drivers that each duplicate what a site's existing gateway already does would add nine more things to get subtly wrong, for protocols where the equipment is hardest to test against. If a site genuinely has no gateway and needs one of these natively, that is a real piece of work to schedule, not a file to add that logs \"not implemented\".",
-      "There are no placeholder drivers in the tree. A protocol either has a working implementation or it is on this page. The previous version of this product had sixteen protocol files, of which fifteen returned \"not implemented\" while the catalogue advertised all sixteen. A test now enforces that every protocol the model declares has a driver compiled in, and vice versa."
+      "There are no placeholder drivers in the tree. A protocol either has a working implementation or it is on this page. The previous version of this product had sixteen protocol files, of which fifteen returned \"not implemented\" while the catalog advertised all sixteen. A test now enforces that every protocol the model declares has a driver compiled in, and vice versa."
     ]
   }
 ]
