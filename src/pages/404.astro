@@ -2,7 +2,12 @@
 import Base from '../layouts/Base.astro';
 ---
 
-<Base title="Page not found" description="That page does not exist.">
+<!-- noindex: a "not found" page must never appear in search results. -->
+<Base
+  title="Page not found"
+  description="That page does not exist. It may have moved, or the link may have a typo in it. Head back to the HotLoop home page or the integrations list."
+  noindex
+>
   <section class="wrap nf stack">
     <span class="label">Error 404</span>
     <h1>That loop did not close.</h1>

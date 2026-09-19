@@ -2,15 +2,21 @@
 // Every page gets a canonical URL, Open Graph, and a large-image Twitter card.
 // Before this existed, a link to hotloop.io pasted into Slack, Discord, X, or
 // Reddit rendered as a bare grey URL.
+//
+// Titles are written per page and kept under 60 characters, because Google
+// truncates around there. A title that does not already say HotLoop gets it
+// appended. Descriptions are kept between 70 and 160 characters for the same
+// reason, and scripts/seo-audit.mjs fails the build if either rule is broken.
 interface Props {
   title: string;
   description: string;
   ogImage?: string;
   ogAlt?: string;
   type?: 'website' | 'article';
+  noindex?: boolean;
 }
 
-const { title, description, ogImage, ogAlt, type = 'website' } = Astro.props;
+const { title, description, ogImage, ogAlt, type = 'website', noindex = false } = Astro.props;
 
 const site = Astro.site!;
 const canonical = new URL(Astro.url.pathname, site).href;
@@ -19,7 +25,7 @@ const canonical = new URL(Astro.url.pathname, site).href;
 const slug = Astro.url.pathname.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'home';
 const image = new URL(ogImage ?? `/og/${slug}.png`, site).href;
 
-const full = title === 'HotLoop' ? 'HotLoop' : `${title} · HotLoop`;
+const full = title.includes('HotLoop') ? title : `${title} · HotLoop`;
 ---
 
 <meta charset="utf-8" />
@@ -27,11 +33,16 @@ const full = title === 'HotLoop' ? 'HotLoop' : `${title} · HotLoop`;
 <title>{full}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+<meta
+  name="robots"
+  content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'}
+/>
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="icon" href="/icon-32.png" sizes="32x32" type="image/png" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
+<link rel="alternate" type="application/rss+xml" title="HotLoop release notes" href="/releases/rss.xml" />
 <meta name="theme-color" content="#FBFAF8" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#14120F" media="(prefers-color-scheme: dark)" />
 

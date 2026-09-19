@@ -4,6 +4,18 @@
 
 @layer reset, base, layout, components, motion;
 
+/* A local Arial adjusted to occupy the same space as Inter, so the swap from this
+   to the real font does not move any text. The four numbers are computed from the
+   Inter and Arial font files. See the note beside --hl-font in tokens.css. */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  size-adjust: 109.56%;
+  ascent-override: 88.42%;
+  descent-override: 22.02%;
+  line-gap-override: 0%;
+}
+
 /* ── reset ─────────────────────────────────────────────────────────────── */
 @layer reset {
   *, *::before, *::after { box-sizing: border-box; }

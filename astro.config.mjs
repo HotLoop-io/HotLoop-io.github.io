@@ -10,5 +10,7 @@ export default defineConfig({
   // Prefetch on viewport entry. With view transitions this is what makes a
   // click feel instant instead of merely fast.
   prefetch: { prefetchAll: true, defaultStrategy: 'viewport' },
-  integrations: [sitemap()],
+  // The 404 page must not be in the sitemap: it is marked noindex, and listing a
+  // noindex page there is a contradiction Search Console reports as an error.
+  integrations: [sitemap({ filter: (page) => !/\/404\/?$/.test(page) })],
 });

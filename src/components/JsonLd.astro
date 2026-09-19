@@ -1,0 +1,13 @@
+---
+// Structured data. It has to be valid JSON and has to describe what is actually
+// on the page, so nothing here claims a price, a rating, or an availability that
+// the page does not state. seo-audit.mjs fails the build if the JSON is invalid.
+interface Props {
+  data: Record<string, unknown> | Record<string, unknown>[];
+}
+const { data } = Astro.props;
+// "<" is escaped so a stray "</script>" in a string can never end the block early.
+const json = JSON.stringify(data).replace(/</g, '\\u003c');
+---
+
+<script type="application/ld+json" set:html={json} />

@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import Meta from '../components/Meta.astro';
+import JsonLd from '../components/JsonLd.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
@@ -14,20 +15,52 @@ import '@fontsource/jetbrains-mono/latin-700.css';
 import '../styles/tokens.css';
 import '../styles/global.css';
 
+// The one font file almost every visitor needs. Preloading it starts the download
+// before the stylesheet has been parsed, which is what keeps Largest Contentful
+// Paint low. Vite gives this a fingerprinted URL, so it cannot be hardcoded.
+import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+
 interface Props {
   title: string;
   description: string;
   ogImage?: string;
   ogAlt?: string;
   type?: 'website' | 'article';
+  noindex?: boolean;
 }
 const props = Astro.props;
+
+const site = Astro.site!.href.replace(/\/$/, '');
+
+// Site-wide structured data. It states what HotLoop is and where it lives, and
+// nothing that cannot be verified from the page.
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${site}/#organization`,
+  name: 'HotLoop',
+  url: `${site}/`,
+  logo: `${site}/icon-512.png`,
+  email: 'support@hotloop.io',
+  description: 'HotLoop builds automation software that closes the loop between what a sensor says and what a machine does.',
+  sameAs: ['https://github.com/HotLoop-io'],
+};
+const website = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${site}/#website`,
+  name: 'HotLoop',
+  url: `${site}/`,
+  publisher: { '@id': `${site}/#organization` },
+  inLanguage: 'en',
+};
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <Meta {...props} />
+    <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
     <!--
       Blocking on purpose. This has to run before first paint or the page flashes
       the wrong theme on every load. Only an explicit choice is stored, so with
@@ -39,6 +72,8 @@ const props = Astro.props;
         if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
       } catch (e) {}
     </script>
+    <JsonLd data={[organization, website]} />
+    <slot name="head" />
     <ClientRouter />
   </head>
   <body>

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import JsonLd from '../components/JsonLd.astro';
 
 const nodes = await getCollection('nodes');
 const level = (l: string) => nodes.filter((n) => n.data.level === l).length;
@@ -44,10 +45,26 @@ const notDone = [
 ---
 
 <Base
-  title="HotLoop Flow"
-  description="A Node-RED-compatible flow engine in one static Go binary. Bounded queues, a goroutine per node, and Apache-2.0, free for everyone."
+  title="HotLoop Flow: a Node-RED alternative in Go"
+  description="A Node-RED-compatible flow engine in one static Go binary, with bounded queues, a goroutine per node, and an Apache-2.0 license for everyone."
   ogAlt="HotLoop Flow, a flow engine in one static Go binary."
 >
+  <JsonLd
+    slot="head"
+    data={{
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'HotLoop Flow',
+      url: 'https://hotloop.io/flow/',
+      description:
+        'A flow engine in one static Go binary that reads Node-RED v1 flow files, with bounded queues, a goroutine per node, and a security posture built for plant floors.',
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Linux',
+      license: 'https://www.apache.org/licenses/LICENSE-2.0',
+      isAccessibleForFree: true,
+      publisher: { '@id': 'https://hotloop.io/#organization' },
+    }}
+  />
   <section class="page-hero">
     <div class="wrap stack">
       <div class="cluster"><span class="label">HotLoop Flow</span><span class="chip ok">Apache-2.0</span></div>

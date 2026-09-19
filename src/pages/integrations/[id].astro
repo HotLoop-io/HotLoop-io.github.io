@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import WordOrder from '../../components/WordOrder.astro';
+import JsonLd from '../../components/JsonLd.astro';
 import { TIERS } from '../../lib/tiers';
 
 export async function getStaticPaths() {
@@ -15,13 +16,31 @@ export async function getStaticPaths() {
 const { entry, prev, next } = Astro.props;
 const p = entry.data;
 const tier = TIERS[p.verification];
+
+// Search engines truncate a description near 160 characters. Prefer the summary
+// with its verification tier, and fall back to the summary alone when that is too long.
+const withTier = `${p.summary} Verification: ${tier.label}.`;
+const description = withTier.length <= 160 ? withTier : p.summary;
+
+// "Everything else" is not a useful page title, so the gateway-mode page says what it covers.
+const title =
+  entry.id === 'gateway-mode'
+    ? 'PROFINET, BACnet and DNP3 through HotLoop Gateway'
+    : `${p.name} integration for HotLoop Gateway`;
+
+const breadcrumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'HotLoop', item: 'https://hotloop.io/' },
+    { '@type': 'ListItem', position: 2, name: 'Integrations', item: 'https://hotloop.io/integrations/' },
+    { '@type': 'ListItem', position: 3, name: p.name, item: `https://hotloop.io/integrations/${entry.id}/` },
+  ],
+};
 ---
 
-<Base
-  title={`${p.name} integration`}
-  description={`${p.summary} Verification: ${tier.label}.`}
-  ogAlt={`${p.name} on HotLoop Gateway.`}
->
+<Base title={title} description={description} ogAlt={`${p.name} on HotLoop Gateway.`}>
+  <JsonLd slot="head" data={breadcrumbs} />
   <section class="page-hero">
     <div class="wrap stack">
       <p class="crumb"><a href="/integrations/">Integrations</a> <span aria-hidden="true">/</span> {p.name}</p>

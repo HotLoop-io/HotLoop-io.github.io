@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import JsonLd from '../components/JsonLd.astro';
 import { TIERS, TIER_ORDER } from '../lib/tiers';
 
 const protocols = (await getCollection('protocols')).sort((a, b) => a.data.order - b.data.order);
@@ -21,10 +22,25 @@ const gate = [
 ---
 
 <Base
-  title="HotLoop Gateway"
-  description="An industrial automation gateway. It polls real equipment over seven native protocols, keeps the history, raises ISA-18.2 alarms, runs automations, and exposes the plant to agents over MCP."
+  title="HotLoop Gateway: OPC UA, Modbus and MQTT gateway"
+  description="An industrial automation gateway with seven native protocols, ISA-18.2 alarms, a historian, and one write gate that nothing can route around."
   ogAlt="HotLoop Gateway, an industrial automation gateway."
 >
+  <JsonLd
+    slot="head"
+    data={{
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'HotLoop Gateway',
+      url: 'https://hotloop.io/gateway/',
+      description:
+        'An industrial automation gateway that polls equipment over OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, and HTTP, keeps the history, raises ISA-18.2 alarms, and exposes the plant to agents over MCP.',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Linux',
+      license: 'https://hotloop.io/license/',
+      publisher: { '@id': 'https://hotloop.io/#organization' },
+    }}
+  />
   <section class="page-hero">
     <div class="wrap stack">
       <span class="label">HotLoop Gateway</span>

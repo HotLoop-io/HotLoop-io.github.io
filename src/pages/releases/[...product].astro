@@ -20,11 +20,31 @@ const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month:
 
 const unpublished = all.filter((r) => r.data.product === 'gateway' && !r.data.published);
 const title = filter === 'all' ? 'Release notes' : `${NAME[filter as 'gateway' | 'flow']} release notes`;
+
+// Three pages, three different titles and descriptions. Identical ones make search
+// engines pick one of them arbitrarily and ignore the rest.
+const gwFirst = all.filter((r) => r.data.product === 'gateway').at(-1)?.data.version;
+const seo = {
+  all: {
+    title: 'HotLoop release notes: Gateway and Flow versions',
+    description:
+      'What changed in HotLoop Gateway and HotLoop Flow, version by version, including which versions have actually been published.',
+  },
+  gateway: {
+    title: 'HotLoop Gateway release notes and version history',
+    description: `Every HotLoop Gateway version from ${gwFirst} onward, with what changed in each and whether it has actually been tagged and published.`,
+  },
+  flow: {
+    title: 'HotLoop Flow release notes and version history',
+    description:
+      'HotLoop Flow release notes, starting with version 0.1.0, which is public today under its original name and the Apache-2.0 license.',
+  },
+}[filter as 'all' | 'gateway' | 'flow'];
 ---
 
 <Base
-  title={title}
-  description="What changed in HotLoop Gateway and HotLoop Flow, version by version, including which versions have actually been published."
+  title={seo.title}
+  description={seo.description}
   ogAlt="HotLoop release notes."
 >
   <section class="page-hero">
