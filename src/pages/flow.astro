@@ -104,7 +104,7 @@ const notDone = [
       </div>
       <div class="table-wrap">
         <table class="data">
-          <thead><tr><th></th><th>Flow</th><th>Node-RED</th><th>Ratio</th></tr></thead>
+          <thead><tr><th>Measure</th><th>Flow</th><th>Node-RED</th><th>Ratio</th></tr></thead>
           <tbody>
             {bench.map(([k, a, b, r]) => (
               <tr><td>{k}</td><td class="num win">{a}</td><td class="num">{b}</td><td class="num">{r}</td></tr>
@@ -197,7 +197,7 @@ const notDone = [
       </div>
       <div class="table-wrap">
         <table class="data stack">
-          <thead><tr><th></th><th>Node-RED</th><th>Flow</th></tr></thead>
+          <thead><tr><th>Area</th><th>Node-RED</th><th>Flow</th></tr></thead>
           <tbody>
             {different.map(([k, a, b]) => <tr><td>{k}</td><td data-label="Node-RED">{a}</td><td data-label="Flow">{b}</td></tr>)}
           </tbody>
@@ -226,14 +226,14 @@ const notDone = [
         </p>
       </div>
       <div class="grid grid-4">
-        <div class="card"><div class="mono big">{level('full')}</div><h4>Full</h4><p>Behaves as the Node-RED node of the same type does.</p></div>
-        <div class="card"><div class="mono big">{level('partial')}</div><h4>Partial</h4><p>A subset. The notes say exactly which parts are missing.</p></div>
-        <div class="card"><div class="mono big">{level('divergent')}</div><h4>Divergent</h4><p>Deliberately different, and the notes say why.</p></div>
-        <div class="card"><div class="mono big">{level('flow-only')}</div><h4>Flow only</h4><p>No Node-RED counterpart.</p></div>
+        <div class="card"><div class="mono big">{level('full')}</div><h3 class="t-md">Full</h3><p>Behaves as the Node-RED node of the same type does.</p></div>
+        <div class="card"><div class="mono big">{level('partial')}</div><h3 class="t-md">Partial</h3><p>A subset. The notes say exactly which parts are missing.</p></div>
+        <div class="card"><div class="mono big">{level('divergent')}</div><h3 class="t-md">Divergent</h3><p>Deliberately different, and the notes say why.</p></div>
+        <div class="card"><div class="mono big">{level('flow-only')}</div><h3 class="t-md">Flow only</h3><p>No Node-RED counterpart.</p></div>
       </div>
       <div class="grid grid-2 after">
-        <div class="card"><h4>Not supported at all: community nodes</h4><p>They are npm packages that need Node.js. There is no version of this where they work.</p></div>
-        <div class="card"><h4>Not supported at all: JSONata</h4><p>Any property typed <code>jsonata</code> is refused with an error rather than ignored, because returning the expression text would make a flow look like it works while routing on a literal string.</p></div>
+        <div class="card"><h3 class="t-md">Not supported at all: community nodes</h3><p>They are npm packages that need Node.js. There is no version of this where they work.</p></div>
+        <div class="card"><h3 class="t-md">Not supported at all: JSONata</h3><p>Any property typed <code>jsonata</code> is refused with an error rather than ignored, because returning the expression text would make a flow look like it works while routing on a literal string.</p></div>
       </div>
       <p class="after"><a class="btn" href="/integrations/#flow-nodes">Browse all {nodes.length} nodes</a></p>
     </div>
