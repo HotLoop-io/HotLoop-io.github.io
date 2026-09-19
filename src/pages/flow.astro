@@ -1,0 +1,279 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const nodes = await getCollection('nodes');
+const level = (l: string) => nodes.filter((n) => n.data.level === l).length;
+
+// Straight from the benchmark table in Flow's own README. Nothing here is
+// rounded in Flow's favor.
+const bench = [
+  ['Image size', '25.1 MB', '717 MB', '29×'],
+  ['Memory, idle', '4.8 MB', '54.6 MB', '11×'],
+  ['Memory, under load', '12.3 MB', '179.6 MB', '15×'],
+  ['Throughput', '3,460 req/s', '1,290 req/s', '2.7×'],
+  ['Latency p50', '1.03 ms', '4.61 ms', '4.5×'],
+  ['Latency p99', '16.72 ms', '23.14 ms', '1.4×'],
+  ['Cold start', '2.1–2.3 s', '4.6–5.5 s', '~2.3×'],
+];
+
+const different = [
+  ['Runtime', 'Node.js, one event loop', 'Go, goroutine per node'],
+  ['Back-pressure', 'None, unbounded queue', 'Bounded inbox, four policies'],
+  ['Message cloning', 'First recipient aliases the sender', 'Every recipient gets a copy'],
+  ['Function sandbox', 'node:vm, explicitly not a boundary', 'goja with no host bindings, plus WASM guests with a hard memory ceiling'],
+  ['exec node', 'Any command, through a shell', 'Disabled until allowlisted, and no shell at all'],
+  ['File nodes', 'Any path the process can reach', 'Scoped to the volume, symlinks resolved'],
+  ['Credentials', 'AES-256-CTR, SHA-256 as the key', 'AES-256-GCM, Argon2id'],
+  ['Context API', 'get, set', 'get, set, CompareAndSwap, Increment, Update'],
+  ['Flow file writes', 'In place', 'Temp file, fsync, rename, fsync the directory, three backups deep'],
+  ['Config', 'settings.js, executable JavaScript', 'Declarative YAML'],
+  ['Auth', 'Off by default', 'Refuses to start without it'],
+  ['Metrics', 'None', 'Prometheus, per node'],
+  ['Node definition', 'A .js plus a hand-written .html twin', 'One Go descriptor'],
+];
+
+const notDone = [
+  ['Partial deploy.', 'A redeploy currently restarts every node rather than only the ones that changed. Node-RED diffs. This is the last big runtime gap.'],
+  ['Link Call, and Link Out’s return mode.', 'Both are refused with an error rather than silently doing nothing, which is the right behavior while they do not exist, and is still a gap.'],
+  ['JSONata.', 'Every jsonata-typed property is refused today. Refusing beats returning the expression text and letting a flow route on a literal string, but it is also the most common thing an imported flow trips over.'],
+  ['Cron-style Inject scheduling.', 'Interval and startup injection work. “At a specific time, on these days” does not, and crontab is ignored.'],
+  ['Editor click-through for the newer nodes.', 'The dialogs are descriptor-driven, so they render, but nothing has been clicked through by hand for the HTTP, WebSocket, TCP, or UDP nodes.'],
+  ['Multipart uploads on HTTP In, and cookies on HTTP Response.', ''],
+];
+---
+
+<Base
+  title="HotLoop Flow"
+  description="A Node-RED-compatible flow engine in one static Go binary. Bounded queues, a goroutine per node, and Apache-2.0, free for everyone."
+  ogAlt="HotLoop Flow, a flow engine in one static Go binary."
+>
+  <section class="page-hero">
+    <div class="wrap stack">
+      <div class="cluster"><span class="label">HotLoop Flow</span><span class="chip ok">Apache-2.0</span></div>
+      <h1>Node-RED's idea, with a runtime that does not fall over.</h1>
+      <p class="lede">
+        A flow engine in Go, in one static binary, with an editor of its own and a scheduler that holds up when a
+        sensor starts talking faster than the thing reading it. Your flow files stay Node-RED v1 compatible, so
+        point it at a <code>flows.json</code> and it runs.
+      </p>
+      <div class="notice info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
+        <div>
+          <strong>Version 0.1.0 is public today under its original name, Emberwire.</strong>
+          <p>
+            It lives at <a href="https://github.com/Embernet-ai/emberwire">github.com/Embernet-ai/emberwire</a>, and the
+            HotLoop Flow release is coming. It is Apache-2.0 and stays Apache-2.0.
+          </p>
+        </div>
+      </div>
+      <div class="cluster">
+        <a class="btn primary" href="/integrations/#flow-nodes">Browse the {nodes.length} nodes</a>
+        <a class="btn" href="/releases/flow/">Release notes</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="numbers">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">The numbers</span>
+        <h2>Smaller, leaner, and faster, with the limits stated up front.</h2>
+        <p class="lede">
+          Both runtimes ran in rootless Podman on one box, with the same five-node flow file deployed to each
+          unchanged, driven by the same load generator in the same sitting. Linux, 12 CPUs, the latest Node-RED
+          image, 8 connections, 30 seconds.
+        </p>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th></th><th>Flow</th><th>Node-RED</th><th>Ratio</th></tr></thead>
+          <tbody>
+            {bench.map(([k, a, b, r]) => (
+              <tr><td>{k}</td><td class="num win">{a}</td><td class="num">{b}</td><td class="num">{r}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="caveats">
+        <h3>Now, walking our own numbers back.</h3>
+        <p class="muted">A benchmark table with no caveats under it is marketing wearing a lab coat. These figures are not allowed to say three things.</p>
+        <ol>
+          <li>
+            <strong>Cold start includes roughly two seconds of container start that both runtimes pay</strong>,
+            so the real gap between the two programs is smaller than that row implies.
+          </li>
+          <li>
+            <strong>The throughput figure includes the whole HTTP stack, on purpose</strong>, since that is the only
+            surface both present identically. It is not a measurement of either scheduler in isolation, and it should
+            not be quoted as one.
+          </li>
+          <li>
+            <strong>The p99 gap is far narrower than the p50 gap</strong>, for a reason that flatters nobody. Under
+            saturation both runtimes queue, queueing dominates the tail, and the median is the only column where
+            per-request cost actually shows up.
+          </li>
+        </ol>
+        <p class="muted">
+          Produced by the benchmark command that ships in the repository, so you can disagree with it on your own
+          hardware. The method, the flow file, the exact commands, and the caveats live in the repo's bench docs.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Why not just keep running Node-RED</span>
+        <h2>Four things, and none of them are fixable with configuration.</h2>
+      </div>
+      <div class="grid grid-2">
+        <article class="card reveal">
+          <h3>There is no back-pressure.</h3>
+          <p>
+            Node-RED puts a <code>setImmediate</code> between every wire hop, and that queue has no ceiling. A fast
+            source outruns a slow sink, the queue grows, and the pod gets OOM-killed with nothing in the log to explain
+            it. <a href="https://github.com/node-red/node-red/issues/855">node-red#855</a> has been open since 2016.
+            Every inbox in Flow is bounded, with a policy per node: block, drop the newest, drop the oldest, or raise
+            it to a Catch node and let the flow decide.
+          </p>
+        </article>
+        <article class="card reveal">
+          <h3>It is single-threaded.</h3>
+          <p>
+            One event loop carries the runtime, the editor API, the websocket fan-out, and every node's I/O. One
+            CPU-heavy Function node stalls all of it, including the editor you are using to find out why it stalled.
+            In Flow, every node instance gets its own goroutine, ordered within a node and parallel across nodes.
+          </p>
+        </article>
+        <article class="card reveal">
+          <h3>The Function node's sandbox is not a boundary.</h3>
+          <p>
+            That is not our accusation, it is Node's own documentation: <a href="https://nodejs.org/api/vm.html">“The
+            <code>node:vm</code> module is not a security mechanism. Do not use it to run untrusted code.”</a>
+            Node-RED's trust model is that anyone who can deploy a flow already owns the box, which is fine on a Pi in a
+            workshop and not fine on a customer's plant floor. It is not hypothetical either:
+            <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-41656">CVE-2025-41656</a> is unauthenticated remote code
+            execution against a default Node-RED, reached by deploying a flow with an <code>exec</code> node in it.
+          </p>
+        </article>
+        <article class="card reveal">
+          <h3>Credentials are weakly protected.</h3>
+          <p>
+            They are encrypted with AES-256-CTR keyed by a raw SHA-256 of your secret. CTR has no MAC, so anyone who can
+            write the credentials file on a shared volume can flip chosen plaintext bits, which turns “can write a file”
+            into “can change a broker password to one they picked.” And plain SHA-256 is not a key derivation function.
+            There is no CVE on either of those, and both are still real.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What is different, concretely</span>
+        <h2>The same idea, rebuilt around what bites people in production.</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="data stack">
+          <thead><tr><th></th><th>Node-RED</th><th>Flow</th></tr></thead>
+          <tbody>
+            {different.map(([k, a, b]) => <tr><td>{k}</td><td data-label="Node-RED">{a}</td><td data-label="Flow">{b}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p class="prose muted after">
+        Flow is deliberately not identical. Node-RED hands the first recipient on a wire the original message and
+        only clones for the rest, so two branches that each believe they own their message can quietly corrupt each
+        other. Every recipient in Flow gets its own copy. That costs 1.4 µs per hop on the author's machine, and a
+        shared path for large binary payloads takes a 1 MB payload from 217 µs down to 341 ns, which is exactly
+        where the copying would have hurt. Every deliberate difference is written down in the compatibility matrix
+        rather than left as a surprise.
+      </p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Compatibility</span>
+        <h2>{nodes.length} node types, and each one says how close it is.</h2>
+        <p class="lede">
+          A node that is partially compatible and silent about how is worse than one that is obviously absent,
+          because the flow appears to work and quietly does the wrong thing. So a test fails the build if a node
+          does not say what is missing.
+        </p>
+      </div>
+      <div class="grid grid-4">
+        <div class="card"><div class="mono big">{level('full')}</div><h4>Full</h4><p>Behaves as the Node-RED node of the same type does.</p></div>
+        <div class="card"><div class="mono big">{level('partial')}</div><h4>Partial</h4><p>A subset. The notes say exactly which parts are missing.</p></div>
+        <div class="card"><div class="mono big">{level('divergent')}</div><h4>Divergent</h4><p>Deliberately different, and the notes say why.</p></div>
+        <div class="card"><div class="mono big">{level('flow-only')}</div><h4>Flow only</h4><p>No Node-RED counterpart.</p></div>
+      </div>
+      <div class="grid grid-2 after">
+        <div class="card"><h4>Not supported at all: community nodes</h4><p>They are npm packages that need Node.js. There is no version of this where they work.</p></div>
+        <div class="card"><h4>Not supported at all: JSONata</h4><p>Any property typed <code>jsonata</code> is refused with an error rather than ignored, because returning the expression text would make a flow look like it works while routing on a literal string.</p></div>
+      </div>
+      <p class="after"><a class="btn" href="/integrations/#flow-nodes">Browse all {nodes.length} nodes</a></p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Where it stands</span>
+        <h2>It runs. It has never run on a plant floor.</h2>
+        <p class="lede">
+          Verified against real infrastructure and not merely against its own encoders: MQTT, InfluxDB 2.7, and
+          PostgreSQL 16 in Podman. The race detector is clean on every package. And here is what is not done yet,
+          roughly in the order it bothers the author.
+        </p>
+      </div>
+      <ul class="notdone">
+        {notDone.map(([h, b]) => <li><strong>{h}</strong> {b}</li>)}
+        <li>
+          <strong>It has never run on a real plant floor.</strong> Everything past the deploy line is unproven in the
+          field, and it will not be described as production-hardened until a plant has tried to break it.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="card cta reveal">
+        <div class="stack">
+          <span class="label">Licensing</span>
+          <h2>Apache-2.0. Free for everyone.</h2>
+          <p class="muted">
+            A business can run Flow, modify it, and ship it commercially without asking anyone. That is the point,
+            and it is why Flow is not under the Community License the Gateway uses.
+          </p>
+        </div>
+        <a class="btn primary" href="/license/">Read the license</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
+  .page-hero h1 { max-width: 20ch; }
+  .page-hero .notice { max-width: 68ch; }
+  .after { margin-top: var(--hl-s6); }
+
+  .caveats { margin-top: var(--hl-s7); padding: var(--hl-s6); border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); background: var(--hl-card); display: grid; gap: var(--hl-s3); }
+  .caveats ol { padding-left: 1.3em; display: grid; gap: var(--hl-s3); color: var(--hl-ink-soft); }
+  .caveats li strong { color: var(--hl-ink); }
+
+  .big { font-size: var(--hl-fs-2xl); font-weight: 800; line-height: 1; margin-bottom: var(--hl-s2); }
+  ul.notdone { display: grid; gap: var(--hl-s4); padding-left: 1.2em; max-width: 78ch; color: var(--hl-ink-soft); }
+  ul.notdone strong { color: var(--hl-ink); }
+
+  .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
+  .cta .stack { max-width: 62ch; }
+</style>

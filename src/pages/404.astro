@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page not found" description="That page does not exist.">
+  <section class="wrap nf stack">
+    <span class="label">Error 404</span>
+    <h1>That loop did not close.</h1>
+    <p class="lede">The page you were looking for is not here. It may have moved, or the link may have a typo in it.</p>
+    <div class="cluster">
+      <a class="btn primary" href="/">Back to the start</a>
+      <a class="btn" href="/integrations/">Browse integrations</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { padding-block: clamp(var(--hl-s8), 14vw, 160px); }
+</style>

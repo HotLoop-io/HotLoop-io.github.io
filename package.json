@@ -1,0 +1,27 @@
+{
+  "name": "hotloop-io-site",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "og": "node scripts/og.mjs",
+    "build": "node scripts/og.mjs && astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "astro": "^7.3.3",
+    "sharp": "^0.35.4"
+  },
+  "devDependencies": {
+    "opentype.js": "^2.0.0"
+  }
+}

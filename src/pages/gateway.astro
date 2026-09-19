@@ -1,0 +1,202 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { TIERS, TIER_ORDER } from '../lib/tiers';
+
+const protocols = (await getCollection('protocols')).sort((a, b) => a.data.order - b.data.order);
+const native = protocols.filter((p) => p.data.verification !== 'gateway-mode');
+const releases = (await getCollection('releases'))
+  .filter((r) => r.data.product === 'gateway')
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const latest = releases[0];
+
+const gate = [
+  ['Writes are enabled.', 'safety.allowWrites is off by default, and has been since 4.4.0.'],
+  ['Agent writes are enabled.', 'safety.allowMcpWrites is a narrowing of the master switch, not a way around it.'],
+  ['The caller has permission.', 'values.write for a logged-in user, which a viewer does not have, or the MCP write setting for an agent.'],
+  ['The tag is marked writable.', 'Tags are read-only until somebody decides otherwise, one at a time. A browse import never arms anything.'],
+  ['The value is within range.', 'It is rejected, not clamped, because sending 400 when someone asked for 500 is quietly doing something else.'],
+  ['The attempt is audited.', 'Before the value reaches the wire, including every refusal, with the actor and the source.'],
+];
+---
+
+<Base
+  title="HotLoop Gateway"
+  description="An industrial automation gateway. It polls real equipment over seven native protocols, keeps the history, raises ISA-18.2 alarms, runs automations, and exposes the plant to agents over MCP."
+  ogAlt="HotLoop Gateway, an industrial automation gateway."
+>
+  <section class="page-hero">
+    <div class="wrap stack">
+      <span class="label">HotLoop Gateway</span>
+      <h1>An industrial gateway that tells you what it has not proven.</h1>
+      <p class="lede">
+        It polls real equipment over real protocols, keeps what it reads, alarms on it, automates against it, and
+        exposes the whole plant to agents over MCP. One static Go binary, no sidecar, running as a non-root user
+        with every capability dropped.
+      </p>
+      <div class="notice info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
+        <div>
+          <strong>Not yet published.</strong>
+          <p>
+            Version {latest.data.version} is merged, and the code is moving into this org. Nothing here is
+            downloadable yet, and the <a href="/releases/gateway/">release notes</a> say exactly which versions have
+            and have not been tagged.
+          </p>
+        </div>
+      </div>
+      <div class="cluster">
+        <a class="btn primary" href="/integrations/">See what it speaks</a>
+        <a class="btn" href="/license/">Read the license</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">The write gate</span>
+        <h2>Every write goes through one function that cannot be routed around.</h2>
+        <p class="lede">
+          From the UI, the API, an automation, or an agent. Policy lives in that one place rather than being
+          re-implemented at each call site, where one of them would eventually be forgotten.
+        </p>
+      </div>
+      <ol class="gate">
+        {gate.map(([head, body], i) => (
+          <li class="card reveal">
+            <span class="step mono">{String(i + 1).padStart(2, '0')}</span>
+            <div><h3>{head}</h3><p>{body}</p></div>
+          </li>
+        ))}
+      </ol>
+      <p class="prose muted after">
+        An MCP client gets no special path. <code>write_tag</code> hits the same gate an operator does, and it
+        requires a stated reason that is recorded next to the write, because an audit row nobody can interpret six
+        months later is barely better than none.
+      </p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap grid grid-2 split">
+      <div class="stack">
+        <span class="label">Built for agents</span>
+        <h2>MCP in both directions.</h2>
+        <p class="muted">
+          13 tools and 4 resources, over streamable HTTP and over stdio, so an agent can read the plant and,
+          only through the gate, act on it. There is also an outbound client, so a rule can call a tool on
+          another system.
+        </p>
+        <p class="muted">
+          The Sites screen uses the same mechanism. Point one gateway at the others as outbound MCP servers and it
+          asks each of them the question it would answer itself. A site that does not answer is shown as
+          unreachable, with the reason, and is left out of the roll-up, because counting a plant you cannot reach
+          as zero alarms would be the worst possible default.
+        </p>
+      </div>
+      <div class="stack">
+        <span class="label">Bad is not zero</span>
+        <h2>A failed read is not a value.</h2>
+        <p class="muted">
+          Every reading carries good, uncertain, or bad. A driver that cannot read a point still emits a reading,
+          marked bad, because silence looks identical to a value that has not changed.
+        </p>
+        <p class="muted">
+          Alarm evaluation holds its previous state on a bad reading rather than evaluating it. A sensor that
+          fails to zero would otherwise trip every low alarm on the unit and look like a process event, when it is
+          an instrument problem.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What it speaks</span>
+        <h2>Seven native protocols, and a table that says how far each has been proven.</h2>
+      </div>
+      <div class="grid grid-4">
+        {native.map((p) => (
+          <a class="card proto reveal" href={`/integrations/${p.id}/`}>
+            <div class="cluster head">
+              <h3>{p.data.name}</h3>
+              <span class={`chip ${TIERS[p.data.verification].chip}`}>{TIERS[p.data.verification].label}</span>
+            </div>
+            <p>{p.data.summary}</p>
+          </a>
+        ))}
+      </div>
+      <div class="notice after">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+        <div>
+          <strong>S7comm and EtherNet/IP have never been run against a physical PLC.</strong>
+          <p>
+            Their decoding is tested thoroughly, but tested decoding is not the same as a value that came off a
+            real controller. If you are the first to point either at real hardware, treat it as commissioning and
+            check a known value before you trust a screen.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What is inside</span>
+        <h2>The rest of the plant, in one binary.</h2>
+      </div>
+      <div class="grid grid-3">
+        <article class="card reveal"><h3>Historian</h3><p>TimescaleDB, promoted to a hypertable when the extension is there and falling back to native range partitioning when it is not. Per-tag deadband filtering, so a sensor jittering in its last bit does not write a row every scan forever.</p></article>
+        <article class="card reveal"><h3>Alarms</h3><p>ISA-18.2, including <code>rtn-unack</code> for an alarm that cleared before anybody saw it. Acknowledgement and return-to-normal are independent axes, so a transient trip at 03:00 is still on the list when the morning shift arrives.</p></article>
+        <article class="card reveal"><h3>Automations</h3><p>Nine trigger types, a sandboxed condition, and actions. Conditions are compiled when a rule is saved, so a broken rule is caught in the editor and not at 3am.</p></article>
+        <article class="card reveal"><h3>The Board</h3><p>The screen that gets left on a wall. Pinned tags are gauges with their alarm limits marked where they fall, layout stored with the plant so the panel PC and the laptop show the same board.</p></article>
+        <article class="card reveal"><h3>Paging</h3><p>Alarm notifications by webhook or email, so a 03:00 alarm can reach a phone. It composes with whatever paging service you already use, and off by default.</p></article>
+        <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, so a third-party client can browse and read the Gateway's tags. Secure channels, the same users as the web login, and no write handler at all.</p></article>
+        <article class="card reveal"><h3>Edge Relay</h3><p>A second, lighter binary with no database, about 16.9 MB against the Gateway's 33.4 MB, that polls and forwards over Sparkplug B. Fleet management tracks and commands registered relays.</p></article>
+        <article class="card reveal"><h3>Embedded broker</h3><p>An optional in-process MQTT broker, so a single-box install can be its own Sparkplug hub. There is no per-topic access control by design, so use a dedicated broker at scale.</p></article>
+        <article class="card reveal"><h3>Backups</h3><p>A logical snapshot taken in pure Go over the existing connection, with a restore that refuses to touch a database that already has data.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="card cta reveal">
+        <div class="stack">
+          <span class="label">Licensing</span>
+          <h2>Free for individuals. Business goes through Embernet.</h2>
+          <p class="muted">
+            The Gateway is source-available under the HotLoop Community License, which is not an OSI open source
+            license. Individual, home, hobbyist, nonprofit, and educational use is free. Any business or for-profit
+            use goes through Embernet, which provides the support and the warranty.
+          </p>
+        </div>
+        <a class="btn primary" href="/license/">Read the terms</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
+  .page-hero h1 { max-width: 20ch; }
+  .page-hero .notice { max-width: 68ch; }
+
+  ol.gate { list-style: none; padding: 0; display: grid; gap: var(--hl-s3); counter-reset: none; }
+  ol.gate li { display: grid; grid-template-columns: auto 1fr; gap: var(--hl-s5); align-items: start; padding: var(--hl-s5) var(--hl-s6); }
+  ol.gate .step { font-size: var(--hl-fs-xl); font-weight: 800; color: var(--hl-ink-faint); line-height: 1; padding-top: 2px; }
+  ol.gate h3 { font-size: var(--hl-fs-md); margin-bottom: var(--hl-s1); }
+  .after { margin-top: var(--hl-s6); }
+
+  .split { align-items: start; gap: var(--hl-s8); }
+  .proto { text-decoration: none; color: inherit; display: block; transition: transform var(--hl-transition-fast), border-color var(--hl-transition-fast); }
+  .proto:hover { transform: translateY(-2px); border-color: var(--hl-orange); }
+  .proto .head { justify-content: space-between; align-items: start; margin-bottom: var(--hl-s2); }
+  .proto h3 { font-size: var(--hl-fs-md); margin: 0; }
+
+  .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
+  .cta .stack { max-width: 62ch; }
+</style>

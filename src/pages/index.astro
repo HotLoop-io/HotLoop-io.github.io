@@ -1,0 +1,257 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import LoopInstrument from '../components/LoopInstrument.astro';
+import { TIERS, TIER_ORDER } from '../lib/tiers';
+
+const protocols = await getCollection('protocols');
+const nodes = await getCollection('nodes');
+const releases = await getCollection('releases');
+
+const counts = Object.fromEntries(
+  TIER_ORDER.map((t) => [
+    t,
+    // The gateway-mode entry stands for nine protocols, so count what it lists.
+    protocols
+      .filter((p) => p.data.verification === t)
+      .reduce((n, p) => n + (t === 'gateway-mode' ? p.data.aka.length : 1), 0),
+  ]),
+) as Record<string, number>;
+
+const newest = (product: string) =>
+  releases
+    .filter((r) => r.data.product === product)
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())[0];
+const gw = newest('gateway');
+const fl = newest('flow');
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+---
+
+<Base
+  title="HotLoop"
+  description="HotLoop is automation software that closes the loop between what a sensor says and what a machine does. HotLoop Gateway is an industrial gateway, and HotLoop Flow is a flow engine."
+  ogAlt="HotLoop. Automation loops for the real world."
+>
+  <section class="hero">
+    <div class="wrap-wide grid-hero">
+      <div class="copy stack">
+        <span class="chip ok">Two products, licensed separately</span>
+        <h1>Automation loops for the real world.</h1>
+        <p class="lede">
+          Most home automation is a toy, and most industrial automation costs a fortune and needs a team to
+          configure. HotLoop is two pieces of software that close the loop between what a sensor says and what
+          a machine does, and neither one changes what it can do based on who you are.
+        </p>
+        <div class="cluster">
+          <a class="btn primary" href="/gateway/">
+            Meet the Gateway
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+          <a class="btn" href="/flow/">Meet Flow</a>
+        </div>
+      </div>
+      <LoopInstrument />
+    </div>
+
+    <div class="wrap-wide stats">
+      <div class="stat">
+        <div class="n mono">7</div>
+        <p>Protocols the Gateway speaks natively. There are no placeholder drivers.</p>
+      </div>
+      <div class="stat">
+        <div class="n mono">{nodes.length}</div>
+        <p>Node types in Flow, each labeled by how closely it matches Node-RED.</p>
+      </div>
+      <div class="stat">
+        <div class="n mono">25.1<small>MB</small></div>
+        <p>The whole Flow image, against 717 for Node-RED. One box, one run, and the caveats are on <a href="/flow/#numbers">the Flow page</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">The loop</span>
+        <h2>Sense, decide, act, and around again.</h2>
+        <p class="lede">
+          That loop is the whole idea. It is the difference between a rule you set once and hope still works,
+          and something you can trust to run while you are not watching it.
+        </p>
+      </div>
+      <div class="grid grid-3">
+        <article class="card reveal">
+          <h3>Sense</h3>
+          <p>
+            Poll real equipment over real protocols, and keep the quality of every reading, not just the value.
+            A failed read is bad quality, never a zero, and a dead sensor does not trip every low alarm.
+          </p>
+        </article>
+        <article class="card reveal">
+          <h3>Decide</h3>
+          <p>
+            Alarms follow ISA-18.2, including the state most homegrown systems miss, an alarm that cleared on its
+            own before anybody saw it. Automation rules are compiled when you save them, so a broken rule is
+            caught in the editor and not at 3am halfway through a sequence.
+          </p>
+        </article>
+        <article class="card reveal">
+          <h3>Act</h3>
+          <p>
+            Every write, from the UI, the API, an automation, or an agent, crosses one gate that cannot be routed
+            around. Out of range is rejected and never clamped, and every refusal is audited.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">The products</span>
+        <h2>Two tools, built for different jobs.</h2>
+      </div>
+      <div class="grid grid-2">
+        <article class="card product reveal">
+          <div class="cluster head"><h3>HotLoop Gateway</h3><span class="chip warn">Not yet published</span></div>
+          <p class="what">
+            An industrial automation gateway. It polls equipment, keeps the history, raises alarms, runs
+            automations against them, and exposes the whole plant to agents over MCP. One static Go binary that
+            runs as a non-root user with every capability dropped.
+          </p>
+          <ul>
+            <li>Seven native protocols, and a verification table that says which ones have never touched a real PLC.</li>
+            <li>A historian on TimescaleDB, with a native-partitioning fallback when the extension is missing.</li>
+            <li>An MCP server with 13 tools and 4 resources, over HTTP and stdio.</li>
+          </ul>
+          <p class="license">Source-available under the HotLoop Community License. Free for individual use, and business use goes through Embernet.</p>
+          <a class="btn primary" href="/gateway/">About the Gateway</a>
+        </article>
+
+        <article class="card product reveal">
+          <div class="cluster head"><h3>HotLoop Flow</h3><span class="chip ok">Version 0.1.0 is public</span></div>
+          <p class="what">
+            A flow engine in one static Go binary, and Node-RED's idea with a different runtime. Flow files stay
+            Node-RED v1 compatible, and every inbox is bounded, so a fast sensor cannot quietly inflate a pod
+            until the kubelet kills it.
+          </p>
+          <ul>
+            <li>{nodes.length} node types, each labeled full, partial, divergent, or Flow-only, with the difference spelled out.</li>
+            <li>Refuses to start without authentication, and ships its <code>exec</code> node disabled.</li>
+            <li>Bounded queues, a goroutine per node, and a race detector that comes back clean on every package.</li>
+          </ul>
+          <p class="license">Apache-2.0, free for everyone, businesses included.</p>
+          <a class="btn primary" href="/flow/">About Flow</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What we refuse to fake</span>
+        <h2>Every integration says how far it has actually been proven.</h2>
+        <p class="lede">
+          Most integration pages list logos. Ours has four tiers, and one of them is empty on purpose.
+        </p>
+      </div>
+      <div class="grid grid-4 tiers">
+        {TIER_ORDER.map((t) => (
+          <div class="card tier reveal">
+            <div class="cluster head">
+              <span class={`chip ${TIERS[t].chip}`}>{TIERS[t].label}</span>
+              <span class="count mono">{counts[t]}</span>
+            </div>
+            <p>{TIERS[t].blurb}</p>
+          </div>
+        ))}
+      </div>
+      <p class="more"><a class="btn" href="/integrations/">See every integration</a></p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Latest</span>
+        <h2>What changed most recently.</h2>
+      </div>
+      <div class="grid grid-2">
+        <a class="card release reveal" href="/releases/flow/">
+          <div class="cluster head">
+            <h3>Flow {fl.data.version}</h3><span class="chip ok">Published</span>
+          </div>
+          <p class="date">{fmt(fl.data.date)}</p>
+          <p>{fl.data.summary}</p>
+        </a>
+        <a class="card release reveal" href="/releases/gateway/">
+          <div class="cluster head">
+            <h3>Gateway {gw.data.version}</h3><span class="chip warn">Merged, not published</span>
+          </div>
+          <p class="date">{fmt(gw.data.date)}</p>
+          <p>{gw.data.summary}</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="card licensing reveal">
+        <div>
+          <span class="label">Licensing</span>
+          <h2>Two products, two licenses.</h2>
+          <p class="lede">
+            Flow is Apache-2.0, so anyone can run it, businesses included, with no agreement. The Gateway is free
+            for individuals, and a business that wants it goes through Embernet for support and a warranty.
+          </p>
+        </div>
+        <a class="btn primary" href="/license/">Which license applies to me?</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-top: clamp(var(--hl-s7), 6vw, var(--hl-s8)); }
+  .grid-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 620px); gap: clamp(var(--hl-s6), 5vw, var(--hl-s8)); align-items: center; }
+  @media (max-width: 1000px) { .grid-hero { grid-template-columns: 1fr; } }
+  .copy > .chip { justify-self: start; }
+  /* A grid item defaults to min-width:auto, so its widest child sets the column. */
+  .grid-hero > * { min-width: 0; }
+  .copy h1 { max-width: 14ch; }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: var(--hl-s5); margin-top: clamp(var(--hl-s7), 6vw, var(--hl-s8));
+    padding-top: var(--hl-s6); border-top: 1px solid var(--hl-border);
+  }
+  .stat .n { font-size: var(--hl-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+  .stat .n small { font-size: 0.45em; margin-left: 0.2em; color: var(--hl-ink-soft); font-weight: 700; }
+  .stat p { color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); margin-top: var(--hl-s2); max-width: 40ch; }
+
+  .product { display: grid; gap: var(--hl-s4); align-content: start; }
+  .product .head { justify-content: space-between; }
+  .product .head h3 { margin: 0; }
+  .product .what { color: var(--hl-ink); font-size: var(--hl-fs-base); }
+  .product .license { padding-top: var(--hl-s3); border-top: 1px solid var(--hl-border); font-size: var(--hl-fs-xs); }
+  .product .btn { justify-self: start; }
+
+  .tier .head { justify-content: space-between; margin-bottom: var(--hl-s3); }
+  .tier .count { font-size: var(--hl-fs-xl); font-weight: 800; }
+  .more { margin-top: var(--hl-s6); }
+
+  a.release { display: block; text-decoration: none; color: inherit; transition: transform var(--hl-transition-fast), box-shadow var(--hl-transition-fast), border-color var(--hl-transition-fast); }
+  a.release:hover { transform: translateY(-2px); box-shadow: var(--hl-sh-2); border-color: var(--hl-orange); }
+  .release .head { justify-content: space-between; margin-bottom: var(--hl-s1); }
+  .release .head h3 { margin: 0; }
+  .release .date { font-size: var(--hl-fs-xs); margin-bottom: var(--hl-s3); }
+
+  .licensing { display: flex; flex-wrap: wrap; gap: var(--hl-s6); align-items: center; justify-content: space-between; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
+  .licensing > div { display: grid; gap: var(--hl-s3); max-width: 60ch; }
+  .licensing .lede { font-size: var(--hl-fs-md); }
+</style>

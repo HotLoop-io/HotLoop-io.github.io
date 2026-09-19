@@ -1,0 +1,53 @@
+---
+// Every page gets a canonical URL, Open Graph, and a large-image Twitter card.
+// Before this existed, a link to hotloop.io pasted into Slack, Discord, X, or
+// Reddit rendered as a bare grey URL.
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  ogAlt?: string;
+  type?: 'website' | 'article';
+}
+
+const { title, description, ogImage, ogAlt, type = 'website' } = Astro.props;
+
+const site = Astro.site!;
+const canonical = new URL(Astro.url.pathname, site).href;
+
+// og:image has to be absolute, or most crawlers will not fetch it.
+const slug = Astro.url.pathname.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'home';
+const image = new URL(ogImage ?? `/og/${slug}.png`, site).href;
+
+const full = title === 'HotLoop' ? 'HotLoop' : `${title} · HotLoop`;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{full}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/icon-32.png" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="theme-color" content="#FBFAF8" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#14120F" media="(prefers-color-scheme: dark)" />
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content="HotLoop" />
+<meta property="og:title" content={full} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={image} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={ogAlt ?? title} />
+<meta property="og:locale" content="en_US" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={full} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+<meta name="twitter:image:alt" content={ogAlt ?? title} />

@@ -1,0 +1,233 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { TIERS, TIER_ORDER, splitCode } from '../../lib/tiers';
+
+const protocols = (await getCollection('protocols')).sort((a, b) => a.data.order - b.data.order);
+const nodes = await getCollection('nodes');
+
+const CATS = ['Common', 'Function', 'Network', 'Sequence', 'Parser', 'Storage', 'Discover', 'Config'];
+const sortedNodes = [...nodes].sort(
+  (a, b) => CATS.indexOf(a.data.category) - CATS.indexOf(b.data.category) || a.data.type.localeCompare(b.data.type),
+);
+
+const count = (t: string) =>
+  protocols
+    .filter((p) => p.data.verification === t)
+    .reduce((n, p) => n + (t === 'gateway-mode' ? p.data.aka.length : 1), 0);
+
+const LEVELS = [
+  ['full', 'Full', 'ok'],
+  ['partial', 'Partial', 'warn'],
+  ['divergent', 'Divergent', 'info'],
+  ['flow-only', 'Flow only', 'none'],
+] as const;
+const lv = Object.fromEntries(LEVELS.map(([k, l, c]) => [k, { label: l, chip: c }]));
+---
+
+<Base
+  title="Integrations"
+  description="Seven native Gateway protocols and 51 Flow nodes, each one labeled by how far it has actually been proven. Zero are certified, and we say so."
+  ogAlt="HotLoop integrations, with four verification tiers."
+>
+  <section class="page-hero">
+    <div class="wrap-wide stack">
+      <span class="label">Integrations</span>
+      <h1>What it speaks, and how far each one has been proven.</h1>
+      <p class="lede">
+        Seven protocols on the Gateway and {nodes.length} node types in Flow. Most integration pages list logos.
+        This one has four tiers, and one of them is empty on purpose.
+      </p>
+    </div>
+  </section>
+
+  <section class="wrap-wide tiers">
+    <div class="grid grid-4">
+      {TIER_ORDER.map((t) => (
+        <div class="card tier">
+          <div class="cluster head">
+            <span class={`chip ${TIERS[t].chip}`}>{TIERS[t].label}</span>
+            <span class="count mono">{count(t)}</span>
+          </div>
+          <p>{TIERS[t].blurb}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="wrap-wide gateway" id="gateway-protocols">
+    <div class="section-head">
+      <span class="label">HotLoop Gateway</span>
+      <h2>Native protocols</h2>
+    </div>
+
+    <div class="notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+      <div>
+        <strong>S7comm and EtherNet/IP have never been run against a physical PLC.</strong>
+        <p>
+          Their decoding is tested thoroughly, but tested decoding is not the same as a value that came off a real
+          controller. If you are the first person to point either at real hardware, treat it as commissioning and check
+          a known value before you trust a screen.
+        </p>
+      </div>
+    </div>
+
+    <div class="scope">
+      <fieldset class="filters" aria-label="Filter protocols by verification tier">
+        <legend class="sr-only">Filter by verification tier</legend>
+        <input type="radio" name="tier" id="t-all" checked /><label for="t-all">All</label>
+        <input type="radio" name="tier" id="t-live" /><label for="t-live">Verified live</label>
+        <input type="radio" name="tier" id="t-decode" /><label for="t-decode">Decode tested</label>
+        <input type="radio" name="tier" id="t-gateway-mode" /><label for="t-gateway-mode">Gateway mode</label>
+      </fieldset>
+
+      <div class="grid grid-4 cards">
+        {protocols.map((p) => (
+          <a class="card proto" href={`/integrations/${p.id}/`} data-tier={p.data.verification}>
+            <div class="cluster head">
+              <h3>{p.data.name}</h3>
+              <span class={`chip ${TIERS[p.data.verification].chip}`}>{TIERS[p.data.verification].label}</span>
+            </div>
+            {p.data.addressExamples[0] && <code class="addr">{p.data.addressExamples[0].expr}</code>}
+            <p>{p.data.summary}</p>
+            {p.data.verifiedAgainst.length > 0 && (
+              <p class="against"><strong>Verified against:</strong> {p.data.verifiedAgainst.join('; ')}</p>
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap-wide flow" id="flow-nodes">
+    <div class="section-head">
+      <span class="label">HotLoop Flow</span>
+      <h2>{nodes.length} node types</h2>
+      <p class="lede">
+        Generated from Flow's node registry. A node that is anything short of full has to say what is different, and
+        the build fails if one does not.
+      </p>
+    </div>
+
+    <div class="scope nodes-scope">
+      <div class="toolbar">
+        <fieldset class="filters" aria-label="Filter nodes by compatibility level">
+          <legend class="sr-only">Filter by compatibility level</legend>
+          <input type="radio" name="lvl" id="l-all" checked /><label for="l-all">All ({nodes.length})</label>
+          {LEVELS.map(([k, l]) => (
+            <>
+              <input type="radio" name="lvl" id={`l-${k}`} /><label for={`l-${k}`}>{l} ({nodes.filter((n) => n.data.level === k).length})</label>
+            </>
+          ))}
+        </fieldset>
+        <label class="search" hidden data-search-wrap>
+          <span class="sr-only">Search nodes</span>
+          <input type="search" placeholder="Search nodes" data-search autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data nodes stack">
+          <thead><tr><th>Node type</th><th>Category</th><th>Level</th><th>What is different</th></tr></thead>
+          <tbody>
+            {sortedNodes.map((n) => (
+              <tr data-level={n.data.level} data-text={`${n.data.type} ${n.data.category} ${n.data.notes}`.toLowerCase()}>
+                <td><code>{n.data.type}</code></td>
+                <td data-label="Category">{n.data.category}</td>
+                <td data-label="Level"><span class={`chip ${lv[n.data.level].chip}`}>{lv[n.data.level].label}</span></td>
+                <td class="notes" data-label="What is different">
+                  {n.data.notes
+                    ? splitCode(n.data.notes).map((s) => (s.code ? <code>{s.text}</code> : s.text))
+                    : <span class="muted">Behaves as the Node-RED node does.</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="empty muted" data-empty hidden>No node matches that search.</p>
+    </div>
+
+    <p class="fine muted">
+      These rows are imported from Flow's generated compatibility document. Node type strings are shown exactly as
+      they appear in a flow file, so two of them still carry the old Emberwire name. They are identifiers stored
+      inside users' saved flows, and they are not ours to rename casually.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s6); }
+  .page-hero h1 { max-width: 22ch; }
+  .tiers { margin-bottom: var(--hl-s8); }
+  .tier .head { justify-content: space-between; margin-bottom: var(--hl-s3); }
+  .tier .count { font-size: var(--hl-fs-xl); font-weight: 800; }
+  .gateway, .flow { padding-block: var(--hl-s7); border-top: 1px solid var(--hl-border); }
+  .gateway .notice { margin-bottom: var(--hl-s6); }
+
+  /* Filtering with no JavaScript: a checked radio changes what :has() lets
+     through. Progressive enhancement rather than a dependency. */
+  .filters { border: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--hl-s2); margin-bottom: var(--hl-s5); }
+  .filters input { position: absolute; opacity: 0; pointer-events: none; }
+  .filters label {
+    padding: 0.5em 1.1em; border-radius: var(--hl-r-pill); border: 1px solid var(--hl-border);
+    background: var(--hl-card); font-size: var(--hl-fs-sm); font-weight: 600; color: var(--hl-ink-soft); cursor: pointer;
+    transition: border-color var(--hl-transition-fast), color var(--hl-transition-fast);
+  }
+  .filters label:hover { border-color: var(--hl-line-strong); color: var(--hl-ink); }
+  .filters input:checked + label { background: var(--hl-ink); border-color: var(--hl-ink); color: var(--hl-bg); }
+  .filters input:focus-visible + label { outline: 2px solid var(--hl-focus); outline-offset: 2px; }
+
+  .scope:has(#t-live:checked) .proto:not([data-tier='live']),
+  .scope:has(#t-decode:checked) .proto:not([data-tier='decode']),
+  .scope:has(#t-gateway-mode:checked) .proto:not([data-tier='gateway-mode']),
+  .scope:has(#l-full:checked) tr[data-level]:not([data-level='full']),
+  .scope:has(#l-partial:checked) tr[data-level]:not([data-level='partial']),
+  .scope:has(#l-divergent:checked) tr[data-level]:not([data-level='divergent']),
+  .scope:has(#l-flow-only:checked) tr[data-level]:not([data-level='flow-only']) { display: none; }
+
+  /* Eight cards should land as 4 + 4, not 5 + 3 with a hole. */
+  .cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); }
+  .proto { display: grid; gap: var(--hl-s3); align-content: start; text-decoration: none; color: inherit; transition: transform var(--hl-transition-fast), border-color var(--hl-transition-fast), box-shadow var(--hl-transition-fast); }
+  .proto:hover { transform: translateY(-2px); border-color: var(--hl-orange); box-shadow: var(--hl-sh-2); }
+  .proto .head { justify-content: space-between; align-items: start; }
+  .proto h3 { font-size: var(--hl-fs-md); margin: 0; }
+  .addr { display: block; padding: 0.5em 0.7em; background: var(--hl-sunken); border: 1px solid var(--hl-border); border-radius: 6px; font-size: var(--hl-fs-xs); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .against { font-size: var(--hl-fs-xs) !important; padding-top: var(--hl-s3); border-top: 1px solid var(--hl-border); }
+  .against strong { color: var(--hl-ink); }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: var(--hl-s4); justify-content: space-between; align-items: start; }
+  .search input { min-width: 240px; padding: 0.6em 1em; background: var(--hl-card); border: 1px solid var(--hl-line-strong); border-radius: var(--hl-r-pill); color: var(--hl-ink); }
+  table.nodes td.notes { max-width: 62ch; color: var(--hl-ink-soft); }
+  table.nodes td.notes code { color: var(--hl-ink); }
+  .fine { font-size: var(--hl-fs-xs); margin-top: var(--hl-s5); max-width: 75ch; }
+  .empty { margin-top: var(--hl-s4); }
+</style>
+
+<script>
+  // Search is an enhancement. Without JavaScript the box stays hidden and the
+  // radio filter above still works.
+  function init() {
+    const wrap = document.querySelector<HTMLElement>('[data-search-wrap]');
+    const input = document.querySelector<HTMLInputElement>('[data-search]');
+    const empty = document.querySelector<HTMLElement>('[data-empty]');
+    if (!wrap || !input || input.dataset.bound) return;
+    input.dataset.bound = '1';
+    wrap.hidden = false;
+    const rows = [...document.querySelectorAll<HTMLElement>('tr[data-text]')];
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      let shown = 0;
+      rows.forEach((r) => {
+        const hit = !q || r.dataset.text!.includes(q);
+        r.toggleAttribute('data-hidden', !hit);
+        (r as HTMLElement).style.display = hit ? '' : 'none';
+        if (hit) shown++;
+      });
+      if (empty) empty.hidden = shown !== 0;
+    });
+  }
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>

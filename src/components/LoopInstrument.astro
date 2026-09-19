@@ -1,0 +1,188 @@
+---
+// The product's own metaphor, running: sense, decide, act, and around again.
+// It is a simulation in the visitor's browser and says so. Nothing on this page
+// is connected to anything.
+---
+
+<section class="instrument card" data-loop aria-labelledby="loop-title">
+  <div class="top">
+    <h2 id="loop-title" class="label">A loop, running</h2>
+    <span class="mono tag">TT-101 &middot; modbus tcp &middot; holding:40001</span>
+  </div>
+
+  <div class="body">
+    <svg class="ring" viewBox="0 0 300 268" role="img" aria-label="A control loop cycling through sense, decide, and act">
+      <defs>
+        <linearGradient id="hl-loop-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color: var(--hl-amber)"></stop>
+          <stop offset="100%" style="stop-color: var(--hl-orange)"></stop>
+        </linearGradient>
+      </defs>
+
+      <circle class="track" cx="150" cy="150" r="116"></circle>
+      <circle class="sweep" cx="150" cy="150" r="116" stroke="url(#hl-loop-grad)"></circle>
+
+      <!-- The dot rides the ring. A rotating group is used instead of CSS
+           offset-path, which is inconsistent on SVG children across browsers. -->
+      <g class="orbit"><circle class="dot-orbit" cx="150" cy="34" r="8"></circle></g>
+
+      <g class="node" text-anchor="middle">
+        <circle cx="150" cy="34" r="27"></circle>
+        <text x="150" y="31" class="n-name">SENSE</text><text x="150" y="43" class="n-sub">poll</text>
+        <circle cx="250" cy="208" r="27"></circle>
+        <text x="250" y="205" class="n-name">DECIDE</text><text x="250" y="217" class="n-sub">vs SP</text>
+        <circle cx="50" cy="208" r="27"></circle>
+        <text x="50" y="205" class="n-name">ACT</text><text x="50" y="217" class="n-sub">gated</text>
+      </g>
+
+      <text x="150" y="140" text-anchor="middle" class="pv" data-pv>61.4</text>
+      <text x="150" y="162" text-anchor="middle" class="unit">degC process value</text>
+      <text x="150" y="187" text-anchor="middle" class="quality">quality: good</text>
+    </svg>
+
+    <div class="readout">
+      <div>
+        <label for="sp" class="sp-label">
+          Setpoint <span class="mono strong"><span data-sp-val>72</span> degC</span>
+        </label>
+        <input id="sp" type="range" min="40" max="90" step="1" value="72" data-sp />
+      </div>
+
+      <dl class="pair">
+        <div><dt>Error</dt><dd class="mono" data-err>+0.00</dd></div>
+        <div><dt>Output</dt><dd class="mono"><span data-out>50</span>%</dd></div>
+      </dl>
+
+      <div class="alarm ok" data-alarm role="status" aria-live="polite">
+        <div class="a-row"><span class="dot"></span><span data-alarm-text>Normal</span></div>
+        <p data-alarm-note>Inside deadband. No alarm raised, nothing paged.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot">
+    A simulation running in your browser, so drag the setpoint and watch the loop close. In the Gateway,
+    every write crosses one gate, out of range is rejected and never clamped, and the refusal is audited.
+  </p>
+</section>
+
+<style>
+  .instrument { padding: var(--hl-s5) var(--hl-s6) var(--hl-s5); display: grid; gap: var(--hl-s4); position: relative; overflow: clip; }
+
+  /* A conic border that turns. The angle is a registered custom property, so it
+     genuinely interpolates instead of snapping. */
+  .instrument::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px;
+    background: conic-gradient(from var(--hl-angle), transparent 0 55%, var(--hl-amber), var(--hl-orange) 80%, transparent);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude; -webkit-mask-composite: xor;
+    pointer-events: none; opacity: 0.85;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .instrument::before { animation: hl-turn 7s linear infinite; }
+    @keyframes hl-turn { to { --hl-angle: 360deg; } }
+    .orbit { transform-origin: 150px 150px; animation: hl-spin 4.5s linear infinite; }
+    @keyframes hl-spin { to { transform: rotate(360deg); } }
+    .sweep { animation: hl-dash 18s linear infinite; }
+    @keyframes hl-dash { to { stroke-dashoffset: -730; } }
+  }
+
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--hl-s3); flex-wrap: wrap; }
+  .tag { font-size: var(--hl-fs-xs); color: var(--hl-ink-soft); }
+
+  .body { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: var(--hl-s6); align-items: center; }
+  @container (max-width: 520px) { .body { grid-template-columns: 1fr; } }
+
+  .ring { width: 100%; max-width: 300px; height: auto; margin-inline: auto; }
+  .track { fill: none; stroke: var(--hl-border); stroke-width: 2; }
+  .sweep { fill: none; stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 120 610; }
+  .dot-orbit { fill: var(--hl-orange); }
+  .node circle { fill: var(--hl-card); stroke: var(--hl-border); stroke-width: 1.5; }
+  .n-name { font-size: 10.5px; font-weight: 700; fill: var(--hl-ink); font-family: var(--hl-font); }
+  .n-sub { font-size: 9px; fill: var(--hl-ink-soft); font-family: var(--hl-font); }
+  .pv { font-size: 46px; font-weight: 700; fill: var(--hl-ink); font-family: var(--hl-font-mono); font-variant-numeric: tabular-nums; }
+  .unit { font-size: 12px; fill: var(--hl-ink-soft); font-family: var(--hl-font); }
+  .quality { font-size: 12px; font-weight: 500; fill: var(--hl-ok-text); font-family: var(--hl-font-mono); }
+
+  .readout { display: grid; gap: var(--hl-s4); min-width: 0; }
+  .sp-label { display: flex; justify-content: space-between; font-size: var(--hl-fs-xs); font-weight: 600; color: var(--hl-ink-soft); margin-bottom: var(--hl-s2); }
+  .strong { color: var(--hl-ink); font-weight: 700; }
+  input[type='range'] { width: 100%; accent-color: var(--hl-orange); cursor: grab; height: 28px; }
+  input[type='range']:active { cursor: grabbing; }
+
+  .pair { display: grid; gap: var(--hl-s2); }
+  .pair > div { display: flex; justify-content: space-between; align-items: center; padding: 0.6em 0.9em; background: var(--hl-sunken); border-radius: var(--hl-r-sm); }
+  dt { font-size: var(--hl-fs-xs); color: var(--hl-ink-soft); }
+  dd { font-size: var(--hl-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .alarm { padding: var(--hl-s3) var(--hl-s4); border-radius: var(--hl-r-sm); border: 1px solid; transition: background var(--hl-transition-med), border-color var(--hl-transition-med); }
+  .a-row { display: flex; align-items: center; gap: var(--hl-s2); font-size: var(--hl-fs-sm); font-weight: 600; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+  .alarm p { font-size: var(--hl-fs-xs); color: var(--hl-ink-soft); margin-top: 4px; line-height: 1.45; }
+  /* State comes from the semantic ramp. The accent is never used for state. */
+  .alarm.ok { color: var(--hl-ok-text); background: var(--hl-ok-tint); border-color: color-mix(in srgb, var(--hl-ok) 35%, transparent); }
+  .alarm.warn { color: var(--hl-warn-text); background: var(--hl-warn-tint); border-color: color-mix(in srgb, var(--hl-warn) 40%, transparent); }
+  .alarm.danger { color: var(--hl-danger-text); background: var(--hl-danger-tint); border-color: color-mix(in srgb, var(--hl-danger) 35%, transparent); }
+
+  .foot { font-size: var(--hl-fs-xs); color: var(--hl-ink-soft); border-top: 1px solid var(--hl-border); padding-top: var(--hl-s3); }
+</style>
+
+<script>
+  function start(root: HTMLElement) {
+    if (root.dataset.running) return;
+    root.dataset.running = '1';
+
+    const $ = <T extends Element>(s: string) => root.querySelector(s) as T;
+    const pvEl = $<SVGTextElement>('[data-pv]');
+    const spIn = $<HTMLInputElement>('[data-sp]');
+    const spVal = $<HTMLElement>('[data-sp-val]');
+    const errEl = $<HTMLElement>('[data-err]');
+    const outEl = $<HTMLElement>('[data-out]');
+    const alarm = $<HTMLElement>('[data-alarm]');
+    const aText = $<HTMLElement>('[data-alarm-text]');
+    const aNote = $<HTMLElement>('[data-alarm-note]');
+
+    let pv = 61.4;
+    let sp = Number(spIn.value);
+
+    spIn.addEventListener('input', () => {
+      sp = Number(spIn.value);
+      spVal.textContent = String(sp);
+    });
+
+    function render() {
+      const err = pv - sp;
+      const abs = Math.abs(err);
+      pvEl.textContent = pv.toFixed(1);
+      errEl.textContent = (err >= 0 ? '+' : '') + err.toFixed(2);
+      outEl.textContent = String(Math.max(0, Math.min(100, Math.round(50 - err * 6))));
+
+      let state: 'ok' | 'warn' | 'danger', text: string, note: string;
+      if (abs <= 1.5) {
+        state = 'ok'; text = 'Normal';
+        note = 'Inside deadband. No alarm raised, nothing paged.';
+      } else if (abs <= 6) {
+        state = 'warn'; text = 'Deviation, low priority';
+        note = 'Outside the deadband, still under the on-delay. Not a page.';
+      } else {
+        state = 'danger'; text = 'Deviation, high priority';
+        note = 'This is the one that wakes somebody at 03:00.';
+      }
+      alarm.className = 'alarm ' + state;
+      if (aText.textContent !== text) { aText.textContent = text; aNote.textContent = note; }
+    }
+
+    // First-order lag toward the setpoint plus a little sensor noise, which is
+    // what a real trend looks like.
+    const timer = window.setInterval(() => {
+      if (!root.isConnected) { window.clearInterval(timer); return; }
+      pv += (sp - pv) * 0.08 + (Math.random() - 0.5) * 0.35;
+      render();
+    }, 110);
+    render();
+  }
+
+  function init() { document.querySelectorAll<HTMLElement>('[data-loop]').forEach(start); }
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>
