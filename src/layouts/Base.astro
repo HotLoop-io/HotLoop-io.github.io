@@ -1,0 +1,52 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Meta from '../components/Meta.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+// Self-hosted, bundled and fingerprinted by the build. Never a CDN: the family
+// names below are the ones tokens.css declares, so nothing names a font it does
+// not ship.
+import '@fontsource-variable/inter';
+import '@fontsource/jetbrains-mono/latin-400.css';
+import '@fontsource/jetbrains-mono/latin-500.css';
+import '@fontsource/jetbrains-mono/latin-700.css';
+import '../styles/tokens.css';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  ogAlt?: string;
+  type?: 'website' | 'article';
+}
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <Meta {...props} />
+    <!--
+      Blocking on purpose. This has to run before first paint or the page flashes
+      the wrong theme on every load. Only an explicit choice is stored, so with
+      nothing stored the page follows the system.
+    -->
+    <script is:inline>
+      try {
+        var t = localStorage.getItem('hl-theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+    <ClientRouter />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,359 @@
+[
+  {
+    "id": "catch",
+    "type": "catch",
+    "category": "Common",
+    "level": "full",
+    "notes": ""
+  },
+  {
+    "id": "comment",
+    "type": "comment",
+    "category": "Common",
+    "level": "full",
+    "notes": ""
+  },
+  {
+    "id": "complete",
+    "type": "complete",
+    "category": "Common",
+    "level": "full",
+    "notes": "Watches only the nodes explicitly selected in its scope, as Node-RED does."
+  },
+  {
+    "id": "debug",
+    "type": "debug",
+    "category": "Common",
+    "level": "full",
+    "notes": ""
+  },
+  {
+    "id": "inject",
+    "type": "inject",
+    "category": "Common",
+    "level": "partial",
+    "notes": "Interval and startup injection are supported. Cron-style scheduling (\"at a specific time\", \"on these days\") is not implemented in this build. Ignored properties: `crontab`."
+  },
+  {
+    "id": "junction",
+    "type": "junction",
+    "category": "Common",
+    "level": "full",
+    "notes": ""
+  },
+  {
+    "id": "link-in",
+    "type": "link in",
+    "category": "Common",
+    "level": "full",
+    "notes": ""
+  },
+  {
+    "id": "link-out",
+    "type": "link out",
+    "category": "Common",
+    "level": "partial",
+    "notes": "Link Out in \"send to\" mode is supported. \"Return to calling Link Call\" requires the Link Call node, which is not implemented in this build."
+  },
+  {
+    "id": "status",
+    "type": "status",
+    "category": "Common",
+    "level": "full",
+    "notes": ""
+  },
+  {
+    "id": "emberwire-influxdb",
+    "type": "emberwire-influxdb",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own InfluxDB connection, targeting the App Store's influxdb-app."
+  },
+  {
+    "id": "emberwire-postgres",
+    "type": "emberwire-postgres",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own PostgreSQL connection. Targets the App Store's postgresql-app and timescale-db-pod, which share a wire protocol."
+  },
+  {
+    "id": "mqtt-broker",
+    "type": "mqtt-broker",
+    "category": "Config",
+    "level": "partial",
+    "notes": "Connection, credentials, TLS, clean session, keepalive, birth and close messages are supported. Will messages and MQTT v5 properties are not implemented in this build. Ignored properties: `willTopic`, `willPayload`, `protocolVersion:5`."
+  },
+  {
+    "id": "websocket-client",
+    "type": "websocket-client",
+    "category": "Config",
+    "level": "partial",
+    "notes": "Connects out and reconnects on its own when the connection drops, in payload mode or whole-message mode. Per-node TLS configuration is not implemented; the system trust store is used. Ignored properties: `tls`."
+  },
+  {
+    "id": "websocket-listener",
+    "type": "websocket-listener",
+    "category": "Config",
+    "level": "partial",
+    "notes": "Serves a websocket path, in payload mode or whole-message mode. The path shares the flow route table with the HTTP In nodes, so it cannot shadow the editor or the admin API and cannot collide with another node's path. A client that stops reading is disconnected rather than queued without limit, which Node-RED does not do."
+  },
+  {
+    "id": "netinfo",
+    "type": "netinfo",
+    "category": "Discover",
+    "level": "flow-only",
+    "notes": "Flow's own node. Reports the interfaces the runtime can see, which in macvlan mode is how a flow learns its address on the OT VLAN."
+  },
+  {
+    "id": "scan",
+    "type": "scan",
+    "category": "Discover",
+    "level": "flow-only",
+    "notes": "Flow's own node. Sweeps a CIDR range for OT devices and identifies Modbus and EtherNet/IP endpoints. Bounded by the discovery allowlist in the runtime configuration, not by this dialog."
+  },
+  {
+    "id": "change",
+    "type": "change",
+    "category": "Function",
+    "level": "partial",
+    "notes": "set, change, delete and move are supported for msg, flow and global targets. JSONata-typed values are not evaluated in this build."
+  },
+  {
+    "id": "delay",
+    "type": "delay",
+    "category": "Function",
+    "level": "divergent",
+    "notes": "All six modes are implemented: fixed, variable, random, rate limit, per-topic queue and timed release, along with msg.reset, msg.flush and the second output for dropped messages. Two deliberate differences: the queue is bounded, and past the limit a message is refused to a Catch node rather than held, because Node-RED's unbounded queue turns a source faster than the drain into an OOM-kill with no explanation; and messages still held when the flow stops are released rather than discarded."
+  },
+  {
+    "id": "exec",
+    "type": "exec",
+    "category": "Function",
+    "level": "divergent",
+    "notes": "The three outputs, both buffered and streaming modes, the timeout and the appended message property all behave as Node-RED's do. Two things do not, and neither is negotiable. There is no shell: the command line is split on quoting rules only, and an unquoted shell metacharacter is refused rather than run, so one allowed command cannot become an arbitrary one. And the node is disabled until an operator names the commands a flow may run. Node-RED's exec node against a default configuration is CVE-2025-41656, unauthenticated remote code execution. Output is capped per stream; a command that exceeds it is killed and reported rather than being allowed to fill the heap. A command that forks children of its own may leave them behind when it is killed."
+  },
+  {
+    "id": "function",
+    "type": "function",
+    "category": "Function",
+    "level": "partial",
+    "notes": "Runs on goja, a JavaScript interpreter written in Go, rather than Node's vm module. The language is ES2023; the Node standard library is not present. require() and npm modules do not work and cannot be made to without embedding Node. There is always a CPU time limit, which Node-RED leaves optional and off. setTimeout and setInterval are not available. Use a Delay or Trigger node, which the runtime can account for. Ignored properties: `libs`, `setTimeout`, `setInterval`, `require`."
+  },
+  {
+    "id": "range",
+    "type": "range",
+    "category": "Function",
+    "level": "full",
+    "notes": ""
+  },
+  {
+    "id": "rbe",
+    "type": "rbe",
+    "category": "Function",
+    "level": "partial",
+    "notes": "Block-unless-changed and deadband modes are supported. Narrowband modes are not implemented in this build."
+  },
+  {
+    "id": "switch",
+    "type": "switch",
+    "category": "Function",
+    "level": "partial",
+    "notes": "All comparison operators are supported except jsonata_exp, which needs an expression engine this build does not ship. Ignored properties: `jsonata_exp`."
+  },
+  {
+    "id": "template",
+    "type": "template",
+    "category": "Function",
+    "level": "partial",
+    "notes": "Mustache templating is implemented against mustache.js's dialect, including its HTML escape set and standalone-line handling, so a template moved from Node-RED renders the same bytes. Partials ({{>name}}) and custom delimiters are refused rather than ignored, because there is nothing in a flow file that can supply either."
+  },
+  {
+    "id": "trigger",
+    "type": "trigger",
+    "category": "Function",
+    "level": "divergent",
+    "notes": "Both messages, extend-on-retrigger, wait-to-be-reset, msg.reset, the msg.delay override, per-topic grouping and the second output are implemented. The divergence is the same as the Delay node's: the number of simultaneously armed timers is bounded, and a message past the limit is refused to a Catch node rather than silently arming another. Timers with a deadline that are still armed when the flow stops fire immediately rather than being discarded; a timer waiting to be reset is dropped, because firing it would invent an event that never happened."
+  },
+  {
+    "id": "http-in",
+    "type": "http in",
+    "category": "Network",
+    "level": "divergent",
+    "notes": "Serves a path, with Express-style :params and a trailing *, and builds the same msg.req / msg.res / msg.payload shape Node-RED does, including JSON, form-encoded and raw bodies. Three deliberate differences. A request that no HTTP Response node answers is closed with 504 after a timeout instead of being held open forever, because Node-RED's version leaks a connection per request until the process runs out of sockets and stops answering with nothing in the log. Two nodes claiming the same method and path is refused at deploy time rather than one of them silently never firing. And a path that would shadow the editor or the admin API is refused for the same reason. File uploads are not parsed into msg.files; a multipart body arrives as raw bytes. Ignored properties: `upload`, `swaggerDoc`."
+  },
+  {
+    "id": "http-request",
+    "type": "http request",
+    "category": "Network",
+    "level": "partial",
+    "notes": "Method, URL, headers, basic authentication, redirects and the three return types, with msg.url, msg.method and msg.headers overriding the node. The response body is size-capped and the call is bounded by a timeout, neither of which Node-RED does. Cookie jars, proxy settings, per-node TLS configuration and connection persistence are not implemented in this build. There is no egress allowlist: this node can reach anything the pod can, exactly as Node-RED's can, and the place to bound that is a NetworkPolicy rather than an edit dialog nobody outside the cluster can trust. Ignored properties: `proxy`, `tls`, `persist`, `cookies`."
+  },
+  {
+    "id": "http-response",
+    "type": "http response",
+    "category": "Network",
+    "level": "partial",
+    "notes": "Status code and headers from the node or from msg.statusCode and msg.headers, with the payload as the body. Cookies set through msg.cookies are not implemented; set a Set-Cookie header instead. Ignored properties: `cookies`."
+  },
+  {
+    "id": "mqtt-in",
+    "type": "mqtt in",
+    "category": "Network",
+    "level": "partial",
+    "notes": "Topic subscription with QoS and payload decoding are supported. Dynamic subscription via a control message is not implemented."
+  },
+  {
+    "id": "mqtt-out",
+    "type": "mqtt out",
+    "category": "Network",
+    "level": "partial",
+    "notes": "Publishing with topic, QoS and retain from the node or the message is supported. MQTT v5 user properties are not implemented."
+  },
+  {
+    "id": "tcp-in",
+    "type": "tcp in",
+    "category": "Network",
+    "level": "divergent",
+    "notes": "Listens or connects out, in stream mode with a delimiter or single mode collecting until the peer closes, with buffer, string or base64 payloads. Every message carries msg._session so a TCP Out node can reply on the same connection. Three bounds Node-RED does not have: the number of accepted connections, the size of one delimited message, and the total of a single-mode read. A peer that opens connections and never closes them, or sends without ever sending the delimiter, grows the heap until the pod dies otherwise. TLS is not implemented. Ignored properties: `tls`."
+  },
+  {
+    "id": "tcp-out",
+    "type": "tcp out",
+    "category": "Network",
+    "level": "partial",
+    "notes": "Connects to a host and sends, or replies on the connection a TCP In node accepted, found through msg._session. Listening for inbound connections purely to write to them, which Node-RED's third mode does, is not implemented. Use a TCP In node for the listening half and this node in reply mode. TLS is not implemented. Ignored properties: `tls`."
+  },
+  {
+    "id": "tcp-request",
+    "type": "tcp request",
+    "category": "Network",
+    "level": "partial",
+    "notes": "Connects, sends the payload and waits for the reply, in any of Node-RED's four wait modes: a fixed time, a delimiter, a byte count, or until the peer closes. msg.host and msg.port override the node. Every request opens its own connection. Node-RED's connection-reuse mode is not implemented, and reusing one would change the semantics of the wait modes, which all end at a connection boundary. TLS is not implemented. Ignored properties: `tls`."
+  },
+  {
+    "id": "udp-in",
+    "type": "udp in",
+    "category": "Network",
+    "level": "partial",
+    "notes": "Receives datagrams, optionally joining a multicast group, with buffer, string or base64 payloads and the sender's address on msg.ip and msg.port. IPv6 and per-node interface selection are not implemented in this build. Ignored properties: `ipv6`."
+  },
+  {
+    "id": "udp-out",
+    "type": "udp out",
+    "category": "Network",
+    "level": "partial",
+    "notes": "Sends datagrams to a host, a broadcast address or a multicast group, with msg.ip and msg.port overriding the node. IPv6 is not implemented in this build. Ignored properties: `ipv6`."
+  },
+  {
+    "id": "websocket-in",
+    "type": "websocket in",
+    "category": "Network",
+    "level": "full",
+    "notes": "Emits a message per frame, carrying msg._session so a WebSocket Out node can reply to the connection it came from."
+  },
+  {
+    "id": "websocket-out",
+    "type": "websocket out",
+    "category": "Network",
+    "level": "divergent",
+    "notes": "Replies to the connection named by msg._session, or broadcasts to every open connection when there is none, as Node-RED does. The divergence is what happens when a connection cannot keep up: the frame is refused to a Catch node and the connection is closed, rather than queued without limit. Blocking instead would push back-pressure from a slow browser into the flow's scheduler, which is a worse failure than losing a connection that had already stopped reading."
+  },
+  {
+    "id": "csv",
+    "type": "csv",
+    "category": "Parser",
+    "level": "partial",
+    "notes": "Parsing to objects and rendering from objects are supported, with configurable separator and header handling. Multi-line quoted fields spanning separate messages are not reassembled."
+  },
+  {
+    "id": "html",
+    "type": "html",
+    "category": "Parser",
+    "level": "partial",
+    "notes": "Extracts elements by CSS selector, returning inner HTML, text or attributes, as one message per match or one message holding an array. The selector engine covers type, id, class, attribute, descendant, child and comma groups. Pseudo-classes, pseudo-elements, sibling combinators and the ~= and \\|= attribute operators are refused at deploy time rather than ignored, because a selector that quietly drops its :nth-child matches the wrong elements and keeps working. Returned HTML is re-rendered from the parse tree, so it is normalised markup rather than the original bytes."
+  },
+  {
+    "id": "json",
+    "type": "json",
+    "category": "Parser",
+    "level": "partial",
+    "notes": "Conversion in both directions is supported. Schema validation against msg.schema is not implemented in this build. Ignored properties: `schema`."
+  },
+  {
+    "id": "xml",
+    "type": "xml",
+    "category": "Parser",
+    "level": "partial",
+    "notes": "Both directions, using xml2js's object convention: attributes under the key named by \"attr\" (default $), element text under \"chr\" (default _), and every child element as an array, which is xml2js's own explicitArray default. Set ew_explicitArray to false to collapse single children instead. The per-message msg.options that Node-RED passes through to xml2js is not honored. The other xml2js options change the shape of the output, and silently ignoring one would produce an object the flow does not expect while looking like it worked. Namespaces are kept as part of the element name rather than being resolved. Ignored properties: `options`."
+  },
+  {
+    "id": "yaml",
+    "type": "yaml",
+    "category": "Parser",
+    "level": "full",
+    "notes": "Conversion in both directions, toggling on the value's type when no action is set, as Node-RED's does."
+  },
+  {
+    "id": "batch",
+    "type": "batch",
+    "category": "Sequence",
+    "level": "partial",
+    "notes": "Grouping by message count, with overlap, is supported. Time-interval and concatenate-sequences modes are not implemented. Ignored properties: `interval`, `concat`."
+  },
+  {
+    "id": "join",
+    "type": "join",
+    "category": "Sequence",
+    "level": "partial",
+    "notes": "Automatic mode rejoins sequences produced by Split, and manual mode joins by count. Timeout-based and reduce-sequence modes are not implemented. Ignored properties: `timeout`, `reduceRight`, `reduceExp`."
+  },
+  {
+    "id": "sort",
+    "type": "sort",
+    "category": "Sequence",
+    "level": "partial",
+    "notes": "Sorts array payloads and message sequences by a property. JSONata key expressions are not supported. Ignored properties: `keyType:jsonata`."
+  },
+  {
+    "id": "split",
+    "type": "split",
+    "category": "Sequence",
+    "level": "partial",
+    "notes": "Splits arrays, objects, strings and buffers. Streaming mode, which carries a partial remainder between messages, is not implemented. Ignored properties: `stream`."
+  },
+  {
+    "id": "file",
+    "type": "file",
+    "category": "Storage",
+    "level": "divergent",
+    "notes": "Append, overwrite and delete, with the filename from a literal, a message property, context or the environment, and utf8, base64, hex or raw encodings. The divergence is the path scope: the file nodes may only reach the data directory and whatever else the operator listed, resolved through symlinks so a link planted on the PVC cannot point out of it. Node-RED's file nodes take any path, which makes editing a flow equivalent to reading any file the process can. Writes are fsynced by default, which Node-RED's are not."
+  },
+  {
+    "id": "file-in",
+    "type": "file in",
+    "category": "Storage",
+    "level": "divergent",
+    "notes": "Whole-file, per-line and chunked reads, with utf8, base64, hex or raw output. Same path scope as the File node, and for the same reason. A read is also size-capped: Node-RED reads a whole file into memory with no limit, so pointing the node at the wrong path is an OOM-kill rather than an error. Past the cap the node says which limit was hit and that per-line or chunked mode would work."
+  },
+  {
+    "id": "influxdb-out",
+    "type": "influxdb out",
+    "category": "Storage",
+    "level": "flow-only",
+    "notes": "Flow's own node. The type name matches the community node-red-contrib-influxdb so an imported flow finds it, but the configuration is not identical. Check the fields after importing."
+  },
+  {
+    "id": "postgres",
+    "type": "postgres",
+    "category": "Storage",
+    "level": "flow-only",
+    "notes": "Flow's own node. Writes to and reads from PostgreSQL or TimescaleDB, with batch insert for message sequences."
+  },
+  {
+    "id": "watch",
+    "type": "watch",
+    "category": "Storage",
+    "level": "divergent",
+    "notes": "Reports files and directories appearing, changing and being removed, with the same message shape Node-RED produces. It polls rather than using the kernel's notification interface, so a change is seen within the poll interval rather than immediately, and two changes inside one interval are reported once. That is a deliberate trade: fsnotify means per-platform code and a filename suffix that is a build constraint, which has already cost this codebase a day. Same path scope as the other file nodes, and the number of watched entries is capped so a recursive watch on a large tree cannot stall the runtime."
+  }
+]

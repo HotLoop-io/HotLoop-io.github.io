@@ -1,0 +1,183 @@
+[
+  {
+    "id": "opc-ua",
+    "name": "OPC UA",
+    "aka": ["OPC Unified Architecture"],
+    "order": 1,
+    "verification": "live",
+    "verifiedAgainst": ["Microsoft opc-plc (C#)", "Emberburn (Python)"],
+    "summary": "Prefer this one when a device offers a choice. It browses, it is properly secured, and it subscribes.",
+    "vendors": [],
+    "addressExamples": [
+      { "expr": "nsu=http://opcua.edge.server;s=Zone1_Temperature", "means": "Good. The namespace URI is part of the model and does not move." },
+      { "expr": "ns=3;s=Zone1_Temperature", "means": "Works until it doesn't. The index depends on load order." }
+    ],
+    "trap": "A namespace index is assigned in whatever order the server happens to load its namespaces. Add a namespace, upgrade firmware, and index 3 quietly becomes something else, so every reading is wrong with no error anywhere.",
+    "configKeys": ["securityPolicy", "securityMode", "username", "password", "certFile", "keyFile", "subscribe", "publishIntervalMs", "samplingIntervalMs", "browseMaxNodes", "browseRoot"],
+    "body": [
+      "The driver subscribes rather than polls. The server sends a value when it changes, at a rate it can sustain, instead of being asked the same question every scan by a client with no idea whether anything moved. If a server refuses a subscription, the driver falls back to batched reads rather than failing the device.",
+      "Address nodes by namespace URI. Browse returns the URI form for exactly this reason, because the URI does not move when a server reloads.",
+      "A bare string is rejected as an address. The underlying library would happily read Temperature as ns=0;s=Temperature, which means a typo parses cleanly into a node that does not exist and the tag reads bad forever. An explicit form is required, so the mistake surfaces when you save it."
+    ]
+  },
+  {
+    "id": "modbus",
+    "name": "Modbus TCP/RTU",
+    "aka": ["Modbus"],
+    "order": 2,
+    "verification": "live",
+    "verifiedAgainst": ["A real Modbus server, run in-process, over TCP"],
+    "summary": "The 1979 workhorse. PLCs, VFDs, power meters, RTUs, and the fallback of every gateway that has nothing better.",
+    "vendors": [],
+    "addressExamples": [
+      { "expr": "holding:100:float32:CDAB", "means": "A float across registers 100 and 101, word-swapped." },
+      { "expr": "holding:40:bit3", "means": "Bit 3 of register 40." },
+      { "expr": "holding:200:string16", "means": "16 characters from register 200." },
+      { "expr": "input:12:int16", "means": "A signed input register." },
+      { "expr": "coil:5", "means": "A single coil." }
+    ],
+    "trap": "Word order is the setting people get wrong, and a float read with the wrong order is not obviously wrong on a screen. It is a plausible number that is not the truth.",
+    "configKeys": ["byteOrder", "oneBased", "maxGap", "maxBlock"],
+    "body": [
+      "All four word orders are supported, under the names vendor manuals print: ABCD, CDAB, BADC, and DCBA. Set a device default with byteOrder and override it per tag with the fourth address field.",
+      "Addressing is raw and zero-based. If your drawings use the traditional 40001-style numbering, set oneBased to true and write the numbers from the drawings. Getting this wrong by one is the oldest Modbus bug there is.",
+      "Reads are merged into blocks, so adjacent and near-adjacent registers become one request. maxGap controls how many unused registers are worth reading to avoid a second round trip (default 8), and maxBlock caps a single request (default 120, protocol ceiling 125).",
+      "Writing a single bit of a holding register is a read-modify-write, because Modbus has no atomic bit-set there. The other fifteen bits are preserved."
+    ]
+  },
+  {
+    "id": "mqtt-sparkplug",
+    "name": "MQTT and Sparkplug B",
+    "aka": ["MQTT", "Sparkplug", "Sparkplug B"],
+    "order": 3,
+    "verification": "live",
+    "verifiedAgainst": ["Eclipse Mosquitto 2.0, with crafted Tahu frames"],
+    "summary": "Plain MQTT, or Sparkplug B as a full primary host application.",
+    "vendors": [],
+    "addressExamples": [
+      { "expr": "mqtt:plant/line1/temperature", "means": "A scalar payload." },
+      { "expr": "mqtt:plant/line1/state|data.temperature", "means": "JSON, extracted by path." },
+      { "expr": "mqtt:plant/+/flow", "means": "Wildcards work." },
+      { "expr": "spb:GroupId|EdgeNodeId|DeviceId|Metric/Name", "means": "A Sparkplug metric." },
+      { "expr": "spb:Plant|Edge1||Node/Uptime", "means": "An empty device is a node-level metric." }
+    ],
+    "trap": "Delivering Sparkplug messages concurrently reorders them, which makes a healthy node look like it is dropping messages and provokes a rebirth storm. Message ordering is enforced.",
+    "configKeys": ["legacyState"],
+    "body": [
+      "As a primary host, the driver does the things the specification asks for and most integrations skip.",
+      "It publishes a retained STATE birth with a matching will, so edge nodes can see the host drop rather than inferring it from a timeout. The Sparkplug 3.0 form (spBv1.0/STATE/<host> carrying JSON) is the default, and legacyState selects the pre-3.0 ONLINE and OFFLINE string.",
+      "It tracks the per-node rolling sequence number and asks a node to rebirth when it skips, because a gap means messages were missed and the alias table can no longer be trusted.",
+      "It requests a rebirth after its own reconnect, because a host that was away has no idea what changed while it was gone.",
+      "It matches NDEATH to NBIRTH by bdSeq, so a death certificate left over from a previous session cannot kill the current one."
+    ]
+  },
+  {
+    "id": "ethernet-ip",
+    "name": "EtherNet/IP",
+    "aka": ["CIP", "Common Industrial Protocol"],
+    "order": 4,
+    "verification": "decode",
+    "verifiedAgainst": ["Address, batching, and type-mapping tests"],
+    "notVerifiedNote": "EtherNet/IP has not been run against a physical PLC. Its decoding and address handling are tested thoroughly, but tested logic is not the same as a value that came off a real controller. If you are the first person to point it at real hardware, treat it as commissioning and check a known value before trusting a screen.",
+    "summary": "Allen-Bradley ControlLogix, CompactLogix, and Micro820. Tags have names, so the controller can be asked what it holds.",
+    "vendors": ["Allen-Bradley ControlLogix", "Allen-Bradley CompactLogix", "Allen-Bradley Micro820"],
+    "addressExamples": [
+      { "expr": "Temperature", "means": "Type taken from the tag's declared dataType." },
+      { "expr": "Speed:dint", "means": "An explicit type wins." },
+      { "expr": "Program:MainProgram.Speed", "means": "A program-scoped tag. The colon is part of the path." },
+      { "expr": "Zones[0].Heater.On:bool", "means": "Array elements and UDT members." }
+    ],
+    "trap": "CIP is strongly typed and the controller rejects a read whose declared type does not match, so the type has to come from somewhere. Unknown falls back to REAL, which most process values are.",
+    "configKeys": [],
+    "body": [
+      "The type is taken from the tag's dataType, or from a :type suffix, which wins.",
+      "Reads are batched into multi-service requests, falling back to individual reads when a batch fails, so that one bad tag path does not blind the other nineteen."
+    ]
+  },
+  {
+    "id": "s7comm",
+    "name": "S7comm",
+    "aka": ["Siemens S7", "ISO-on-TCP"],
+    "order": 5,
+    "verification": "decode",
+    "verifiedAgainst": ["Frame-level decode and encode tests"],
+    "notVerifiedNote": "S7comm has not been run against a physical PLC. Its decoding is tested thoroughly, covering every data type, sign extension, the two-byte S7 STRING header, byte ordering, block planning, and read-modify-write for bits. But tested decoding is not the same as a value that came off a real controller. If you are the first person to point it at real hardware, treat it as commissioning and check a known value before trusting a screen.",
+    "summary": "Siemens S7-300, S7-400, S7-1200, and S7-1500, over ISO-on-TCP by rack and slot.",
+    "vendors": ["Siemens S7-300", "Siemens S7-400", "Siemens S7-1200", "Siemens S7-1500"],
+    "addressExamples": [
+      { "expr": "db1:0:real", "means": "A REAL at DB1.DBD0." },
+      { "expr": "db1:4:dint", "means": "A DINT at DB1.DBD4." },
+      { "expr": "db1:8.3:bool", "means": "Bit 3 of DB1.DBB8." },
+      { "expr": "db2:20:string32", "means": "A 32-character STRING." },
+      { "expr": "m:10:word", "means": "Merker word MW10." },
+      { "expr": "i:0.1:bool", "means": "Input I0.1." },
+      { "expr": "q:2:byte", "means": "Output byte QB2." }
+    ],
+    "trap": "The type is required for anything wider than a byte. The protocol cannot tell you whether four bytes are a REAL or a DINT, because that is a fact about the PLC program, not about the wire.",
+    "configKeys": ["rack", "slot", "connectType"],
+    "body": [
+      "Defaults to rack 0, slot 1, which is right for an S7-1200 or S7-1500. An S7-300 or S7-400 is usually slot 2.",
+      "connectType defaults to 3 (S7 Basic), so the gateway does not occupy the PG connection slot an engineer wants for TIA Portal.",
+      "There is no browse. An S7 CPU does not publish the layout of its data blocks, because that lives in the TIA Portal project."
+    ]
+  },
+  {
+    "id": "mtconnect",
+    "name": "MTConnect",
+    "aka": ["Machine tool telemetry"],
+    "order": 6,
+    "verification": "live",
+    "verifiedAgainst": ["Golden agent documents, served over HTTP"],
+    "summary": "Read-only machine tool telemetry. There is no command channel in MTConnect, and this driver does not pretend otherwise.",
+    "vendors": [],
+    "addressExamples": [
+      { "expr": "dataItemId or name", "means": "Address by either. Agents are inconsistent about which is stable." }
+    ],
+    "trap": "UNAVAILABLE is the agent explicitly saying it has no reading. It becomes bad quality, not the text \"UNAVAILABLE\" and not zero.",
+    "configKeys": [],
+    "body": [
+      "Two details separate a working integration from a plausible one. First, UNAVAILABLE becomes bad quality rather than a string or a zero. Second, a Condition's meaning is its element name (Normal, Warning, Fault, or Unavailable), not its character data, which is usually empty.",
+      "Browse reads /probe and walks the component tree to any depth."
+    ]
+  },
+  {
+    "id": "http-rest",
+    "name": "HTTP and REST",
+    "aka": ["REST", "JSON over HTTP"],
+    "order": 7,
+    "verification": "live",
+    "verifiedAgainst": ["Real HTTP endpoints"],
+    "summary": "The catch-all, for energy meters, environmental sensors, OEM controllers, and the REST side of a gateway that speaks something proprietary underneath.",
+    "vendors": [],
+    "addressExamples": [
+      { "expr": "power.kw", "means": "Nested fields." },
+      { "expr": "readings[0].value", "means": "Array indexing." },
+      { "expr": "zones[name=Zone1].temp", "means": "Select an array element by a field value." },
+      { "expr": "$.data.temperature", "means": "A leading $. is accepted." }
+    ],
+    "trap": "These APIs love returning an unordered array of name and value objects, and indexing by position is a bug waiting for a firmware update. Select by field value instead.",
+    "configKeys": [],
+    "body": [
+      "One request serves every tag on the device. Browse walks the document and reports every scalar with the path that reaches it."
+    ]
+  },
+  {
+    "id": "gateway-mode",
+    "name": "Everything else",
+    "aka": ["PROFINET", "EtherCAT", "HART", "BACnet/IP", "DNP3", "FINS", "MELSEC/SLMP", "CANopen", "FANUC FOCAS"],
+    "order": 8,
+    "verification": "gateway-mode",
+    "verifiedAgainst": [],
+    "summary": "Nine protocols with no driver, by choice, reached through the gateway a site already has.",
+    "vendors": [],
+    "addressExamples": [],
+    "trap": "",
+    "configKeys": [],
+    "body": [
+      "PROFINET, EtherCAT, HART, BACnet/IP, DNP3, FINS, MELSEC/SLMP, CANopen, and FANUC FOCAS are not spoken natively, and there is no driver for them. That is a deliberate choice, not a gap waiting to be filled with a stub.",
+      "Sites running these protocols almost always already have a gateway that re-publishes on OPC UA or Modbus, such as a PROFINET IO controller with an OPC UA server, a HART multiplexer with a Modbus map, or a BACnet/IP to Modbus bridge. Point a device at that endpoint and configure it as OPC UA or Modbus.",
+      "Writing nine more drivers that each duplicate what a site's existing gateway already does would add nine more things to get subtly wrong, for protocols where the equipment is hardest to test against. If a site genuinely has no gateway and needs one of these natively, that is a real piece of work to schedule, not a file to add that logs \"not implemented\".",
+      "There are no placeholder drivers in the tree. A protocol either has a working implementation or it is on this page. The previous version of this product had sixteen protocol files, of which fifteen returned \"not implemented\" while the catalogue advertised all sixteen. A test now enforces that every protocol the model declares has a driver compiled in, and vice versa."
+    ]
+  }
+]

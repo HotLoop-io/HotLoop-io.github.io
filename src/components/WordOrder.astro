@@ -1,0 +1,170 @@
+---
+// Modbus word order is the setting people get wrong, and a float read with the
+// wrong order is a plausible number that is not the truth. This makes that
+// visible: type two registers and see all four readings at once.
+//
+// The defaults are computed here, at build time, so the widget shows real
+// values even with JavaScript off. The script below only keeps them live.
+const ORDERS: [string, (b: number[]) => number[]][] = [
+  ['ABCD', (b) => [b[0], b[1], b[2], b[3]]],
+  ['CDAB', (b) => [b[2], b[3], b[0], b[1]]],
+  ['BADC', (b) => [b[1], b[0], b[3], b[2]]],
+  ['DCBA', (b) => [b[3], b[2], b[1], b[0]]],
+];
+function fmt(n: number): string {
+  if (Number.isNaN(n)) return 'NaN';
+  if (!Number.isFinite(n)) return n > 0 ? 'Infinity' : '-Infinity';
+  if (n === 0) return '0';
+  const a = Math.abs(n);
+  return a >= 1e7 || a < 1e-3 ? n.toExponential(4) : String(Number(n.toPrecision(7)));
+}
+function readAll(r0: string, r1: string) {
+  const a = parseInt(r0, 16), b = parseInt(r1, 16);
+  const bytes = [(a >> 8) & 255, a & 255, (b >> 8) & 255, b & 255];
+  return ORDERS.map(([name, pick]) => {
+    const seq = pick(bytes);
+    const dv = new DataView(new ArrayBuffer(4));
+    seq.forEach((v, i) => dv.setUint8(i, v));
+    return { name, bytes: seq.map((v) => v.toString(16).padStart(2, '0').toUpperCase()).join(' '), value: fmt(dv.getFloat32(0, false)) };
+  });
+}
+const initial = readAll('E979', '42F6');
+---
+
+<section class="wordorder card" data-wordorder aria-labelledby="wo-title">
+  <h3 id="wo-title">Try it: one pair of registers, four readings</h3>
+  <p class="muted">
+    A float32 spans two 16-bit registers, and vendors disagree about which comes first. Type the two registers exactly
+    as the device sent them. Only one of the four results below is the truth, and nothing on the wire tells you which.
+  </p>
+
+  <div class="inputs">
+    <label>Register 1, hex <input class="mono" data-r0 value="E979" maxlength="4" inputmode="text" autocomplete="off" spellcheck="false" /></label>
+    <label>Register 2, hex <input class="mono" data-r1 value="42F6" maxlength="4" inputmode="text" autocomplete="off" spellcheck="false" /></label>
+  </div>
+
+  <div class="presets" role="group" aria-label="Examples">
+    <button type="button" class="chip" data-preset="E979,42F6">123.456, word-swapped</button>
+    <button type="button" class="chip" data-preset="0000,4248">50.0, word-swapped</button>
+    <button type="button" class="chip" data-preset="42F6,E979">123.456, big-endian</button>
+  </div>
+
+  <!-- A grid, not a table. A table forced the result column off the edge of a
+       phone, and the result is the whole point of the widget. -->
+  <div class="results" role="table" aria-label="The four readings">
+    <div class="r head" role="row">
+      <span role="columnheader" class="o">Order</span><span role="columnheader" class="b">Bytes</span><span role="columnheader" class="v">Reads as</span>
+    </div>
+    <div data-out role="rowgroup">
+      {initial.map((r) => (
+        <div class="r" role="row">
+          <span role="cell" class="o">{r.name}</span><span role="cell" class="b mono">{r.bytes}</span><span role="cell" class="v mono">{r.value}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+  <p class="err" data-err role="alert" hidden>Enter one to four hexadecimal digits in each box.</p>
+</section>
+
+<style is:global>
+  /* Global on purpose. The result rows are created by the script below, after
+     the page loads, so they never receive Astro's generated scoping attribute.
+     Everything is namespaced under .wordorder so nothing leaks. */
+  .wordorder { display: grid; gap: var(--hl-s4); }
+  .wordorder .inputs { display: flex; flex-wrap: wrap; gap: var(--hl-s4); }
+  .wordorder label { display: grid; gap: var(--hl-s1); font-size: var(--hl-fs-xs); font-weight: 600; color: var(--hl-ink-soft); }
+  .wordorder input {
+    width: 8ch; padding: 0.55em 0.75em; text-transform: uppercase;
+    background: var(--hl-card); border: 1px solid var(--hl-line-strong);
+    border-radius: var(--hl-r-sm); color: var(--hl-ink); font-size: var(--hl-fs-md); letter-spacing: 0.06em;
+  }
+  .wordorder input[aria-invalid='true'] { border-color: var(--hl-danger); }
+  .wordorder .presets { display: flex; flex-wrap: wrap; gap: var(--hl-s2); }
+  .wordorder .presets .chip { cursor: pointer; text-transform: none; letter-spacing: 0; font-size: var(--hl-fs-xs); white-space: normal; text-align: left; }
+  .wordorder .presets .chip::before { display: none; }
+  .wordorder .presets .chip:hover { border-color: var(--hl-orange); color: var(--hl-ink); }
+  .wordorder .err { color: var(--hl-danger-text); font-size: var(--hl-fs-sm); font-weight: 600; }
+
+  .wordorder .results { border: 1px solid var(--hl-border); border-radius: var(--hl-r-sm); background: var(--hl-card); overflow: hidden; }
+  .wordorder .r { display: grid; grid-template-columns: 6ch minmax(0, 1fr) auto; gap: var(--hl-s3); align-items: baseline; padding: 0.65em var(--hl-s4); border-bottom: 1px solid var(--hl-border); }
+  .wordorder [data-out] .r:last-child { border-bottom: 0; }
+  .wordorder .r.head { background: var(--hl-sunken); font-size: var(--hl-fs-2xs); letter-spacing: var(--hl-ls-label); text-transform: uppercase; color: var(--hl-ink-soft); font-weight: 600; }
+  .wordorder .o { font-weight: 700; }
+  .wordorder .b { font-size: var(--hl-fs-xs); color: var(--hl-ink-soft); }
+  .wordorder .v { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .wordorder .r.head > span { font-weight: inherit; }
+  .wordorder .r.head .b { font-size: inherit; color: inherit; }
+  /* On a very narrow card the byte sequence yields to the result. */
+  @container (max-width: 380px) {
+    .wordorder .b { display: none; }
+    .wordorder .r { grid-template-columns: 6ch 1fr; }
+  }
+</style>
+
+<script>
+  const ORDERS: [string, (b: number[]) => number[]][] = [
+    ['ABCD', (b) => [b[0], b[1], b[2], b[3]]],
+    ['CDAB', (b) => [b[2], b[3], b[0], b[1]]],
+    ['BADC', (b) => [b[1], b[0], b[3], b[2]]],
+    ['DCBA', (b) => [b[3], b[2], b[1], b[0]]],
+  ];
+  const HEX = /^[0-9a-fA-F]{1,4}$/;
+
+  function fmt(n: number): string {
+    if (Number.isNaN(n)) return 'NaN';
+    if (!Number.isFinite(n)) return n > 0 ? 'Infinity' : '-Infinity';
+    if (n === 0) return '0';
+    const a = Math.abs(n);
+    return a >= 1e7 || a < 1e-3 ? n.toExponential(4) : String(Number(n.toPrecision(7)));
+  }
+
+  function bind(root: HTMLElement) {
+    if (root.dataset.bound) return;
+    root.dataset.bound = '1';
+    const r0 = root.querySelector<HTMLInputElement>('[data-r0]')!;
+    const r1 = root.querySelector<HTMLInputElement>('[data-r1]')!;
+    const out = root.querySelector<HTMLElement>('[data-out]')!;
+    const err = root.querySelector<HTMLElement>('[data-err]')!;
+
+    function render() {
+      const okA = HEX.test(r0.value.trim()), okB = HEX.test(r1.value.trim());
+      r0.setAttribute('aria-invalid', String(!okA));
+      r1.setAttribute('aria-invalid', String(!okB));
+      err.hidden = okA && okB;
+      if (!(okA && okB)) return;
+
+      const a = parseInt(r0.value, 16), b = parseInt(r1.value, 16);
+      // A B are register 1, C D are register 2, both big-endian on the wire.
+      const bytes = [(a >> 8) & 255, a & 255, (b >> 8) & 255, b & 255];
+      out.replaceChildren(
+        ...ORDERS.map(([name, pick]) => {
+          const seq = pick(bytes);
+          const dv = new DataView(new ArrayBuffer(4));
+          seq.forEach((v, i) => dv.setUint8(i, v));
+          const row = document.createElement('div');
+          row.className = 'r';
+          row.setAttribute('role', 'row');
+          [['o', name], ['b mono', seq.map((v) => v.toString(16).padStart(2, '0').toUpperCase()).join(' ')], ['v mono', fmt(dv.getFloat32(0, false))]].forEach(([cls, text]) => {
+            const c = document.createElement('span');
+            c.className = cls; c.setAttribute('role', 'cell'); c.textContent = text;
+            row.append(c);
+          });
+          return row;
+        }),
+      );
+    }
+
+    r0.addEventListener('input', render);
+    r1.addEventListener('input', render);
+    root.querySelectorAll<HTMLButtonElement>('[data-preset]').forEach((btn) =>
+      btn.addEventListener('click', () => {
+        const [x, y] = btn.dataset.preset!.split(',');
+        r0.value = x; r1.value = y; render();
+      }),
+    );
+  }
+
+  const init = () => document.querySelectorAll<HTMLElement>('[data-wordorder]').forEach(bind);
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>

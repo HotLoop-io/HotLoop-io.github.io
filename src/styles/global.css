@@ -1,0 +1,284 @@
+/* Global styles. Tokens come from tokens.css, which is a vendored copy of the
+   canonical file in HotLoop-io/HotLoop-io/brand. Do not edit values there from
+   here, and do not introduce a hex value in this file that is not a token. */
+
+@layer reset, base, layout, components, motion;
+
+/* ── reset ─────────────────────────────────────────────────────────────── */
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+  * { margin: 0; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  img, svg, video, canvas { display: block; max-width: 100%; }
+  input, button, textarea, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  h1, h2, h3, h4, p { overflow-wrap: break-word; }
+  table { border-collapse: collapse; }
+}
+
+/* ── base ──────────────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    scroll-padding-top: 88px;
+    /* Animatable angle for the loop border. @property is what lets a
+       custom property interpolate instead of snapping. */
+    interpolate-size: allow-keywords;
+  }
+
+  @property --hl-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--hl-bg);
+    color: var(--hl-ink);
+    font-family: var(--hl-font);
+    font-size: var(--hl-fs-base);
+    line-height: var(--hl-lh-body);
+    font-feature-settings: 'cv11', 'ss03';
+    -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+  main { flex: 1; }
+
+  h1, h2, h3, h4 {
+    font-weight: 800;
+    line-height: var(--hl-lh-heading);
+    letter-spacing: var(--hl-ls-heading);
+    text-wrap: balance;
+  }
+  h1 { font-size: var(--hl-fs-3xl); line-height: var(--hl-lh-tight); letter-spacing: var(--hl-ls-tight); }
+  h2 { font-size: var(--hl-fs-2xl); }
+  h3 { font-size: var(--hl-fs-xl); font-weight: 700; }
+  h4 { font-size: var(--hl-fs-md); font-weight: 700; }
+  p, li { text-wrap: pretty; }
+
+  a { color: var(--hl-link); text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+  a:hover { color: var(--hl-link-hover); }
+
+  :focus-visible {
+    outline: 2px solid var(--hl-focus);
+    outline-offset: 3px;
+    border-radius: var(--hl-r-sm);
+  }
+
+  code, kbd, samp, pre { font-family: var(--hl-font-mono); font-size: 0.92em; }
+  :not(pre) > code {
+    background: var(--hl-sunken);
+    border: 1px solid var(--hl-border);
+    border-radius: 6px;
+    padding: 0.1em 0.4em;
+    overflow-wrap: anywhere;
+  }
+
+  ::selection { background: var(--hl-orange-tint); }
+
+  .skip {
+    position: absolute; left: var(--hl-s4); top: -100px; z-index: 100;
+    background: var(--hl-card); border: 1px solid var(--hl-line-strong);
+    padding: var(--hl-s2) var(--hl-s4); border-radius: var(--hl-r-sm);
+  }
+  .skip:focus { top: var(--hl-s4); }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+}
+
+/* ── layout ────────────────────────────────────────────────────────────── */
+@layer layout {
+  .wrap { width: min(100% - 2 * var(--hl-s5), var(--hl-w-page)); margin-inline: auto; }
+  .wrap-wide { width: min(100% - 2 * var(--hl-s5), var(--hl-w-wide)); margin-inline: auto; }
+  .prose { max-width: var(--hl-w-prose); }
+
+  section.block { padding-block: clamp(var(--hl-s8), 9vw, var(--hl-s9)); }
+  section.block + section.block { border-top: 1px solid var(--hl-border); }
+
+  .grid { display: grid; gap: var(--hl-s5); }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+  .grid-4 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); }
+  .stack > * + * { margin-top: var(--hl-s4); }
+  .cluster { display: flex; flex-wrap: wrap; gap: var(--hl-s3); align-items: center; }
+}
+
+/* ── components ────────────────────────────────────────────────────────── */
+@layer components {
+  /* The small uppercase label. This is the brand's type signature. */
+  .label {
+    font-size: var(--hl-fs-2xs);
+    font-weight: 600;
+    letter-spacing: var(--hl-ls-label);
+    text-transform: uppercase;
+    color: var(--hl-link);
+  }
+  .lede {
+    font-size: var(--hl-fs-lg);
+    line-height: 1.55;
+    color: var(--hl-ink-soft);
+    max-width: 62ch;
+  }
+  .muted { color: var(--hl-ink-soft); }
+  .mono { font-family: var(--hl-font-mono); }
+
+  .section-head { display: grid; gap: var(--hl-s3); margin-bottom: var(--hl-s7); max-width: 70ch; }
+
+  /* buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: var(--hl-s2);
+    padding: 0.85em 1.6em;
+    border-radius: var(--hl-r-pill);
+    border: 1px solid var(--hl-border);
+    background: var(--hl-card);
+    color: var(--hl-ink);
+    font-weight: 700; font-size: var(--hl-fs-sm);
+    text-decoration: none;
+    transition: transform var(--hl-transition-fast), border-color var(--hl-transition-fast),
+                box-shadow var(--hl-transition-fast);
+  }
+  .btn:hover { color: var(--hl-ink); border-color: var(--hl-orange); transform: translateY(-1px); box-shadow: var(--hl-sh-1); }
+  .btn.primary {
+    background: var(--hl-gradient);
+    color: var(--hl-on-accent);
+    border-color: transparent;
+  }
+  .btn.primary:hover { color: var(--hl-on-accent); box-shadow: var(--hl-sh-2); }
+  .btn svg { width: 1.1em; height: 1.1em; }
+
+  /* cards */
+  .card {
+    background: var(--hl-card);
+    border: 1px solid var(--hl-border);
+    border-radius: var(--hl-r-card);
+    padding: var(--hl-s6);
+    box-shadow: var(--hl-sh-1);
+    container-type: inline-size;
+  }
+  .card h3, .card h4 { margin-bottom: var(--hl-s2); }
+  .card p { color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); }
+  .card ul { padding-left: 1.2em; color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); display: grid; gap: var(--hl-s2); }
+
+  /* a chip that carries a fact, never a decoration */
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.5em;
+    padding: 0.25em 0.8em;
+    border-radius: var(--hl-r-pill);
+    border: 1px solid var(--hl-border);
+    background: var(--hl-card);
+    font-size: var(--hl-fs-2xs); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--hl-ink-soft);
+    white-space: nowrap;
+  }
+  /* Long chips must be allowed to wrap on a small phone, or one of them forces
+     the whole layout wider than the screen. */
+  @media (max-width: 480px) { .chip { white-space: normal; } }
+  .chip::before { content: ''; width: 0.5em; height: 0.5em; border-radius: 50%; background: currentColor; }
+  .chip.ok { color: var(--hl-ok-text); background: var(--hl-ok-tint); border-color: color-mix(in srgb, var(--hl-ok) 35%, transparent); }
+  .chip.warn { color: var(--hl-warn-text); background: var(--hl-warn-tint); border-color: color-mix(in srgb, var(--hl-warn) 40%, transparent); }
+  .chip.info { color: var(--hl-info-text); background: var(--hl-info-tint); border-color: color-mix(in srgb, var(--hl-info) 35%, transparent); }
+  .chip.none { color: var(--hl-ink-soft); background: var(--hl-sunken); }
+
+  /* the notice that a small chip could not carry */
+  .notice {
+    display: grid; grid-template-columns: auto 1fr; gap: var(--hl-s4);
+    padding: var(--hl-s5);
+    border-radius: var(--hl-r-card);
+    border: 1px solid color-mix(in srgb, var(--hl-warn) 45%, transparent);
+    background: var(--hl-warn-tint);
+  }
+  .notice svg { width: 22px; height: 22px; color: var(--hl-warn-text); margin-top: 2px; }
+  .notice strong { display: block; color: var(--hl-warn-text); margin-bottom: var(--hl-s1); }
+  .notice p { color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); }
+  .notice.info { border-color: color-mix(in srgb, var(--hl-info) 40%, transparent); background: var(--hl-info-tint); }
+  .notice.info svg, .notice.info strong { color: var(--hl-info-text); }
+
+  /* code blocks */
+  pre {
+    background: var(--hl-sunken);
+    border: 1px solid var(--hl-border);
+    border-radius: var(--hl-r-card);
+    padding: var(--hl-s4) var(--hl-s5);
+    overflow-x: auto;
+    line-height: 1.6;
+    tab-size: 2;
+  }
+  pre code { background: none; border: 0; padding: 0; }
+
+  /* tables */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); background: var(--hl-card); }
+  table.data { width: 100%; font-size: var(--hl-fs-sm); }
+  table.data th {
+    text-align: left; padding: var(--hl-s3) var(--hl-s4);
+    font-size: var(--hl-fs-2xs); letter-spacing: var(--hl-ls-label); text-transform: uppercase;
+    color: var(--hl-ink-soft); border-bottom: 1px solid var(--hl-border); background: var(--hl-sunken);
+    white-space: nowrap;
+  }
+  table.data td { padding: var(--hl-s3) var(--hl-s4); border-bottom: 1px solid var(--hl-border); vertical-align: top; }
+  table.data tr:last-child td { border-bottom: 0; }
+  table.data td:first-child { font-weight: 600; }
+  table.data code { white-space: nowrap; }
+  table.data .num { font-family: var(--hl-font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  table.data .win { font-weight: 800; }
+
+  /* On a phone a wide table does not scroll gracefully, it crushes its columns.
+     Tables marked .stack turn each row into a small labeled card instead. The
+     first cell is the row title, and every other cell carries its column name
+     from data-label. */
+  @media (max-width: 640px) {
+    table.data.stack, table.data.stack tbody { display: block; }
+    table.data.stack thead {
+      position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+    }
+    table.data.stack tr { display: block; padding: var(--hl-s3) var(--hl-s4); border-bottom: 1px solid var(--hl-border); }
+    table.data.stack tr:last-child { border-bottom: 0; }
+    table.data.stack td { display: block; padding: var(--hl-s2) 0 0; border: 0; }
+    table.data.stack td:first-child { display: block; font-weight: 700; padding-bottom: var(--hl-s2); }
+    table.data.stack td::before {
+      content: attr(data-label); display: block; margin-bottom: 2px;
+      font-size: var(--hl-fs-2xs); font-weight: 600; letter-spacing: var(--hl-ls-label);
+      text-transform: uppercase; color: var(--hl-ink-soft);
+    }
+    table.data.stack td:first-child::before { content: none; }
+    table.data th, table.data td { padding-inline: var(--hl-s3); }
+    table.data.stack td { padding-inline: 0; }
+  }
+}
+
+/* ── motion ────────────────────────────────────────────────────────────── */
+@layer motion {
+  /* Native scroll-driven reveal. No IntersectionObserver, no listener, and it
+     runs off the main thread. Browsers without support simply show the content. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        animation: hl-reveal linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 55%;
+      }
+      @keyframes hl-reveal {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: none; }
+      }
+    }
+  }
+
+  /* Cross-document feel between pages, from the ClientRouter. */
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root) { animation: 140ms ease-out both hl-fade-out; }
+    ::view-transition-new(root) { animation: 220ms ease-out 60ms both hl-fade-in; }
+    @keyframes hl-fade-out { to { opacity: 0; } }
+    @keyframes hl-fade-in { from { opacity: 0; } }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+}

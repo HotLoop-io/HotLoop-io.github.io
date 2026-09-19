@@ -1,0 +1,68 @@
+---
+---
+<button type="button" class="theme-toggle" aria-label="Switch between light and dark" data-theme-toggle>
+  <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+  </svg>
+  <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-grid; place-items: center;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--hl-border);
+    background: var(--hl-card);
+    color: var(--hl-ink-soft);
+    transition: color var(--hl-transition-fast), border-color var(--hl-transition-fast);
+  }
+  .theme-toggle:hover { color: var(--hl-ink); border-color: var(--hl-line-strong); }
+  .theme-toggle svg { width: 18px; height: 18px; grid-area: 1 / 1; }
+
+  /* Show the icon for the theme you would switch TO. */
+  .sun { display: none; }
+  :global(:root[data-theme='dark']) .sun { display: block; }
+  :global(:root[data-theme='dark']) .moon { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .sun { display: block; }
+    :global(:root:not([data-theme='light'])) .moon { display: none; }
+  }
+</style>
+
+<script>
+  // Only an explicit choice is stored. With no stored value the page follows the
+  // system, which is what the blocking script in <head> and tokens.css assume.
+  const KEY = 'hl-theme';
+
+  function current(): 'light' | 'dark' {
+    const set = document.documentElement.dataset.theme;
+    if (set === 'light' || set === 'dark') return set;
+    return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function bind() {
+    document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((b) => {
+      if (b.dataset.bound) return;
+      b.dataset.bound = '1';
+      b.addEventListener('click', () => {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem(KEY, next); } catch {}
+      });
+    });
+  }
+
+  bind();
+  document.addEventListener('astro:page-load', bind);
+
+  // The new document arrives without our attribute. Carry the theme across the
+  // swap, or every navigation flashes back to the system theme.
+  document.addEventListener('astro:before-swap', (e) => {
+    const t = document.documentElement.dataset.theme;
+    if (t) (e as any).newDocument.documentElement.dataset.theme = t;
+  });
+</script>
