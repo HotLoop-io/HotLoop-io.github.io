@@ -129,7 +129,25 @@ const R = [
       'Every inbox is bounded, with a policy per node: block, drop the newest, drop the oldest, or raise it to a Catch node.',
       'The race detector is clean on every package.',
     ],
-    body: 'This release is Apache-2.0 and stays that way. It is published today as Emberwire, and the HotLoop Flow release is coming.',
+    body: 'This release is Apache-2.0 and stays that way. It was published as Emberwire. HotLoop Flow 2.0.0 is the first release under the new name.',
+  },
+  {
+    product: 'flow', version: '2.0.0', date: '2026-09-20', published: true,
+    summary: 'The first release under the HotLoop Flow name. It was Emberwire 0.1.0 before this.',
+    highlights: [
+      'Renamed end to end. The image is ghcr.io/hotloop-io/hotloop-flow, the chart and the binary are hotloop-flow, and the variables are HOTLOOP_FLOW_*.',
+      'The editor uses the HotLoop palette and self-hosted Inter and JetBrains Mono, in light and dark, and its top bar works on a phone. Text on an orange fill is dark ink, because white on that orange measured 3.13:1.',
+      'Still one static binary in a 25 MB image, with the same 51 node types.',
+      'The editor is type-checked in CI now, which it never was, and its design tokens are checked against the canonical copy.',
+    ],
+    breaking: [
+      'The EMBERWIRE_* environment variables are not read. Use HOTLOOP_FLOW_*.',
+      'The InfluxDB and PostgreSQL config nodes are hotloop-flow-influxdb and hotloop-flow-postgres. A saved flow that uses the old emberwire- types will not find them.',
+      'WASM modules must export hotloop_flow_process, hotloop_flow_alloc, and hotloop_flow_free. A module built against the old exports will not run.',
+      'A credentials file written by 0.1.0 cannot be read. It fails to load with a parsing error, so re-enter the credentials.',
+      'Metrics are hotloop_flow_* and not emberwire_*, and the deployment header is HotLoop-Flow-Deployment-Rev.',
+    ],
+    body: 'This is a deliberate clean break, since 0.1.0 had no known users, and nothing keeps answering to the old names. It is Apache-2.0 and stays that way. The 0.1.0 image is still where it was, at ghcr.io/embernet-ai/emberwire:0.1.0.',
   },
 ];
 
