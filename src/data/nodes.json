@@ -63,15 +63,15 @@
     "notes": ""
   },
   {
-    "id": "emberwire-influxdb",
-    "type": "emberwire-influxdb",
+    "id": "hotloop-flow-influxdb",
+    "type": "hotloop-flow-influxdb",
     "category": "Config",
     "level": "flow-only",
     "notes": "Flow's own InfluxDB connection, targeting the App Store's influxdb-app."
   },
   {
-    "id": "emberwire-postgres",
-    "type": "emberwire-postgres",
+    "id": "hotloop-flow-postgres",
+    "type": "hotloop-flow-postgres",
     "category": "Config",
     "level": "flow-only",
     "notes": "Flow's own PostgreSQL connection. Targets the App Store's postgresql-app and timescale-db-pod, which share a wire protocol."

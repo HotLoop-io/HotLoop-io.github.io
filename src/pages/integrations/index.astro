@@ -151,8 +151,9 @@ const lv = Object.fromEntries(LEVELS.map(([k, l, c]) => [k, { label: l, chip: c 
 
     <p class="fine muted">
       These rows are imported from Flow's generated compatibility document. Node type strings are shown exactly as
-      they appear in a flow file, so two of them still carry the old Emberwire name. They are identifiers stored
-      inside users' saved flows, and they are not ours to rename casually.
+      they appear in a flow file. Two of them, the InfluxDB and PostgreSQL config nodes, were renamed with the product
+      to hotloop-flow-influxdb and hotloop-flow-postgres, and the old emberwire- names are not kept as aliases. A flow
+      saved by version 0.1.0 that uses either one has to be pointed at the new name.
     </p>
   </section>
 </Base>

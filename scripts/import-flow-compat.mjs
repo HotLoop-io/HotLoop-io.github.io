@@ -23,10 +23,10 @@ const CATEGORIES = new Set([
   'Common', 'Function', 'Network', 'Sequence', 'Parser', 'Storage', 'Discover', 'Config',
 ]);
 
-// The product is renaming, so text on the site says Flow. Node TYPE strings are
-// left exactly as they are: they are identifiers persisted inside users' flow
-// files, and they are not ours to reword.
-const rebrand = (s) => s.replace(/Emberwire's/g, "Flow's").replace(/Emberwire/g, 'Flow');
+// The source says "HotLoop Flow", and on these pages the product is just Flow.
+// Node TYPE strings are left exactly as they are: they are identifiers persisted
+// inside users' flow files, so they are never reworded here.
+const rebrand = (s) => s.replace(/HotLoop Flow's/g, "Flow's").replace(/HotLoop Flow/g, 'Flow');
 
 // The site's house style has no em-dashes as connectors and uses American
 // spelling. Flow's generated doc has both, and we cannot edit it, so the import
@@ -64,7 +64,7 @@ for (const line of readFileSync(src, 'utf8').split(/\r?\n/)) {
   if (!m) continue;
 
   const [, type, rawLevel, rawNotes] = m;
-  const level = rawLevel === 'emberwire-only' ? 'flow-only' : rawLevel;
+  const level = rawLevel === 'hotloop-flow-only' ? 'flow-only' : rawLevel;
   const notes = rawNotes === '—' ? '' : house(rebrand(rawNotes));
   const id = type.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
