@@ -149,6 +149,26 @@ const R = [
     ],
     body: 'This is a deliberate clean break, since 0.1.0 had no known users, and nothing keeps answering to the old names. It is Apache-2.0 and stays that way. The 0.1.0 image is still where it was, at ghcr.io/embernet-ai/emberwire:0.1.0.',
   },
+  {
+    product: 'flow', version: '2.0.1', date: '2026-09-20', published: true,
+    summary: "A credentials file from Emberwire 0.1.0 now says what it is, instead of failing with a parsing error.",
+    highlights: [
+      "Starting on a credentials file written by 0.1.0 used to fail with a JSON parsing error. It now names the file, says it was written by Emberwire 0.1.0 and that 2.x cannot read it, and tells you to move it aside and enter the credentials again.",
+      "A plaintext credentials file that has a node called \"format\" in it still loads, and there is a test for that.",
+    ],
+    body: "Nothing else changed. The old file still cannot be read, because it is encrypted under the old format, and that is on purpose. This only fixes what the operator is told when it happens.",
+  },
+  {
+    product: 'flow', version: '2.0.2', date: '2026-09-20', published: true,
+    summary: "The chart's generated admin password now works. It never did, from 0.1.0 through 2.0.1.",
+    highlights: [
+      "The chart generates an admin password, stores it, and the install notes print how to read it. The login it gave did not work in any earlier version, because the hash the app checks was made from a different random password than the one the chart stored. The hash is made from the stored password now.",
+      "A release installed with the bug is fixed in place by upgrading to 2.0.2. The password and the credential secret do not change, so nothing stored with your flows is lost.",
+      "CI now renders the chart and checks with bcrypt that the generated password matches its hash. Nothing caught this before because both values are random, and nothing rendered the chart before a tag.",
+      "It was found by installing the chart on a live k3s cluster and logging in with the password the chart had stored.",
+    ],
+    body: "Only the generated password was affected. A password you set with auth.password, or a hash you set with auth.passwordHash, worked all along. The program itself is unchanged since 2.0.1, and the image is rebuilt from the same code.",
+  },
 ];
 
 const q = (s) => JSON.stringify(s);
