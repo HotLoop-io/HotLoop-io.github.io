@@ -169,6 +169,17 @@ const R = [
     ],
     body: "Only the generated password was affected. A password you set with auth.password, or a hash you set with auth.passwordHash, worked all along. The program itself is unchanged since 2.0.1, and the image is rebuilt from the same code.",
   },
+  {
+    product: 'flow', version: '2.0.3', date: '2026-09-20', published: true,
+    summary: "The chart puts the EmberNET dashboard's tenant labels on everything it renders.",
+    highlights: [
+      "When an app is deployed from the EmberNET App Store, the dashboard passes tenantLabels (the tenant, the app id, who deployed it, and the deployment id) and expects them on everything the chart creates. The chart did not read them, so none of the five were there. It puts them on every resource and on the pod now.",
+      "The value is empty by default. A plain helm install renders exactly as before, and the selectors are untouched.",
+      "Found by deploying it to a tenant cluster through Fleet and looking at what arrived. It has now been deployed that way to a real cluster: the pod runs, login works, and all five labels are on every resource.",
+      "CI checks both directions: a default render carries no tenant label, and a chosen one reaches all seven places it belongs.",
+    ],
+    body: "Nothing else changed in the program. The fix for the generated admin password, from 2.0.2, is included.",
+  },
 ];
 
 const q = (s) => JSON.stringify(s);
