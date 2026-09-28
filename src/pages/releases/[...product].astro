@@ -62,12 +62,12 @@ const seo = {
     <div class="wrap stack">
       <span class="label">Releases</span>
       <h1>{title}</h1>
-      <div class="cluster tabs" role="tablist" aria-label="Filter by product">
+      <nav class="cluster tabs" aria-label="Filter by product">
         <a class="pill" href="/releases/" aria-current={filter === 'all' ? 'page' : undefined}>All</a>
         <a class="pill" href="/releases/gateway/" aria-current={filter === 'gateway' ? 'page' : undefined}>Gateway</a>
         <a class="pill" href="/releases/flow/" aria-current={filter === 'flow' ? 'page' : undefined}>Flow</a>
         <a class="pill rss" href="/releases/rss.xml">RSS</a>
-      </div>
+      </nav>
 
       {filter !== 'flow' && unpublished.length > 0 && gwLatest && (
         <div class="notice info">
