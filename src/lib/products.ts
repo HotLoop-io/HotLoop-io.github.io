@@ -108,7 +108,7 @@ export const IOT_FEATURES: Feature[] = [
   { name: 'The automation language', status: 'main', note: 'Condition, wait and stop steps inside a sequence, and forSec on a state trigger, for "the pump has been on for five minutes".' },
   { name: 'Helpers', status: 'main', note: 'The seven Home Assistant input helpers: toggles, numbers, selects, text, counters, timers and schedules. Kept across restarts, never clamped.' },
   { name: 'Logbook', status: 'main', note: 'One timeline of state changes, writes, alarms, automation runs and config changes, for the plant, one area, or one entity.' },
-  { name: 'Scripts', status: 'building', note: 'Write the CIP cycle once, give it a name, and run it from a rule, the Scripts screen, MCP or its own entity. In review now.' },
+  { name: 'Scripts', status: 'main', note: 'Write the CIP cycle once, give it a name, and run it from a rule, the Scripts screen, MCP or its own entity. Typed fields, and a dry run through the real gate.' },
   { name: 'Recipes and blueprints', status: 'planned', note: 'Scenes as recipes: a set of setpoints captured and applied together, audited. Then reusable automation templates.' },
   { name: 'Dashboards', status: 'planned', note: 'A builder with cards, one per role or screen, that looks right on a panel PC, a laptop and a phone.' },
   { name: 'ISA-18.2 alarms', status: 'released', note: 'Including rtn-unack, shelving with an end, and an unshelve that brings the alarm back in the state it is really in.' },
