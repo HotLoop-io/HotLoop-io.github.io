@@ -130,7 +130,7 @@ const pages = [
   ['gateway', 'HotLoop Gateway', 'An industrial gateway that tells you what it has not proven. Seven native protocols, one write gate.', 'Product'],
   ['flow', 'HotLoop Flow', "Node-RED's idea, with a runtime that does not fall over. Apache-2.0, free for everyone.", 'Product'],
   ['integrations', 'What it speaks, and how far each one has been proven.', `${nativeCount} Gateway protocols and ${nodeCount} Flow nodes. ${certified === 0 ? 'None are certified, and we say so.' : `${certified} certified.`}`, 'Integrations'],
-  ['license', 'Which license applies to you?', 'Gateway: free for individuals, business through Embernet. Flow: Apache-2.0, free for everyone.', 'License'],
+  ['license', 'Which license applies to you?', 'Gateway: free for individuals, business through EmberNET. Flow: Apache-2.0, free for everyone.', 'License'],
   ['releases', 'Release notes', 'What changed in HotLoop Gateway and HotLoop Flow, including which versions are actually published.', 'Releases'],
   ['releases-gateway', 'Gateway release notes', 'Which versions are published, and which are only merged. Every entry says which.', 'Releases'],
   ['releases-flow', 'Flow release notes', 'Version 0.1.0, published under its original name and Apache-2.0.', 'Releases'],
