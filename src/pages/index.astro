@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import LoopInstrument from '../components/LoopInstrument.astro';
 import { TIERS, TIER_ORDER } from '../lib/tiers';
+import { PRODUCTS } from '../lib/products';
 
 const protocols = await getCollection('protocols');
 const nodes = await getCollection('nodes');
@@ -23,6 +24,7 @@ const newest = (product: string) =>
     .filter((r) => r.data.product === product)
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
 const gw = newest('gateway');
+const gwOut = releases.filter((r) => r.data.product === 'gateway' && r.data.published).sort((a, b) => b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
 const fl = newest('flow');
 
 const fmt = (d: Date) =>
@@ -31,24 +33,26 @@ const fmt = (d: Date) =>
 
 <Base
   title="HotLoop: automation loops for the real world"
-  description="HotLoop closes the loop between what a sensor says and what a machine does. HotLoop Gateway is an industrial gateway, and HotLoop Flow is a flow engine."
+  description="HotLoop closes the loop between what a sensor says and what a machine does: IoT, Edge, Gateway and Edge Relay from one codebase, and Flow, a flow engine."
   ogAlt="HotLoop. Automation loops for the real world."
 >
   <section class="hero">
     <div class="wrap-wide grid-hero">
       <div class="copy stack">
-        <span class="chip ok">Two products, licensed separately</span>
+        <span class="chip ok">Gateway {gwOut.data.version} is out</span>
         <h1>Automation loops for the real world.</h1>
         <p class="lede">
           Most home automation is a toy, and most industrial automation costs a fortune and needs a team to
-          configure. HotLoop is two pieces of software that close the loop between what a sensor says and what
-          a machine does, and neither one changes what it can do based on who you are.
+          configure. HotLoop closes the loop between what a sensor says and what a machine does: one codebase
+          shipped as four products, from a Pi on a shelf to a whole site, and Flow beside them. None of it
+          changes what it can do based on who you are.
         </p>
         <div class="cluster">
           <a class="btn primary" href="/gateway/">
             Meet the Gateway
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </a>
+          <a class="btn" href="/products/">See the lineup</a>
           <a class="btn" href="/flow/">Meet Flow</a>
         </div>
       </div>
@@ -112,11 +116,15 @@ const fmt = (d: Date) =>
     <div class="wrap">
       <div class="section-head">
         <span class="label">The products</span>
-        <h2>Two tools, built for different jobs.</h2>
+        <h2>The lineup, and Flow beside it.</h2>
+        <p class="lede">
+          The Gateway is the top of a lineup built from one codebase and released from one tag. Flow is a
+          separate product with its own license, for people who think in wires between nodes.
+        </p>
       </div>
       <div class="grid grid-2">
         <article class="card product reveal">
-          <div class="cluster head"><h3>HotLoop Gateway</h3><span class="chip warn">Not yet published</span></div>
+          <div class="cluster head"><h3>HotLoop Gateway</h3><span class="chip ok">Version {gwOut.data.version} is out</span></div>
           <p class="what">
             An industrial automation gateway. It polls equipment, keeps the history, raises alarms, runs
             automations against them, and exposes the whole plant to agents over MCP. One static Go binary that
@@ -146,6 +154,17 @@ const fmt = (d: Date) =>
           <p class="license">Apache-2.0, free for everyone, businesses included.</p>
           <a class="btn primary" href="/flow/">About Flow</a>
         </article>
+      </div>
+      <div class="grid grid-4 lineup">
+        {PRODUCTS.map((p) => (
+          <a class="card mini reveal" href={p.href}>
+            <div class="cluster head">
+              <h3>{p.name.replace('HotLoop ', '')}</h3>
+              <span class={`chip ${p.installable ? 'ok' : 'warn'}`}>{p.installable ? 'Install today' : 'Upcoming'}</span>
+            </div>
+            <p>{p.tagline}</p>
+          </a>
+        ))}
       </div>
     </div>
   </section>
@@ -190,7 +209,7 @@ const fmt = (d: Date) =>
         </a>
         <a class="card release reveal" href="/releases/gateway/">
           <div class="cluster head">
-            <h3>Gateway {gw.data.version}</h3><span class="chip warn">Merged, not published</span>
+            <h3>Gateway {gw.data.version}</h3><span class={`chip ${gw.data.published ? 'ok' : 'warn'}`}>{gw.data.published ? 'Published' : 'Merged, not published'}</span>
           </div>
           <p class="date">{fmt(gw.data.date)}</p>
           <p>{gw.data.summary}</p>
@@ -204,12 +223,13 @@ const fmt = (d: Date) =>
       <div class="card licensing reveal">
         <div>
           <span class="label">Licensing</span>
-          <h2>Two products, two licenses.</h2>
+          <h2>Two licenses, no keys.</h2>
           <p class="lede">
-            Flow is Apache-2.0, so anyone can run it, businesses included, with no agreement. The Gateway is free
-            for individuals, and a business signs up for <a href="https://embernet.ai">EmberNET</a> for free and uses
-            it there for free. Rather have it rolled out for you? <a href="https://fireballz.ai">Fireball Industries</a>
-            is our official systems integrator.
+            Flow is Apache-2.0, so anyone can run it, businesses included, with no agreement. IoT, Edge, the Gateway
+            and the Edge Relay are free for individuals, and a business signs up for
+            {' '}<a href="https://embernet.ai">EmberNET</a> for free and uses them there for free. Want support, SLAs
+            and warranties, or the rollout done for you? Our Official Systems Integrators are
+            {' '}<a href="https://fireballz.ai">Fireball Industries</a>.
           </p>
         </div>
         <a class="btn primary" href="/license/">Which license applies to me?</a>
@@ -221,7 +241,9 @@ const fmt = (d: Date) =>
 <style>
   .hero { padding-top: clamp(var(--hl-s7), 6vw, var(--hl-s8)); }
   .grid-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 620px); gap: clamp(var(--hl-s6), 5vw, var(--hl-s8)); align-items: center; }
-  @media (max-width: 1000px) { .grid-hero { grid-template-columns: 1fr; } }
+  /* Side by side, the copy column gets about 250px at 1024 and the h1 broke
+     "Automation" in the middle of the word. Stack until there's room. */
+  @media (max-width: 1100px) { .grid-hero { grid-template-columns: 1fr; } }
   .copy > .chip { justify-self: start; }
   /* A grid item defaults to min-width:auto, so its widest child sets the column. */
   .grid-hero > * { min-width: 0; }
@@ -242,6 +264,13 @@ const fmt = (d: Date) =>
   .product .what { color: var(--hl-ink); font-size: var(--hl-fs-base); }
   .product .license { padding-top: var(--hl-s3); border-top: 1px solid var(--hl-border); font-size: var(--hl-fs-xs); }
   .product .btn { justify-self: start; }
+
+  .lineup { margin-top: var(--hl-s5); }
+  a.mini { display: grid; gap: var(--hl-s2); align-content: start; text-decoration: none; color: inherit; padding: var(--hl-s5); transition: transform var(--hl-transition-fast), border-color var(--hl-transition-fast); }
+  a.mini:hover { transform: translateY(-2px); border-color: var(--hl-orange); }
+  .mini .head { justify-content: space-between; }
+  .mini h3 { margin: 0; font-size: var(--hl-fs-md); }
+  .mini p { font-size: var(--hl-fs-sm); color: var(--hl-ink-soft); }
 
   .tier .head { justify-content: space-between; margin-bottom: var(--hl-s3); }
   .tier .count { font-size: var(--hl-fs-xl); font-weight: 800; }
