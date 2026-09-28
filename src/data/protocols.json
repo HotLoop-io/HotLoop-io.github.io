@@ -5,7 +5,7 @@
     "aka": ["OPC Unified Architecture"],
     "order": 1,
     "verification": "live",
-    "verifiedAgainst": ["Microsoft opc-plc (C#)", "Emberburn (Python)"],
+    "verifiedAgainst": ["Inductive Automation Ignition 8.3.9, secured and signed in", "Microsoft opc-plc (C#)", "Emberburn (Python)"],
     "summary": "Prefer this one when a device offers a choice. It browses, it is properly secured, and it subscribes.",
     "vendors": [],
     "addressExamples": [

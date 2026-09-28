@@ -21,7 +21,7 @@ const counts = Object.fromEntries(
 const newest = (product: string) =>
   releases
     .filter((r) => r.data.product === product)
-    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())[0];
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
 const gw = newest('gateway');
 const fl = newest('flow');
 
@@ -125,14 +125,14 @@ const fmt = (d: Date) =>
           <ul>
             <li>Seven native protocols, and a verification table that says which ones have never touched a real PLC.</li>
             <li>A historian on TimescaleDB, with a native-partitioning fallback when the extension is missing.</li>
-            <li>An MCP server with 13 tools and 4 resources, over HTTP and stdio.</li>
+            <li>An MCP server with 16 tools and 4 resources, over HTTP and stdio.</li>
           </ul>
           <p class="license">Source-available under the HotLoop Community License. Free for individual use, and business use goes through Embernet.</p>
           <a class="btn primary" href="/gateway/">About the Gateway</a>
         </article>
 
         <article class="card product reveal">
-          <div class="cluster head"><h3>HotLoop Flow</h3><span class="chip ok">Version 0.1.0 is public</span></div>
+          <div class="cluster head"><h3>HotLoop Flow</h3><span class="chip ok">Version {fl.data.version} is out</span></div>
           <p class="what">
             A flow engine in one static Go binary, and Node-RED's idea with a different runtime. Flow files stay
             Node-RED v1 compatible, and every inbox is bounded, so a fast sensor cannot quietly inflate a pod

@@ -8,7 +8,7 @@ const protocols = (await getCollection('protocols')).sort((a, b) => a.data.order
 const native = protocols.filter((p) => p.data.verification !== 'gateway-mode');
 const releases = (await getCollection('releases'))
   .filter((r) => r.data.product === 'gateway')
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
 const latest = releases[0];
 
 const gate = [
@@ -55,9 +55,11 @@ const gate = [
         <div>
           <strong>Not yet published.</strong>
           <p>
-            Version {latest.data.version} is merged, and the code is moving into this org. Nothing here is
-            downloadable yet, and the <a href="/releases/gateway/">release notes</a> say exactly which versions have
-            and have not been tagged.
+            Version {latest.data.version} is merged. The code has moved into the HotLoop-io org, at
+            HotLoop-io/hotloop, and that repository is private for now. Entities, the plant tree, and paging over
+            ntfy, Gotify and Discord are merged after {latest.data.version} and don't have a version number yet.
+            Nothing here is downloadable yet, and the <a href="/releases/gateway/">release notes</a> say exactly
+            which versions have and have not been tagged.
           </p>
         </div>
       </div>
@@ -100,8 +102,9 @@ const gate = [
         <span class="label">Built for agents</span>
         <h2>MCP in both directions.</h2>
         <p class="muted">
-          13 tools and 4 resources, over streamable HTTP and over stdio, so an agent can read the plant and,
-          only through the gate, act on it. There is also an outbound client, so a rule can call a tool on
+          16 tools and 4 resources, over streamable HTTP and over stdio, so an agent can read the plant and,
+          only through the gate, act on it. An agent can work in entities, the infeed pump rather than
+          register 40001, and <code>call_service</code> crosses the same gate <code>write_tag</code> does. There is also an outbound client, so a rule can call a tool on
           another system.
         </p>
         <p class="muted">
@@ -169,11 +172,14 @@ const gate = [
         <article class="card reveal"><h3>Alarms</h3><p>ISA-18.2, including <code>rtn-unack</code> for an alarm that cleared before anybody saw it. Acknowledgement and return-to-normal are independent axes, so a transient trip at 03:00 is still on the list when the morning shift arrives.</p></article>
         <article class="card reveal"><h3>Automations</h3><p>Nine trigger types, a sandboxed condition, and actions. Conditions are compiled when a rule is saved, so a broken rule is caught in the editor and not at 3am.</p></article>
         <article class="card reveal"><h3>The Board</h3><p>The screen that gets left on a wall. Pinned tags are gauges with their alarm limits marked where they fall, layout stored with the plant so the panel PC and the laptop show the same board.</p></article>
-        <article class="card reveal"><h3>Paging</h3><p>Alarm notifications by webhook or email, so a 03:00 alarm can reach a phone. It composes with whatever paging service you already use, and off by default.</p></article>
-        <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, so a third-party client can browse and read the Gateway's tags. Secure channels, the same users as the web login, and no write handler at all.</p></article>
+        <article class="card reveal"><h3>Entities</h3><p>The plant the way people talk about it: the infeed pump, not register 40001. Every tag gets an entity on its own, and a motor, a valve or a PID loop is one entity built from the tags it really is. Commands go through the write gate like everything else.</p></article>
+        <article class="card reveal"><h3>Plant tree</h3><p>One ISA-95 equipment tree, enterprise down to equipment, plus labels. Devices and entities hang off it, and the site, area and line a device already carried stay in step with it.</p></article>
+        <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook and email, so a 03:00 alarm reaches a phone. ntfy's Acknowledge button and the Discord bot's Acknowledge and Shelve buttons act on the alarm itself, through signed, single-use links. Discord has only been run against a stand-in, not the real thing. Rate limited, retried, and off by default.</p></article>
+        <article class="card reveal"><h3>Reports</h3><p>Historian numbers on a schedule, as CSV or HTML, stored and optionally emailed. Only good readings are counted, each row says how many it left out, and a period with no readings says no data, never zero.</p></article>
+        <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, so a third-party client can browse and read the Gateway's tags. Secure channels, the same users as the web login, no write handler at all, and no holes in the address space while somebody edits a device.</p></article>
         <article class="card reveal"><h3>Edge Relay</h3><p>A second, lighter binary with no database, about 16.9 MB against the Gateway's 33.4 MB, that polls and forwards over Sparkplug B. Fleet management tracks and commands registered relays.</p></article>
         <article class="card reveal"><h3>Embedded broker</h3><p>An optional in-process MQTT broker, so a single-box install can be its own Sparkplug hub. There is no per-topic access control by design, so use a dedicated broker at scale.</p></article>
-        <article class="card reveal"><h3>Backups</h3><p>A logical snapshot taken in pure Go over the existing connection, with a restore that refuses to touch a database that already has data.</p></article>
+        <article class="card reveal"><h3>Backups</h3><p>A logical snapshot taken in pure Go over the existing connection, with a restore that refuses to touch a database that already has data. It loads an older backup by column name, and refuses one from a newer version outright.</p></article>
       </div>
     </div>
   </section>

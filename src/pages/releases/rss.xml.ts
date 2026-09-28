@@ -8,7 +8,9 @@ import type { APIContext } from 'astro';
 // has not.
 export async function GET(context: APIContext) {
   const releases = (await getCollection('releases')).sort(
-    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+    (a, b) =>
+      b.data.date.getTime() - a.data.date.getTime() ||
+      b.data.version.localeCompare(a.data.version, undefined, { numeric: true }),
   );
   const NAME = { gateway: 'HotLoop Gateway', flow: 'HotLoop Flow' } as const;
 
