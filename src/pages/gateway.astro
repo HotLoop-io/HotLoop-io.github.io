@@ -296,15 +296,15 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
           release. Until then it is not something you can install, and we are not going to pretend it is.
         </p>
       </div>
-      <div class="grid grid-3">
+      <div class="grid grid-2">
         <article class="card reveal"><h3>Helpers</h3><p>The seven Home Assistant input helpers: toggles, numbers, selects, text, counters, timers and schedules. The values a plant's people own, like today's batch target or which shift is on, kept across restarts and never clamped.</p></article>
         <article class="card reveal"><h3>Logbook</h3><p>One timeline of state changes, writes, alarms, automation runs and config changes, for the plant, one place on the tree, or one entity. The answer to "what happened just before?" in one list instead of five.</p></article>
         <article class="card reveal"><h3>The automation language</h3><p>Condition, wait and stop steps inside a sequence, and <code>forSec</code> on a state trigger, so "the pump has been on for five minutes" is one trigger and not a hack.</p></article>
+        <article class="card reveal"><h3>Scripts</h3><p>Write the CIP cycle once, give it a name, and run it the same way from the Scripts screen, a rule, MCP or its own entity. Typed fields that are refused, never trimmed, and a dry run through the real gate. A script an agent starts still writes as the agent.</p></article>
       </div>
       <p class="prose muted after">
-        Being built right now: scripts, named sequences you can call from an automation, the UI or MCP. Recipes and
-        blueprints come after that. And a native <a href="/unifi/">UniFi integration</a> is in development, Network
-        first.
+        Recipes and blueprints come next. And a native <a href="/unifi/">UniFi integration</a> is in development,
+        Network first.
       </p>
     </div>
   </section>
