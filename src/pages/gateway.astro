@@ -2,14 +2,17 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import JsonLd from '../components/JsonLd.astro';
+import FeatureList from '../components/FeatureList.astro';
 import { TIERS, TIER_ORDER } from '../lib/tiers';
+import { CURRENT, GATEWAY_FEATURES, product } from '../lib/products';
 
 const protocols = (await getCollection('protocols')).sort((a, b) => a.data.order - b.data.order);
 const native = protocols.filter((p) => p.data.verification !== 'gateway-mode');
 const releases = (await getCollection('releases'))
   .filter((r) => r.data.product === 'gateway')
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
-const latest = releases[0];
+const latest = releases.find((r) => r.data.published)!;
+const gw = product('gateway');
 
 const gate = [
   ['Writes are enabled.', 'safety.allowWrites is off by default, and has been since 4.4.0.'],
@@ -38,12 +41,14 @@ const gate = [
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Linux',
       license: 'https://hotloop.io/license/',
+      softwareVersion: CURRENT,
+      isAccessibleForFree: true,
       publisher: { '@id': 'https://hotloop.io/#organization' },
     }}
   />
   <section class="page-hero">
     <div class="wrap stack">
-      <span class="label">HotLoop Gateway</span>
+      <div class="cluster"><span class="label">HotLoop Gateway</span><span class="chip ok">{latest.data.version} is out</span></div>
       <h1>An industrial gateway that tells you what it has not proven.</h1>
       <p class="lede">
         It polls real equipment over real protocols, keeps what it reads, alarms on it, automates against it, and
@@ -53,19 +58,116 @@ const gate = [
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>Not yet published.</strong>
+          <strong>HotLoop Gateway {latest.data.version} is out. It is the first published release since 4.3.1.</strong>
           <p>
-            Version {latest.data.version} is merged. The code has moved into the HotLoop-io org, at
-            HotLoop-io/hotloop, and that repository is private for now. Entities, the plant tree, and paging over
-            ntfy, Gotify and Discord are merged after {latest.data.version} and don't have a version number yet.
-            Nothing here is downloadable yet, and the <a href="/releases/gateway/">release notes</a> say exactly
-            which versions have and have not been tagged.
+            Everything merged from 4.4.0 to 4.15.3 ships in it at once. The image is <code>{gw.image}:{latest.data.version}</code>,
+            the chart is <code>{gw.chart}</code> from <code>https://hotloop.io/hotloop</code>, and both pull with no
+            login. The source repository, HotLoop-io/hotloop, is still private. Coming from 4.3.1? It is not a plain
+            {' '}<code>helm upgrade</code>, so read <a href="#upgrading">the upgrade</a> before you touch a running plant.
           </p>
         </div>
       </div>
       <div class="cluster">
-        <a class="btn primary" href="/integrations/">See what it speaks</a>
-        <a class="btn" href="/license/">Read the license</a>
+        <a class="btn primary" href="#install">Install it</a>
+        <a class="btn" href="/releases/gateway/">Release notes</a>
+        <a class="btn" href="/products/">Compare the lineup</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap grid grid-2 split">
+      <div class="stack">
+        <span class="label">Where it sits</span>
+        <h2>The top of the lineup. Everything, for the whole site.</h2>
+        <p class="muted">
+          HotLoop is one codebase and four products, released together from one tag.
+          {' '}<a href="/iot/">IoT</a> is the Home Assistant style base, <a href="/edge/">Edge</a> adds the machine
+          layer, and the Gateway is everything in both plus what a site needs: fleet management, multi-site roll-ups
+          and scheduled reports. The <a href="/edge-relay/">Edge Relay</a> is the headless one that polls and forwards.
+        </p>
+        <p class="muted">
+          Today the Gateway and the Edge Relay are the two you can install. IoT and Edge arrive in an upcoming
+          release, and everything they will have is in the Gateway already or on its way to it.
+        </p>
+      </div>
+      <div class="stack">
+        <span class="label">What only the Gateway has</span>
+        <FeatureList features={GATEWAY_FEATURES} />
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="install">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Install</span>
+        <h2>Helm, from the published chart.</h2>
+        <p class="lede">
+          On any Kubernetes, k3s included. The chart deploys the Gateway and a TimescaleDB, generates the database
+          password, the MCP token and an admin account, and keeps them across upgrades.
+        </p>
+      </div>
+      <div class="grid grid-2 split">
+        <div class="stack">
+<pre><code>helm repo add hotloop https://hotloop.io/hotloop
+helm repo update
+helm install hotloop hotloop/hotloop --version {latest.data.version} \
+  --namespace hotloop --create-namespace</code></pre>
+          <p class="muted">
+            The user is <code>admin</code>. The chart generates the password and keeps it in the release Secret, and
+            the install notes print the command that reads it back:
+          </p>
+<pre><code>kubectl -n hotloop get secret hotloop \
+  -o jsonpath='&#123;.data.admin-password&#125;' | base64 -d
+kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
+        </div>
+        <div class="stack">
+          <p class="muted">
+            Then open <code>http://localhost:8080</code>, sign in, add a device and discover its tags. Writes ship
+            off. Tags are read-only until you arm them one at a time, and <code>safety.allowWrites</code> stays off
+            until you decide this pod gets to move machinery.
+          </p>
+          <p class="muted">
+            The image is <code>{gw.image}:{latest.data.version}</code> for amd64 and arm64, about 34 MB, and it pulls
+            anonymously. The database today is TimescaleDB, or plain PostgreSQL when the extension is missing.
+            SQLite is on its way, in the same image.
+          </p>
+          <p class="muted">
+            There is no Quadlet unit for the Gateway yet, so off a cluster it's the chart on k3s. The
+            {' '}<a href="/edge-relay/">Edge Relay</a> has one today. The
+            {' '}<a href="https://docs.hotloop.io/gateway/install/">install docs</a> cover the values worth setting
+            before a real plant sees it.
+          </p>
+        </div>
+      </div>
+
+      <div class="card upgrade reveal" id="upgrading">
+        <span class="label">Coming from 4.3.1</span>
+        <h3>It is not a plain helm upgrade.</h3>
+        <p>
+          Nothing between 4.3.1 and {latest.data.version} was ever published, so you get every version from 4.4.0 to
+          4.15.3 at once, under a new name. The image was <code>ghcr.io/embernet-ai/industrial-iot</code>, the chart was
+          {' '}<code>industrial-iot</code>, and every <code>IIOT_</code> variable is <code>HOTLOOP_</code> now. The
+          chart name is baked into the workload selectors, and Kubernetes won't change a selector in place. Keep the
+          release name and the namespace, and:
+        </p>
+        <ol>
+          <li><code>pg_dump</code> the database. Belt and braces.</li>
+          <li>Delete the old Deployment (<code>&lt;release&gt;</code>) and StatefulSet (<code>&lt;release&gt;-postgresql</code>). The database volume is its own claim and stays put.</li>
+          <li><code>helm upgrade &lt;release&gt; hotloop/hotloop -f your-4.3.1-values.yaml</code>, with any <code>IIOT_</code> in <code>extraEnv</code> renamed and any <code>image.repository</code> override dropped. Not <code>--reuse-values</code>, which skips every default the chart added since.</li>
+        </ol>
+        <p>
+          The new database pod mounts the old volume and the Gateway migrates it forward on start. We checked that by
+          rendering both charts side by side, not by running it on a live cluster, which is exactly why step one is
+          there.
+        </p>
+        <p>
+          There is a login now, writes default to off, and the license is the HotLoop Community License rather than
+          Apache-2.0. The API changed in a handful of places a script will notice, like empty lists being
+          {' '}<code>[]</code> and never <code>null</code>. The whole list, and the procedure in full, is in
+          {' '}<a href="https://docs.hotloop.io/gateway/upgrading/">the upgrade docs</a>.
+        </p>
       </div>
     </div>
   </section>
@@ -170,14 +272,14 @@ const gate = [
       <div class="grid grid-3">
         <article class="card reveal"><h3>Historian</h3><p>TimescaleDB, promoted to a hypertable when the extension is there and falling back to native range partitioning when it is not. Per-tag deadband filtering, so a sensor jittering in its last bit does not write a row every scan forever.</p></article>
         <article class="card reveal"><h3>Alarms</h3><p>ISA-18.2, including <code>rtn-unack</code> for an alarm that cleared before anybody saw it. Acknowledgement and return-to-normal are independent axes, so a transient trip at 03:00 is still on the list when the morning shift arrives.</p></article>
-        <article class="card reveal"><h3>Automations</h3><p>Nine trigger types, a sandboxed condition, and actions. Conditions are compiled when a rule is saved, so a broken rule is caught in the editor and not at 3am.</p></article>
+        <article class="card reveal"><h3>Automations</h3><p>Ten trigger types, entity state changes included, a sandboxed condition, and actions. Conditions are compiled when a rule is saved, so a broken rule is caught in the editor and not at 3am.</p></article>
         <article class="card reveal"><h3>The Board</h3><p>The screen that gets left on a wall. Pinned tags are gauges with their alarm limits marked where they fall, layout stored with the plant so the panel PC and the laptop show the same board.</p></article>
         <article class="card reveal"><h3>Entities</h3><p>The plant the way people talk about it: the infeed pump, not register 40001. Every tag gets an entity on its own, and a motor, a valve or a PID loop is one entity built from the tags it really is. Commands go through the write gate like everything else.</p></article>
         <article class="card reveal"><h3>Plant tree</h3><p>One ISA-95 equipment tree, enterprise down to equipment, plus labels. Devices and entities hang off it, and the site, area and line a device already carried stay in step with it.</p></article>
         <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook and email, so a 03:00 alarm reaches a phone. ntfy's Acknowledge button and the Discord bot's Acknowledge and Shelve buttons act on the alarm itself, through signed, single-use links. Discord has only been run against a stand-in, not the real thing. Rate limited, retried, and off by default.</p></article>
         <article class="card reveal"><h3>Reports</h3><p>Historian numbers on a schedule, as CSV or HTML, stored and optionally emailed. Only good readings are counted, each row says how many it left out, and a period with no readings says no data, never zero.</p></article>
         <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, so a third-party client can browse and read the Gateway's tags. Secure channels, the same users as the web login, no write handler at all, and no holes in the address space while somebody edits a device.</p></article>
-        <article class="card reveal"><h3>Edge Relay</h3><p>A second, lighter binary with no database, about 16.9 MB against the Gateway's 33.4 MB, that polls and forwards over Sparkplug B. Fleet management tracks and commands registered relays.</p></article>
+        <article class="card reveal"><h3>Edge Relay</h3><p>Its own product now, with its own image and chart: no database, no UI, about 15 MB against the Gateway's 34, polling and forwarding over Sparkplug B. Fleet management here tracks and commands the relays. <a href="/edge-relay/">More on the Edge Relay</a>.</p></article>
         <article class="card reveal"><h3>Embedded broker</h3><p>An optional in-process MQTT broker, so a single-box install can be its own Sparkplug hub. There is no per-topic access control by design, so use a dedicated broker at scale.</p></article>
         <article class="card reveal"><h3>Backups</h3><p>A logical snapshot taken in pure Go over the existing connection, with a restore that refuses to touch a database that already has data. It loads an older backup by column name, and refuses one from a newer version outright.</p></article>
       </div>
@@ -186,17 +288,41 @@ const gate = [
 
   <section class="block">
     <div class="wrap">
+      <div class="section-head">
+        <span class="label">On main since {latest.data.version}</span>
+        <h2>Merged, and landing in the next release.</h2>
+        <p class="lede">
+          None of this is in {latest.data.version}. It merged after the tag, it is on main, and it ships in the next
+          release. Until then it is not something you can install, and we are not going to pretend it is.
+        </p>
+      </div>
+      <div class="grid grid-3">
+        <article class="card reveal"><h3>Helpers</h3><p>The seven Home Assistant input helpers: toggles, numbers, selects, text, counters, timers and schedules. The values a plant's people own, like today's batch target or which shift is on, kept across restarts and never clamped.</p></article>
+        <article class="card reveal"><h3>Logbook</h3><p>One timeline of state changes, writes, alarms, automation runs and config changes, for the plant, one place on the tree, or one entity. The answer to "what happened just before?" in one list instead of five.</p></article>
+        <article class="card reveal"><h3>The automation language</h3><p>Condition, wait and stop steps inside a sequence, and <code>forSec</code> on a state trigger, so "the pump has been on for five minutes" is one trigger and not a hack.</p></article>
+      </div>
+      <p class="prose muted after">
+        Being built right now: scripts, named sequences you can call from an automation, the UI or MCP. Recipes and
+        blueprints come after that. And a native <a href="/unifi/">UniFi integration</a> is in development, Network
+        first.
+      </p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
       <div class="card cta reveal">
         <div class="stack">
           <span class="label">Licensing</span>
-          <h2>Free for individuals. Free for business, through EmberNET.</h2>
+          <h2>Free. For individuals, and for business through EmberNET.</h2>
           <p class="muted">
-            The Gateway is source-available under the HotLoop Community License, which is not an OSI open source
-            license. Individual, home, hobbyist, nonprofit, and educational use is free. Any business or for-profit
-            use goes through <a href="https://embernet.ai">EmberNET</a>. You can sign up for EmberNET for free, and
-            business use of HotLoop there is free. Support, SLAs, and warranties come from
-            <a href="https://fireballz.ai">Fireball Industries</a>, our official systems integrator, which will also
-            design, install, and support the rollout for you.
+            Every HotLoop product except Flow is source-available under the HotLoop Community License, which is not
+            an OSI open source license. There are no license keys and nothing unlocks at runtime. Individual, home,
+            hobbyist, nonprofit, and educational use is free. Any business or for-profit use goes through
+            {' '}<a href="https://embernet.ai">EmberNET</a>, where signing up is free and business use of HotLoop is
+            free. Support, SLAs, and warranties come from our Official Systems Integrators,
+            {' '}<a href="https://fireballz.ai">Fireball Industries</a>, who will also design, install, and support the
+            rollout for you.
           </p>
         </div>
         <a class="btn primary" href="/license/">Read the terms</a>
@@ -209,6 +335,10 @@ const gate = [
   .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
   .page-hero h1 { max-width: 20ch; }
   .page-hero .notice { max-width: 68ch; }
+  .page-hero .notice code { overflow-wrap: anywhere; }
+  .upgrade { margin-top: var(--hl-s7); display: grid; gap: var(--hl-s3); }
+  .upgrade ol { padding-left: 1.3em; display: grid; gap: var(--hl-s2); color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); }
+  pre { max-width: 100%; }
 
   ol.gate { list-style: none; padding: 0; display: grid; gap: var(--hl-s3); counter-reset: none; }
   ol.gate li { display: grid; grid-template-columns: auto 1fr; gap: var(--hl-s5); align-items: start; padding: var(--hl-s5) var(--hl-s6); }

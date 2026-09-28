@@ -19,7 +19,7 @@ export async function GET(context: APIContext) {
     description: 'What changed in HotLoop Gateway and HotLoop Flow, including which versions are actually published.',
     site: context.site!,
     items: releases.map((r) => ({
-      title: `${NAME[r.data.product]} ${r.data.version}${r.data.published ? '' : ' (merged, not yet published)'}`,
+      title: `${NAME[r.data.product]} ${r.data.version}${r.data.published ? '' : ' (merged, never published on its own)'}`,
       pubDate: r.data.date,
       description: r.data.summary,
       link: `/releases/${r.data.product}/#${r.data.product}-${r.data.version}`,

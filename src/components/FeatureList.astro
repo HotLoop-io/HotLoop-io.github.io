@@ -1,0 +1,30 @@
+---
+// A product's features, each with a chip that says whether it is in a published
+// release, merged and waiting, being built, or not started. The chip comes from
+// src/lib/products.ts and nowhere else.
+import { STATUS, type Feature } from '../lib/products';
+
+interface Props { features: Feature[] }
+const { features } = Astro.props;
+---
+
+<ul class="features">
+  {features.map((f) => (
+    <li class="card">
+      <div class="cluster head">
+        <h3>{f.name}</h3>
+        <span class={`chip ${STATUS[f.status].chip}`}>{STATUS[f.status].label}</span>
+      </div>
+      <p>{f.note}</p>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .features { list-style: none; padding: 0; display: grid; gap: var(--hl-s4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+  .features .card { padding: var(--hl-s5); }
+  .head { justify-content: space-between; align-items: start; margin-bottom: var(--hl-s2); flex-wrap: nowrap; }
+  .head h3 { font-size: var(--hl-fs-md); margin: 0; }
+  .head .chip { flex-shrink: 0; }
+  @media (max-width: 400px) { .head { flex-wrap: wrap; } }
+</style>

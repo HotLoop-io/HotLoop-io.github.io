@@ -1,0 +1,134 @@
+---
+import Base from '../layouts/Base.astro';
+import { CURRENT, PRODUCTS } from '../lib/products';
+
+// Yes means the product has it (whatever its status on that product's page);
+// the columns are IoT, Edge, Gateway, Edge Relay.
+const rows: [string, boolean, boolean, boolean, boolean][] = [
+  ['Every protocol driver, MQTT included', true, true, true, true],
+  ['Entities, automations, helpers, scripts, logbook', true, true, true, false],
+  ['Dashboards, notifications, ISA-18.2 alarms', true, true, true, false],
+  ['MCP for agents', true, true, true, false],
+  ['MQTT discovery (Shelly, ESPHome, Tasmota, Zigbee2MQTT)', true, true, true, false],
+  ['Backups and restore', true, true, true, false],
+  ['HMI screens and panel mode', false, true, true, false],
+  ['Store-and-forward over Sparkplug B', false, true, true, true],
+  ['OPC UA server', false, true, true, false],
+  ['Fleet management of edge relays', false, false, true, false],
+  ['Multi-site roll-ups', false, false, true, false],
+  ['Scheduled reports', false, false, true, false],
+  ['A web UI and a login', true, true, true, false],
+];
+const yes = (b: boolean) => (b ? 'Yes' : 'No');
+---
+
+<Base
+  title="HotLoop products: IoT, Edge, Gateway and Edge Relay"
+  description="One codebase, four products, released together: HotLoop IoT, HotLoop Edge, HotLoop Gateway and HotLoop Edge Relay. What each one has, and which you can install."
+  ogAlt="The HotLoop lineup: IoT, Edge, Gateway and Edge Relay."
+>
+  <section class="page-hero">
+    <div class="wrap stack">
+      <span class="label">Products</span>
+      <h1>One codebase. Four products. One version number.</h1>
+      <p class="lede">
+        HotLoop is built once and shipped four ways, each with its own image and its own chart, all released
+        together from the same tag. Protocols don't split the products, because every one of them speaks every
+        protocol, MQTT included. Features do.
+      </p>
+    </div>
+  </section>
+
+  <section class="wrap body">
+    <div class="grid grid-2 cards">
+      {PRODUCTS.map((p) => (
+        <a class="card product reveal" href={p.href}>
+          <div class="cluster head">
+            <h2>{p.name}</h2>
+            <span class={`chip ${p.installable ? 'ok' : 'warn'}`}>{p.installable ? `${CURRENT} is out` : 'Upcoming release'}</span>
+          </div>
+          <p class="tag">{p.tagline}</p>
+          <p>{p.summary}</p>
+          <p class="db"><span class="label">Database</span> {p.databases}{p.databasesToday && <span class="today"> Today: {p.databasesToday}</span>}</p>
+        </a>
+      ))}
+    </div>
+
+    <h2 class="sub">Side by side</h2>
+    <p class="muted intro">
+      What each product has, not whether it is finished. The product pages say which pieces ship today and which
+      are still being built, piece by piece.
+    </p>
+    <div class="table-wrap">
+      <table class="data stack">
+        <thead><tr><th>Feature</th><th>IoT</th><th>Edge</th><th>Gateway</th><th>Edge Relay</th></tr></thead>
+        <tbody>
+          {rows.map(([name, a, b, c, d]) => (
+            <tr>
+              <td>{name}</td>
+              <td data-label="IoT" class={a ? 'y' : 'n'}>{yes(a)}</td>
+              <td data-label="Edge" class={b ? 'y' : 'n'}>{yes(b)}</td>
+              <td data-label="Gateway" class={c ? 'y' : 'n'}>{yes(c)}</td>
+              <td data-label="Edge Relay" class={d ? 'y' : 'n'}>{yes(d)}</td>
+            </tr>
+          ))}
+          <tr>
+            <td>Database</td>
+            {PRODUCTS.map((p) => <td data-label={p.name.replace('HotLoop ', '')}>{p.databases.split('.')[0]}</td>)}
+          </tr>
+          <tr>
+            <td>Install today</td>
+            {PRODUCTS.map((p) => <td data-label={p.name.replace('HotLoop ', '')}>{p.installable ? 'Yes' : 'Not yet'}</td>)}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid grid-2 notes">
+      <div class="stack">
+        <h2 class="sub">Moving up keeps your data</h2>
+        <p class="muted">
+          Every product runs the same schema. Going from IoT to Edge to the Gateway is designed to be an image swap
+          on the same database, with your devices, entities, automations, alarms, history and users already there.
+          Going back down deletes nothing: what the smaller product doesn't have just sits there until you come back.
+        </p>
+      </div>
+      <div class="stack">
+        <h2 class="sub">No keys, no tiers</h2>
+        <p class="muted">
+          There are no license keys and nothing unlocks at runtime. The product is what was compiled, so a feature
+          that isn't in your image can't be switched on by accident. All four are under the HotLoop Community
+          License: free for individuals, and free for business through <a href="https://embernet.ai">EmberNET</a>.
+          {' '}<a href="/license/">Which license applies to you</a>.
+        </p>
+      </div>
+    </div>
+
+    <p class="muted flow">
+      Looking for a Node-RED style flow engine? That's <a href="/flow/">HotLoop Flow</a>, a separate product under
+      Apache-2.0, free for everyone, businesses included.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s6); }
+  .page-hero h1 { max-width: 22ch; }
+  .body { padding-bottom: var(--hl-s8); }
+  /* Four products: two by two, never three and an orphan. */
+  .cards { margin-bottom: var(--hl-s8); grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+  a.product { display: grid; gap: var(--hl-s3); align-content: start; text-decoration: none; color: inherit; transition: transform var(--hl-transition-fast), border-color var(--hl-transition-fast); }
+  a.product:hover { transform: translateY(-2px); border-color: var(--hl-orange); }
+  .product .head { justify-content: space-between; }
+  .product h2 { font-size: var(--hl-fs-xl); margin: 0; }
+  .product .tag { color: var(--hl-ink); font-weight: 600; font-size: var(--hl-fs-base); }
+  .product .db { padding-top: var(--hl-s3); border-top: 1px solid var(--hl-border); }
+  .product .db .label { margin-right: var(--hl-s2); }
+  .product .db .today { display: block; margin-top: var(--hl-s1); font-size: var(--hl-fs-xs); }
+  h2.sub { font-size: var(--hl-fs-xl); }
+  .intro { margin: var(--hl-s3) 0 var(--hl-s5); max-width: 70ch; }
+  td.y { color: var(--hl-ok-text); font-weight: 600; }
+  td.n { color: var(--hl-ink-soft); }
+  .notes { margin-top: var(--hl-s8); gap: var(--hl-s7); }
+  .flow { margin-top: var(--hl-s7); max-width: 70ch; }
+</style>

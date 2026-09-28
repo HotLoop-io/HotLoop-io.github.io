@@ -1,0 +1,169 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { product } from '../lib/products';
+
+const p = product('edge-relay');
+const latest = (await getCollection('releases'))
+  .filter((r) => r.data.product === 'gateway' && r.data.published)
+  .sort((a, b) => b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
+const v = latest.data.version;
+---
+
+<Base
+  title="HotLoop Edge Relay: a Sparkplug B edge node"
+  description="HotLoop Edge Relay polls equipment and forwards it over Sparkplug B, with no database and no UI, and buffers to disk when the uplink is down."
+  ogAlt="HotLoop Edge Relay, a headless Sparkplug B edge node."
+>
+  <JsonLd
+    slot="head"
+    data={{
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: p.name,
+      url: 'https://hotloop.io/edge-relay/',
+      description:
+        'A headless poll-and-forward Sparkplug B edge node with no database, no UI and no write path, using the same protocol drivers as HotLoop Gateway.',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Linux',
+      license: 'https://hotloop.io/license/',
+      isAccessibleForFree: true,
+      softwareVersion: v,
+      publisher: { '@id': 'https://hotloop.io/#organization' },
+    }}
+  />
+  <section class="page-hero">
+    <div class="wrap stack">
+      <div class="cluster"><span class="label">HotLoop Edge Relay</span><span class="chip ok">{v} is out</span></div>
+      <h1>Poll, forward, survive. Nothing else.</h1>
+      <p class="lede">
+        A headless edge node for a Pi or a small industrial PC. It polls equipment with the same drivers the
+        Gateway uses, forwards every reading over Sparkplug B, and buffers to disk when the uplink goes away. No
+        database, no UI, no login, and no way to write to a machine, on purpose.
+      </p>
+      <div class="notice info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
+        <div>
+          <strong>Edge Relay {v} is out, released in lockstep with the Gateway.</strong>
+          <p>
+            The image is <code>{p.image}:{v}</code> for amd64 and arm64, about 15 MB, and it pulls with no login. The
+            chart is <code>{p.chart}</code> from <code>https://hotloop.io/hotloop</code>, and there is a Quadlet unit
+            for a box that isn't in a cluster.
+          </p>
+        </div>
+      </div>
+      <div class="cluster">
+        <a class="btn primary" href="#install">Install it</a>
+        <a class="btn" href="/products/">Compare the lineup</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What it is not</span>
+        <h2>Not a smaller Gateway with the options turned off.</h2>
+        <p class="lede">
+          It is a different binary. It never links the database, the web UI, the automation engine, the entity
+          registry or MCP, and a test asks the compiler what it actually links and fails the build if one of them
+          creeps in. There is no mode switch buried in the Gateway, because a switch is one bad environment
+          variable away from turning things back on.
+        </p>
+      </div>
+      <div class="grid grid-3">
+        <article class="card reveal"><h3>Every driver</h3><p>OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect and HTTP, the same code the Gateway polls with, down to the reconnect and back-off.</p></article>
+        <article class="card reveal"><h3>Store-and-forward</h3><p>Births, sequence numbers and deaths the way Sparkplug B says. When the link drops it queues to a single file on disk, then replays in order, flagged historical, when it comes back.</p></article>
+        <article class="card reveal"><h3>Configured by a file</h3><p>Devices and tags come from one JSON file, read once at start. An edge box has one operator who can edit a file and restart a service, and this doesn't invent a live-reload to avoid it.</p></article>
+        <article class="card reveal"><h3>No write path</h3><p>It reads and forwards. It can't take a write, serve a screen or answer an agent, because all three need a signed-in person to put the action against, and it has no users at all.</p></article>
+        <article class="card reveal"><h3>Managed from the Gateway</h3><p>The Gateway's fleet view tracks each relay from its births and deaths, and sends a rebirth, a restart, or a new device file, all over the connection the relay already dialed out on.</p></article>
+        <article class="card reveal"><h3>Honest about what's proven</h3><p>Run end to end against a real Mosquitto broker, with an HTTP endpoint standing in for the plant. The other drivers are the Gateway's own tested code, but this binary hasn't polled real PLC hardware or met a certified Sparkplug host yet, and until it has, we say so.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="install">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Install</span>
+        <h2>Helm on a cluster, Quadlet on a box.</h2>
+        <p class="lede">
+          Two supported ways, both containers, both starting on boot and restarting on failure. A bare
+          {' '}<code>podman run</code> from a shell that dies with your session is not one of them.
+        </p>
+      </div>
+      <div class="grid grid-2 split">
+        <div class="stack">
+          <h3>Helm</h3>
+          <p class="muted">The broker and the Sparkplug group are required, and the chart refuses to render without them.</p>
+<pre><code>helm repo add hotloop https://hotloop.io/hotloop
+helm repo update
+helm install press-line-3 hotloop/hotloop-edge-relay \
+  --version {v} --namespace hotloop --create-namespace \
+  --set edgePublish.broker=tcp://gateway.plant.local:1883 \
+  --set edgePublish.group=Plant1 \
+  -f devices.yaml</code></pre>
+          <p class="muted">
+            Devices and tags go in <code>devices.yaml</code> under <code>devices:</code> and <code>tags:</code>. If a
+            device carries a password, put the whole device file in a Secret and name it in
+            {' '}<code>devicesSecret</code>, because values end up in a ConfigMap anyone in the namespace can read.
+          </p>
+        </div>
+        <div class="stack">
+          <h3>Quadlet</h3>
+          <p class="muted">
+            For a Pi or an industrial PC outside any cluster. Quadlet turns the container into a systemd service:
+            it starts on boot with nobody logged in, restarts when it dies, and logs to the journal. It needs Podman
+            4.4 or newer, so Raspberry Pi OS Bookworm, which ships 4.3, is too old for it.
+          </p>
+          <p class="muted">
+            Save <code>edge-relay.container</code> and <code>edge-relay-data.volume</code> from the
+            {' '}<a href="https://docs.hotloop.io/edge-relay/install/">install docs</a> into
+            {' '}<code>/etc/containers/systemd/</code>, set the broker, group and node in the first, and put your
+            device file at <code>/etc/edge-relay/devices.json</code>. Then:
+          </p>
+<pre><code>printf '%s' 'your-broker-password' | \
+  sudo podman secret create edge-relay-broker-password -
+sudo systemctl daemon-reload
+sudo systemctl start edge-relay.service
+curl localhost:8081/status</code></pre>
+          <p class="muted">
+            Broker takes anonymous connections? Skip the secret and delete the unit's <code>Secret=</code> line. On
+            an isolated OT network that's a real setup, not a mistake.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="card cta reveal">
+        <div class="stack">
+          <span class="label">Licensing</span>
+          <h2>Free, with no license key.</h2>
+          <p class="muted">
+            The Edge Relay is under the HotLoop Community License, like the rest of the lineup. Individuals use it
+            free. Businesses sign up for <a href="https://embernet.ai">EmberNET</a> free and use it there free.
+            Support, SLAs, and warranties come from our Official Systems Integrators,
+            {' '}<a href="https://fireballz.ai">Fireball Industries</a>.
+          </p>
+        </div>
+        <a class="btn primary" href="/license/">Read the terms</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
+  .page-hero h1 { max-width: 20ch; }
+  .page-hero .notice { max-width: 68ch; }
+  .page-hero .notice code { overflow-wrap: anywhere; }
+  .split { align-items: start; gap: var(--hl-s8); }
+  .split h3 { font-size: var(--hl-fs-lg); }
+  pre { max-width: 100%; }
+  .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
+  .cta .stack { max-width: 62ch; }
+</style>

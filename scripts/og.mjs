@@ -126,14 +126,19 @@ const nativeCount = protocols.filter((p) => p.verification !== 'gateway-mode').l
 const certified = protocols.filter((p) => p.verification === 'certified').length;
 
 const pages = [
-  ['home', 'Automation loops for the real world.', 'HotLoop Gateway and HotLoop Flow. Two products, licensed separately, on purpose.', 'HotLoop'],
+  ['home', 'Automation loops for the real world.', 'IoT, Edge, Gateway and Edge Relay from one codebase, and Flow beside them.', 'HotLoop'],
+  ['products', 'One codebase. Four products.', 'HotLoop IoT, Edge, Gateway and Edge Relay, released together from one tag.', 'Products'],
+  ['iot', 'HotLoop IoT', 'Home Assistant, rewritten in Go for the plant floor. Arrives in an upcoming release.', 'Product'],
+  ['edge', 'HotLoop Edge', 'IoT plus the machine layer: HMI, PLCs, store-and-forward, an OPC UA server.', 'Product'],
   ['gateway', 'HotLoop Gateway', 'An industrial gateway that tells you what it has not proven. Seven native protocols, one write gate.', 'Product'],
+  ['edge-relay', 'HotLoop Edge Relay', 'Poll, forward over Sparkplug B, survive the uplink dying. No database, no UI.', 'Product'],
+  ['unifi', 'UniFi in HotLoop', 'In development, built natively in Go. Network first, then Protect, Access and PDUs.', 'In development'],
   ['flow', 'HotLoop Flow', "Node-RED's idea, with a runtime that does not fall over. Apache-2.0, free for everyone.", 'Product'],
   ['integrations', 'What it speaks, and how far each one has been proven.', `${nativeCount} Gateway protocols and ${nodeCount} Flow nodes. ${certified === 0 ? 'None are certified, and we say so.' : `${certified} certified.`}`, 'Integrations'],
-  ['license', 'Which license applies to you?', 'Gateway: free for individuals, business through EmberNET. Flow: Apache-2.0, free for everyone.', 'License'],
+  ['license', 'Which license applies to you?', 'IoT, Edge, Gateway, Edge Relay: free for individuals, business free through EmberNET. Flow: Apache-2.0.', 'License'],
   ['releases', 'Release notes', 'What changed in HotLoop Gateway and HotLoop Flow, including which versions are actually published.', 'Releases'],
   ['releases-gateway', 'Gateway release notes', 'Which versions are published, and which are only merged. Every entry says which.', 'Releases'],
-  ['releases-flow', 'Flow release notes', 'Version 0.1.0, published under its original name and Apache-2.0.', 'Releases'],
+  ['releases-flow', 'Flow release notes', 'Every Flow release, Apache-2.0 from the first one to the current one.', 'Releases'],
   ['404', 'That loop did not close.', 'The page you were looking for is not here.', 'Error 404'],
   ...protocols.map((p) => [`integrations-${p.id}`, p.name, p.summary, 'Integration']),
 ];
