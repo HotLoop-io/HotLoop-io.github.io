@@ -213,11 +213,12 @@ const notDone = [
       </div>
       <p class="prose muted after">
         Flow is deliberately not identical. Node-RED hands the first recipient on a wire the original message and
-        only clones for the rest, so two branches that each believe they own their message can quietly corrupt each
-        other. Every recipient in Flow gets its own copy. That costs 1.4 µs per hop on the author's machine, and a
-        shared path for large binary payloads takes a 1 MB payload from 217 µs down to 341 ns, which is exactly
-        where the copying would have hurt. Every deliberate difference is written down in the compatibility matrix
-        rather than left as a surprise.
+        only clones for the rest, so two branches that each think they own their message can quietly corrupt each
+        other, and which one breaks depends on the order you wired them. Every recipient in Flow gets its own copy.
+        A small message costs 411 to 453 ns to copy. A 1 MiB binary payload would cost 128 to 156 µs per recipient,
+        so those travel shared and immutable instead, at 250 to 279 ns, which is exactly where copying would have
+        hurt. Every deliberate difference is written down in the compatibility matrix, so none of them is a
+        surprise on a live line.
       </p>
     </div>
   </section>
