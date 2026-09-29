@@ -42,10 +42,11 @@ const fmt = (d: Date) =>
         <span class="chip ok">Gateway {gwOut.data.version} is out</span>
         <h1>Automation loops for the real world.</h1>
         <p class="lede">
-          Most home automation is a toy, and most industrial automation costs a fortune and needs a team to
-          configure. HotLoop closes the loop between what a sensor says and what a machine does: one codebase
-          shipped as four products, from a Pi on a shelf to a whole site, and Flow beside them. None of it
-          changes what it can do based on who you are.
+          Home automation is a toy right up until the day it matters. Industrial automation works, costs a fortune,
+          and comes with a guy who has to drive out to change a setpoint. HotLoop is the thing in the middle that
+          should have existed ten years ago: it reads real equipment, keeps the history, raises the alarm and moves
+          the machine, from a Pi on a shelf to a whole plant. It's free for you, and free for your business through
+          EmberNET.
         </p>
         <div class="cluster">
           <a class="btn primary" href="/gateway/">
@@ -62,15 +63,15 @@ const fmt = (d: Date) =>
     <div class="wrap-wide stats">
       <div class="stat">
         <div class="n mono">7</div>
-        <p>Protocols the Gateway speaks natively. There are no placeholder drivers.</p>
+        <p>Protocols the Gateway speaks natively. No placeholder drivers, and a table that admits which ones have never met a real PLC.</p>
       </div>
       <div class="stat">
         <div class="n mono">{nodes.length}</div>
-        <p>Node types in Flow, each labeled by how closely it matches Node-RED.</p>
+        <p>Node types in Flow. Each one says how close it is to Node-RED, and the build fails if one lies about it.</p>
       </div>
       <div class="stat">
         <div class="n mono">25.1<small>MB</small></div>
-        <p>The whole Flow image, against 717 for Node-RED. One box, one run, and the caveats are on <a href="/flow/#numbers">the Flow page</a>.</p>
+        <p>The whole Flow image. Node-RED's is 717. The caveats are on <a href="/flow/#numbers">the Flow page</a>, because a benchmark without caveats is marketing in a lab coat.</p>
       </div>
     </div>
   </section>
@@ -81,31 +82,34 @@ const fmt = (d: Date) =>
         <span class="label">The loop</span>
         <h2>Sense, decide, act, and around again.</h2>
         <p class="lede">
-          That loop is the whole idea. It is the difference between a rule you set once and hope still works,
-          and something you can trust to run while you are not watching it.
+          That's the whole product. A rule you set once and pray over is not a loop. A loop is something you can
+          walk away from, because it tells you the truth when it can't see and it refuses to do something stupid
+          when somebody tells it to.
         </p>
       </div>
       <div class="grid grid-3">
         <article class="card reveal">
           <h3>Sense</h3>
           <p>
-            Poll real equipment over real protocols, and keep the quality of every reading, not just the value.
-            A failed read is bad quality, never a zero, and a dead sensor does not trip every low alarm.
+            Poll real equipment over real protocols, and keep the quality of every reading, not just the number. A
+            failed read is bad, never zero, so a dead sensor doesn't trip every low alarm on the unit and send the
+            night shift chasing a tank that's fine.
           </p>
         </article>
         <article class="card reveal">
           <h3>Decide</h3>
           <p>
-            Alarms follow ISA-18.2, including the state most homegrown systems miss, an alarm that cleared on its
-            own before anybody saw it. Automation rules are compiled when you save them, so a broken rule is
-            caught in the editor and not at 3am halfway through a sequence.
+            ISA-18.2 alarms, including the one homegrown systems forget: the alarm that cleared on its own before
+            anybody saw it. It's still on the list at shift change. Rules compile when you save them, so a typo dies
+            in the editor, not at 3am halfway through a batch.
           </p>
         </article>
         <article class="card reveal">
           <h3>Act</h3>
           <p>
-            Every write, from the UI, the API, an automation, or an agent, crosses one gate that cannot be routed
-            around. Out of range is rejected and never clamped, and every refusal is audited.
+            Every write, from a person, a rule or an agent, crosses one gate that nothing routes around. Out of range
+            is refused, not clamped, and the refusal gets written down. Want to watch it say no?
+            {' '}<a href="/gateway/#the-gate">Go try to break it</a>.
           </p>
         </article>
       </div>
@@ -116,42 +120,42 @@ const fmt = (d: Date) =>
     <div class="wrap">
       <div class="section-head">
         <span class="label">The products</span>
-        <h2>The lineup, and Flow beside it.</h2>
+        <h2>Four products from one codebase, and Flow beside them.</h2>
         <p class="lede">
-          The Gateway is the top of a lineup built from one codebase and released from one tag. Flow is a
-          separate product with its own license, for people who think in wires between nodes.
+          Every one of the four speaks every protocol, so you pick the one that fits the box, not the one that
+          happens to have your driver. Flow is its own thing with its own license, for people who think in wires.
         </p>
       </div>
       <div class="grid grid-2">
         <article class="card product reveal">
           <div class="cluster head"><h3>HotLoop Gateway</h3><span class="chip ok">Version {gwOut.data.version} is out</span></div>
           <p class="what">
-            An industrial automation gateway. It polls equipment, keeps the history, raises alarms, runs
-            automations against them, and exposes the whole plant to agents over MCP. One static Go binary that
-            runs as a non-root user with every capability dropped.
+            The site brain, and the one you can install today. It polls the equipment, keeps the history, raises the
+            alarms, runs the rules and lets agents read the plant over MCP. One static Go binary, non-root, every
+            capability dropped.
           </p>
           <ul>
-            <li>Seven native protocols, and a verification table that says which ones have never touched a real PLC.</li>
-            <li>A historian on TimescaleDB, with a native-partitioning fallback when the extension is missing.</li>
-            <li>An MCP server with 16 tools and 4 resources, over HTTP and stdio.</li>
+            <li>Seven native protocols, and a verification table that admits which ones have never touched a real PLC.</li>
+            <li>Entities on an ISA-95 tree, so the plant has names instead of register addresses.</li>
+            <li>One write gate for people, rules and agents, and a row in the audit for every refusal.</li>
           </ul>
-          <p class="license">Source-available under the HotLoop Community License. Free for individual use, and free for business use through EmberNET.</p>
+          <p class="license">Source-available under the HotLoop Community License. Free for individuals, and free for business through EmberNET.</p>
           <a class="btn primary" href="/gateway/">About the Gateway</a>
         </article>
 
         <article class="card product reveal">
           <div class="cluster head"><h3>HotLoop Flow</h3><span class="chip ok">Version {fl.data.version} is out</span></div>
           <p class="what">
-            A flow engine in one static Go binary, and Node-RED's idea with a different runtime. Flow files stay
-            Node-RED v1 compatible, and every inbox is bounded, so a fast sensor cannot quietly inflate a pod
-            until the kubelet kills it.
+            Node-RED's idea on a runtime that doesn't fall over. Your <code>flows.json</code> runs as it is, every node
+            gets its own goroutine, and every inbox has a ceiling, so a chatty sensor can't balloon the pod until the
+            kubelet shoots it.
           </p>
           <ul>
-            <li>{nodes.length} node types, each labeled full, partial, divergent, or Flow-only, with the difference spelled out.</li>
-            <li>Refuses to start without authentication, and ships its <code>exec</code> node disabled.</li>
-            <li>Bounded queues, a goroutine per node, and a race detector that comes back clean on every package.</li>
+            <li>{nodes.length} node types, each labeled full, partial, divergent or Flow-only, with the difference written down.</li>
+            <li>Won't start without authentication, and ships <code>exec</code> disabled. Node-RED ships with the door open.</li>
+            <li>Bounded queues, and a race detector that comes back clean on every package.</li>
           </ul>
-          <p class="license">Apache-2.0, free for everyone, businesses included.</p>
+          <p class="license">Apache-2.0. Free for everyone, businesses included, nobody to ask.</p>
           <a class="btn primary" href="/flow/">About Flow</a>
         </article>
       </div>
@@ -175,7 +179,8 @@ const fmt = (d: Date) =>
         <span class="label">What we refuse to fake</span>
         <h2>Every integration says how far it has actually been proven.</h2>
         <p class="lede">
-          Most integration pages list logos. Ours has four tiers, and one of them is empty on purpose.
+          Most integration pages are a wall of logos. Ours has four tiers, and the top one is empty on purpose,
+          because nothing has earned it yet. You'd rather know that now than at commissioning.
         </p>
       </div>
       <div class="grid grid-4 tiers">
@@ -197,7 +202,7 @@ const fmt = (d: Date) =>
     <div class="wrap">
       <div class="section-head">
         <span class="label">Latest</span>
-        <h2>What changed most recently.</h2>
+        <h2>What changed last, and whether you can download it.</h2>
       </div>
       <div class="grid grid-2">
         <a class="card release reveal" href="/releases/flow/">
@@ -225,10 +230,10 @@ const fmt = (d: Date) =>
           <span class="label">Licensing</span>
           <h2>Two licenses, no keys.</h2>
           <p class="lede">
-            Flow is Apache-2.0, so anyone can run it, businesses included, with no agreement. IoT, Edge, the Gateway
-            and the Edge Relay are free for individuals, and a business signs up for
-            {' '}<a href="https://embernet.ai">EmberNET</a> for free and uses them there for free. Want support, SLAs
-            and warranties, or the rollout done for you? Our Official Systems Integrators are
+            Flow is Apache-2.0: run it, fork it, sell it, nobody to ask. IoT, Edge, the Gateway and the Edge Relay
+            are free for individuals, and a business signs up for <a href="https://embernet.ai">EmberNET</a>, free,
+            and runs them there, free. There's no key to type in and nothing waiting behind a paywall. Want somebody
+            else to own the rollout, SLAs and warranty included? That's our Official Systems Integrators,
             {' '}<a href="https://fireballz.ai">Fireball Industries</a>.
           </p>
         </div>

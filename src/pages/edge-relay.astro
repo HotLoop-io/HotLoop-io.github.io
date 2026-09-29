@@ -38,9 +38,10 @@ const v = latest.data.version;
       <div class="cluster"><span class="label">HotLoop Edge Relay</span><span class="chip ok">{v} is out</span></div>
       <h1>Poll, forward, survive. Nothing else.</h1>
       <p class="lede">
-        A headless edge node for a Pi or a small industrial PC. It polls equipment with the same drivers the
-        Gateway uses, forwards every reading over Sparkplug B, and buffers to disk when the uplink goes away. No
-        database, no UI, no login, and no way to write to a machine, on purpose.
+        A headless edge node for a Pi or a small industrial PC. It polls equipment with the same drivers the Gateway
+        uses, forwards every reading over Sparkplug B, and buffers to disk when the uplink goes away. No database, no
+        UI, no login, and no way to write to a machine. That's the feature: a box with nothing to click can't be
+        clicked wrong.
       </p>
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
@@ -66,19 +67,19 @@ const v = latest.data.version;
         <span class="label">What it is not</span>
         <h2>Not a smaller Gateway with the options turned off.</h2>
         <p class="lede">
-          It is a different binary. It never links the database, the web UI, the automation engine, the entity
-          registry or MCP, and a test asks the compiler what it actually links and fails the build if one of them
-          creeps in. There is no mode switch buried in the Gateway, because a switch is one bad environment
-          variable away from turning things back on.
+          It's a different binary. It never links the database, the web UI, the automation engine, the entity
+          registry or MCP, and a test asks the compiler what actually got linked and fails the build if any of them
+          sneaks in. There's no "relay mode" buried in the Gateway, because a mode is one bad environment variable
+          away from a web server listening on a box nobody's watching.
         </p>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>Every driver</h3><p>OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect and HTTP, the same code the Gateway polls with, down to the reconnect and back-off.</p></article>
-        <article class="card reveal"><h3>Store-and-forward</h3><p>Births, sequence numbers and deaths the way Sparkplug B says. When the link drops it queues to a single file on disk, then replays in order, flagged historical, when it comes back.</p></article>
-        <article class="card reveal"><h3>Configured by a file</h3><p>Devices and tags come from one JSON file, read once at start. An edge box has one operator who can edit a file and restart a service, and this doesn't invent a live-reload to avoid it.</p></article>
-        <article class="card reveal"><h3>No write path</h3><p>It reads and forwards. It can't take a write, serve a screen or answer an agent, because all three need a signed-in person to put the action against, and it has no users at all.</p></article>
-        <article class="card reveal"><h3>Managed from the Gateway</h3><p>The Gateway's fleet view tracks each relay from its births and deaths, and sends a rebirth, a restart, or a new device file, all over the connection the relay already dialed out on.</p></article>
-        <article class="card reveal"><h3>Honest about what's proven</h3><p>Run end to end against a real Mosquitto broker, with an HTTP endpoint standing in for the plant. The other drivers are the Gateway's own tested code, but this binary hasn't polled real PLC hardware or met a certified Sparkplug host yet, and until it has, we say so.</p></article>
+        <article class="card reveal"><h3>Every driver</h3><p>OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect and HTTP. The same code the Gateway polls with, down to the reconnect and back-off, so a bug fixed there is fixed here.</p></article>
+        <article class="card reveal"><h3>Store-and-forward</h3><p>Births, sequence numbers and deaths the way Sparkplug B says. When the link drops it queues to one file on disk and replays in order, flagged historical, when it's back. The historian upstream gets the gap filled instead of a hole.</p></article>
+        <article class="card reveal"><h3>Configured by a file</h3><p>Devices and tags come from one JSON file, read at start. An edge box has one person who can edit a file and restart a service, and that's simpler and harder to break than any live-reload we could bolt on.</p></article>
+        <article class="card reveal"><h3>No write path</h3><p>It reads and forwards. It can't take a write, serve a screen or answer an agent, because every one of those needs a signed-in person to pin the action on, and it has no users at all.</p></article>
+        <article class="card reveal"><h3>Managed from the Gateway</h3><p>The Gateway's fleet view tracks every relay from its births and deaths, and sends a rebirth, a restart or a new device file over the connection the relay already dialed out on. Commands need no way in to the edge box, and nobody drives out to it.</p></article>
+        <article class="card reveal"><h3>Honest about what's proven</h3><p>Run end to end against a real Mosquitto broker, with an HTTP endpoint standing in for the plant. It hasn't polled real PLC hardware or met a certified Sparkplug host yet. Until it has, this card stays here.</p></article>
       </div>
     </div>
   </section>
@@ -89,8 +90,9 @@ const v = latest.data.version;
         <span class="label">Install</span>
         <h2>Helm on a cluster, Quadlet on a box.</h2>
         <p class="lede">
-          Two supported ways, both containers, both starting on boot and restarting on failure. A bare
-          {' '}<code>podman run</code> from a shell that dies with your session is not one of them.
+          Two supported ways, both containers, both start on boot and come back when they die. A bare
+          {' '}<code>podman run</code> from an SSH session is not one of them, because it dies the moment you close
+          the laptop, and you'll find out from the historian a week later.
         </p>
       </div>
       <div class="grid grid-2 split">
@@ -129,8 +131,8 @@ sudo systemctl daemon-reload
 sudo systemctl start edge-relay.service
 curl localhost:8081/status</code></pre>
           <p class="muted">
-            Broker takes anonymous connections? Skip the secret and delete the unit's <code>Secret=</code> line. On
-            an isolated OT network that's a real setup, not a mistake.
+            Broker takes anonymous connections? Skip the secret and delete the unit's <code>Secret=</code> line. On an
+            isolated OT network that's a legit setup, not a mistake.
           </p>
         </div>
       </div>

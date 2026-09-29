@@ -1,0 +1,181 @@
+---
+// Two trends of the same sensor, and a button that pulls its wire. The left one
+// does what most homegrown systems do with a failed read: calls it zero. The
+// right one does what the Gateway does: marks it bad, keeps the last good value
+// visible as exactly that, and holds the alarm where it was.
+//
+// With JavaScript off it is a static picture of the moment after the wire comes
+// out, so the point still lands.
+const W = 300, H = 120, LO = 40;
+const y = (v: number) => H - 8 - (v / 80) * (H - 16);
+const pts = (vals: number[]) => vals.map((v, i) => `${(i / 59) * W},${y(v).toFixed(1)}`).join(' ');
+const seed = Array.from({ length: 44 }, (_, i) => 61 + Math.sin(i / 4) * 1.6);
+const naive = [...seed, ...Array(16).fill(0)];
+const good = seed;
+---
+
+<section class="bnz card" data-bnz aria-labelledby="bnz-title">
+  <div class="top">
+    <h3 id="bnz-title">Pull the wire on TT-101.</h3>
+    <button type="button" class="btn primary" data-pull hidden>Pull the wire</button>
+  </div>
+  <p class="muted">
+    Same sensor, same moment, two systems. Low alarm at {LO} degC. Pull the wire and watch which one wakes somebody
+    up for nothing.
+  </p>
+
+  <div class="pair">
+    <figure class="side" data-side="naive">
+      <figcaption>Calls a failed read zero</figcaption>
+      <svg viewBox={`0 0 ${W} ${H}`} class="trend" role="img" aria-label="Trend where a failed read is recorded as zero">
+        <line class="lim" x1="0" x2={W} y1={y(LO)} y2={y(LO)}></line>
+        <text class="lim-t" x={W - 4} y={y(LO) - 4} text-anchor="end">LO {LO}</text>
+        <polyline class="line" data-line points={pts(naive)}></polyline>
+      </svg>
+      <div class="read"><span class="pv mono" data-pv>0.0</span><span class="q mono" data-q>quality: good</span></div>
+      <p class="state danger" data-state role="status">LOW TEMPERATURE. Paging on-call.</p>
+    </figure>
+
+    <figure class="side" data-side="hotloop">
+      <figcaption>HotLoop Gateway</figcaption>
+      <svg viewBox={`0 0 ${W} ${H}`} class="trend" role="img" aria-label="Trend where a failed read is marked bad quality">
+        <defs>
+          <pattern id="bnz-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="6" class="hatch-l"></line>
+          </pattern>
+        </defs>
+        <rect class="bad-zone" data-zone x={(43 / 59) * W} y="0" width={W - (43 / 59) * W} height={H} fill="url(#bnz-hatch)"></rect>
+        <line class="lim" x1="0" x2={W} y1={y(LO)} y2={y(LO)}></line>
+        <text class="lim-t" x={W - 4} y={y(LO) - 4} text-anchor="end">LO {LO}</text>
+        <polyline class="line" data-line points={pts(good)}></polyline>
+      </svg>
+      <div class="read"><span class="pv mono stale" data-pv>61.3</span><span class="q mono bad" data-q>quality: bad</span></div>
+      <p class="state held" data-state role="status">Normal, held. The reading is bad, so the alarm isn't evaluated on it.</p>
+    </figure>
+  </div>
+
+  <p class="verdict" data-verdict>
+    The left one just paged somebody at 3am for a process event that never happened. The right one told the truth:
+    nobody knows the temperature right now, and the problem is the instrument, not the tank.
+  </p>
+  <p class="foot">A simulation in your browser. The quality rule and the held alarm are the Gateway's.</p>
+</section>
+
+<style>
+  .bnz { display: grid; gap: var(--hl-s4); padding: var(--hl-s5) var(--hl-s6); }
+  .top { display: flex; flex-wrap: wrap; gap: var(--hl-s3); justify-content: space-between; align-items: center; }
+  .top h3 { font-size: var(--hl-fs-lg); margin: 0; }
+  .pair { display: grid; gap: var(--hl-s4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+  .side { margin: 0; display: grid; gap: var(--hl-s2); padding: var(--hl-s4); border-radius: var(--hl-r-sm); background: var(--hl-sunken); }
+  figcaption { font-size: var(--hl-fs-xs); font-weight: 700; color: var(--hl-ink-soft); letter-spacing: var(--hl-ls-label); text-transform: uppercase; }
+  .trend { width: 100%; height: auto; display: block; }
+  .line { fill: none; stroke: var(--hl-ink); stroke-width: 2; stroke-linejoin: round; }
+  .lim { stroke: var(--hl-danger); stroke-width: 1; stroke-dasharray: 4 4; opacity: 0.7; }
+  .lim-t { font-size: 10px; fill: var(--hl-danger-text); font-family: var(--hl-font-mono); }
+  .hatch-l { stroke: var(--hl-ink-faint); stroke-width: 1.5; opacity: 0.55; }
+  .read { display: flex; justify-content: space-between; align-items: baseline; gap: var(--hl-s3); }
+  .pv { font-size: var(--hl-fs-xl); font-weight: 800; font-variant-numeric: tabular-nums; }
+  /* Greyed, the way the Gateway's own screens draw a last good value. */
+  .pv.stale { color: var(--hl-ink-faint); }
+  .q { font-size: var(--hl-fs-xs); color: var(--hl-ok-text); }
+  .q.bad { color: var(--hl-warn-text); font-weight: 700; }
+  .state { font-size: var(--hl-fs-sm); font-weight: 600; padding: 0.55em 0.8em; border-radius: var(--hl-r-sm); border: 1px solid var(--hl-border); }
+  .state.ok { color: var(--hl-ok-text); background: var(--hl-ok-tint); border-color: color-mix(in srgb, var(--hl-ok) 35%, transparent); }
+  .state.danger { color: var(--hl-danger-text); background: var(--hl-danger-tint); border-color: color-mix(in srgb, var(--hl-danger) 35%, transparent); }
+  .state.held { color: var(--hl-warn-text); background: var(--hl-warn-tint); border-color: color-mix(in srgb, var(--hl-warn) 40%, transparent); }
+  .verdict { font-weight: 600; }
+  .verdict[hidden] { display: none; }
+  .foot { font-size: var(--hl-fs-xs); color: var(--hl-ink-soft); border-top: 1px solid var(--hl-border); padding-top: var(--hl-s3); }
+</style>
+
+<script>
+  const W = 300, H = 120, N = 60;
+  const y = (v: number) => H - 8 - (v / 80) * (H - 16);
+
+  function bind(root: HTMLElement) {
+    if (root.dataset.bound) return;
+    root.dataset.bound = '1';
+
+    const btn = root.querySelector<HTMLButtonElement>('[data-pull]')!;
+    const verdict = root.querySelector<HTMLElement>('[data-verdict]')!;
+    const side = (s: string) => {
+      const el = root.querySelector<HTMLElement>(`[data-side="${s}"]`)!;
+      return {
+        line: el.querySelector<SVGPolylineElement>('[data-line]')!,
+        pv: el.querySelector<HTMLElement>('[data-pv]')!,
+        q: el.querySelector<HTMLElement>('[data-q]')!,
+        state: el.querySelector<HTMLElement>('[data-state]')!,
+        zone: el.querySelector<SVGRectElement>('[data-zone]'),
+      };
+    };
+    const naive = side('naive');
+    const hl = side('hotloop');
+
+    // null in the HotLoop series is a bad reading: no point, a gap in the line.
+    let truth = 61.2;
+    let t = 0;
+    let pulled = false;
+    let pulledAt = -1;
+    const a: number[] = [];
+    const b: (number | null)[] = [];
+    let lastGood = truth;
+
+    function tick() {
+      t++;
+      truth += (61 - truth) * 0.05 + (Math.random() - 0.5) * 0.9;
+      a.push(pulled ? 0 : truth);
+      b.push(pulled ? null : truth);
+      if (!pulled) lastGood = truth;
+      if (a.length > N) { a.shift(); b.shift(); }
+      render();
+    }
+
+    function render() {
+      const x = (i: number) => ((i + (N - a.length)) / (N - 1)) * W;
+      naive.line.setAttribute('points', a.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' '));
+      const good = b.map((v, i) => (v === null ? null : `${x(i).toFixed(1)},${y(v).toFixed(1)}`)).filter(Boolean);
+      hl.line.setAttribute('points', good.join(' '));
+
+      const firstBad = b.findIndex((v) => v === null);
+      if (hl.zone) {
+        if (firstBad < 0) hl.zone.setAttribute('width', '0');
+        else { hl.zone.setAttribute('x', x(firstBad).toFixed(1)); hl.zone.setAttribute('width', (W - x(firstBad)).toFixed(1)); }
+      }
+
+      const nowA = a[a.length - 1];
+      naive.pv.textContent = nowA.toFixed(1);
+      naive.q.textContent = 'quality: good';
+      const low = nowA < 40;
+      naive.state.className = 'state ' + (low ? 'danger' : 'ok');
+      naive.state.textContent = low ? 'LOW TEMPERATURE. Paging on-call.' : 'Normal.';
+
+      hl.pv.textContent = lastGood.toFixed(1);
+      hl.pv.classList.toggle('stale', pulled);
+      hl.q.textContent = pulled ? 'quality: bad' : 'quality: good';
+      hl.q.classList.toggle('bad', pulled);
+      hl.state.className = 'state ' + (pulled ? 'held' : 'ok');
+      hl.state.textContent = pulled ? 'Normal, held. The reading is bad, so the alarm isn\'t evaluated on it.' : 'Normal.';
+      verdict.hidden = !(pulled && t - pulledAt > 4);
+    }
+
+    // Start from a full, healthy trend so there is something to lose.
+    for (let i = 0; i < N; i++) tick();
+    btn.hidden = false;
+    btn.addEventListener('click', () => {
+      pulled = !pulled;
+      pulledAt = t;
+      btn.textContent = pulled ? 'Plug it back in' : 'Pull the wire';
+      render();
+    });
+
+    const timer = window.setInterval(() => {
+      if (!root.isConnected) { window.clearInterval(timer); return; }
+      if (document.hidden) return;
+      tick();
+    }, 250);
+  }
+
+  const init = () => document.querySelectorAll<HTMLElement>('[data-bnz]').forEach(bind);
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>

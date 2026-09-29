@@ -34,18 +34,20 @@ const p = product('iot');
       <h1>The automation base for the plant floor.</h1>
       <p class="lede">
         Entities, automations, helpers, scripts, the logbook, dashboards, notifications and MCP, on MQTT with
-        discovery, with every industrial protocol driver HotLoop has. Written natively in Go. One static binary,
-        a non-root user, every capability dropped.
+        discovery, plus every industrial driver HotLoop has. Written from scratch in Go, one static binary. It's the
+        box for your garage, your greenhouse, your small shop, and the used PLC you bought off eBay because you
+        couldn't help yourself.
       </p>
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>HotLoop IoT is not out yet. It arrives in an upcoming release.</strong>
+          <strong>HotLoop IoT is not out yet. It comes in an upcoming release.</strong>
           <p>
-            It ships once MQTT discovery lands, so the first version finds your Shelly, ESPHome, Tasmota and
-            Zigbee2MQTT devices by itself instead of making you type in topics. There is no image or chart to install
-            today, and no date, because a date we miss is worse than none. Most of what it will carry already runs
-            inside the <a href="/gateway/">Gateway</a>, which you can install now.
+            It ships when MQTT discovery works, so its first version finds your Shelly, ESPHome, Tasmota and
+            Zigbee2MQTT gear by itself instead of making you type topics. An automation base that can't find a smart
+            plug on its own network is a joke, and we're not shipping the joke. No image, no chart, and no date,
+            because a date we miss is worse than none. Most of what it will carry already runs in the
+            {' '}<a href="/gateway/">Gateway</a>, which you can install today.
           </p>
         </div>
       </div>
@@ -62,14 +64,15 @@ const p = product('iot');
         <span class="label">Why it exists</span>
         <h2>Everything is an entity, and everything else is built on that.</h2>
         <p class="muted">
-          A tag is what a driver talks about: a register, a NodeId, a DB offset. An entity is what people and rules
-          talk about: the zone 1 temperature, the conveyor run switch. IoT puts every signal in the plant behind an
-          entity whose id never changes, lets rules react to them, and gives the people on the floor values of their
-          own, like today's batch target or which shift is on.
+          A tag is what a driver talks about: a register, a NodeId, a DB offset. An entity is what people talk
+          about: the zone 1 temperature, the conveyor run switch. IoT puts every signal behind an entity whose id
+          never changes. Somebody deletes the tag and re-imports it during a PLC change? The entity comes back with
+          its id, so the rule that says <code>sensor.oven_temperature</code> keeps working instead of quietly dying.
         </p>
         <p class="muted">
-          Every line of it is ours, written in Go, for OT. Nothing embedded, bridged or forked. Every command goes
-          through the one write gate, and a failed read is bad quality, never a zero.
+          Every line is ours, written in Go, for OT. Nothing embedded, bridged or forked, so when something breaks at
+          3am there's one codebase to read and nobody else's bug to wait on. Every command goes through the one write
+          gate, and a failed read is bad quality, never a zero.
         </p>
       </div>
       <div class="stack">
@@ -78,12 +81,12 @@ const p = product('iot');
         <p class="muted">
           <a href="/edge/">Edge</a> is IoT plus the machine layer. The <a href="/gateway/">Gateway</a> is everything
           plus fleet, multi-site and reports. The <a href="/edge-relay/">Edge Relay</a> is the headless one. One
-          codebase, one tag, four images, released together.
+          codebase, one tag, four images, released together, so a fix in IoT is a fix in all of them the same day.
         </p>
         <p class="muted">
-          Its database is <strong>{p.databases}</strong>, picked by a setting, in the same image. SQLite for a Pi
-          on a shelf, PostgreSQL when it grows up, and moving up to Edge or the Gateway is designed to keep your data
-          and your config.
+          Its database is <strong>{p.databases}</strong>, picked by a setting, in the same image. SQLite for the Pi
+          on the shelf, PostgreSQL when it grows up. Moving up to Edge or the Gateway is designed to keep your data
+          and your config, so starting small doesn't paint you into a corner.
         </p>
       </div>
     </div>
@@ -95,9 +98,10 @@ const p = product('iot');
         <span class="label">What is in it</span>
         <h2>Each piece says where it actually stands.</h2>
         <p class="lede">
-          "{STATUS.released.label}" means it ships in the published Gateway today. "{STATUS.main.label}" means merged
-          and landing in the next release. "{STATUS.building.label}" means somebody is writing it right now.
-          "{STATUS.planned.label}" means exactly that.
+          "{STATUS.released.label}" means it ships in the published Gateway today, and you can run it tonight.
+          "{STATUS.main.label}" means merged, tested and landing in the next release. "{STATUS.building.label}" means
+          somebody is writing it right now. "{STATUS.planned.label}" means exactly that, and no amount of squinting
+          turns it into a feature.
         </p>
       </div>
       <FeatureList features={IOT_FEATURES} />
@@ -112,8 +116,8 @@ const p = product('iot');
           <h2>Free, with no license key, when it ships.</h2>
           <p class="muted">
             IoT is under the HotLoop Community License, like the Gateway, Edge and the Edge Relay. Individuals use it
-            free. Businesses sign up for <a href="https://embernet.ai">EmberNET</a> free and use it there free. There
-            are no tiers to unlock and no key to type in.
+            free. Businesses sign up for <a href="https://embernet.ai">EmberNET</a> free and use it there free. No
+            tiers, no key, and no email six months in asking you to upgrade.
           </p>
         </div>
         <a class="btn primary" href="/license/">Read the terms</a>
