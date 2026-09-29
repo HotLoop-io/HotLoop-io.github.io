@@ -118,7 +118,7 @@ export const IOT_FEATURES: Feature[] = [
   { name: 'MQTT and an embedded broker', status: 'released', note: 'Plain topics with JSON paths, Sparkplug B, and a broker in the same process, so one box can be the whole install.' },
   { name: 'MQTT discovery', status: 'planned', note: 'Shelly, ESPHome, Tasmota and Zigbee2MQTT devices show up by themselves. IoT doesn\'t ship until this works, because an automation base that can\'t find a smart plug is a joke.' },
   { name: 'Every protocol driver', status: 'released', note: 'OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect and HTTP. Protocols don\'t split the products, so nobody runs the Gateway just to reach one PLC.' },
-  { name: 'UniFi', status: 'building', note: 'The read-only Network driver is on main: devices, ports, PoE and WAN failover as tags. Its first real read found a backup link that had been dead for two days. Screens and writes are next.' },
+  { name: 'UniFi', status: 'building', note: 'The read-only Network driver is on main: devices, ports, PoE and WAN failover as tags. It reads WAN health the way the console's own checks do, so a backup link that's been dead for two days reads dead. Screens and writes are next.' },
   { name: 'Backups and restore', status: 'released', note: 'Pure Go over the database connection, in IoT, Edge and the Gateway. It\'s also how you move between them, so it has to work every time.' },
 ];
 

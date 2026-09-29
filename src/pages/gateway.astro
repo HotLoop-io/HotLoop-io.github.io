@@ -313,8 +313,9 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
         <article class="card reveal"><h3>The automation language</h3><p>Condition, wait and stop steps inside a sequence, and <code>forSec</code> on a state trigger. "The pump has been on for five minutes" is one trigger now, not a timer hack.</p></article>
       </div>
       <p class="prose muted after">
-        Also on main: the read-only half of a native <a href="/unifi/">UniFi integration</a>. Its first real read
-        found a 5G backup link that had been dead for two days while the console's own summary still called it up.
+        Also on main: the read-only half of a native <a href="/unifi/">UniFi integration</a>. Its first real
+        read called a dead 5G backup link up, because it trusted the same stale field the console did. It reads the
+        console's health checks now, so a backup that's been dead for two days reads dead.
       </p>
     </div>
   </section>
