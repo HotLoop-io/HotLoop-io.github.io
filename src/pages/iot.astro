@@ -8,9 +8,9 @@ const p = product('iot');
 ---
 
 <Base
-  title="HotLoop IoT: Home Assistant, rewritten in Go for OT"
-  description="HotLoop IoT is the Home Assistant feature set rewritten natively in Go for the plant floor. It arrives in an upcoming release, once MQTT discovery lands."
-  ogAlt="HotLoop IoT, Home Assistant rewritten in Go for OT."
+  title="HotLoop IoT: the automation base, built in Go for OT"
+  description="HotLoop IoT is the automation base for the plant floor, written natively in Go. It arrives in an upcoming release, once MQTT discovery lands."
+  ogAlt="HotLoop IoT, the automation base, built in Go for OT."
 >
   <JsonLd
     slot="head"
@@ -20,7 +20,7 @@ const p = product('iot');
       name: p.name,
       url: 'https://hotloop.io/iot/',
       description:
-        'The Home Assistant feature set rewritten natively in Go for operational technology: entities, automations, helpers, alarms, notifications, MCP, and MQTT with discovery, plus industrial protocol drivers.',
+        'An automation base for operational technology, written natively in Go: entities, automations, helpers, scripts, the logbook, dashboards, alarms, notifications, MCP, and MQTT with discovery, plus industrial protocol drivers.',
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Linux',
       license: 'https://hotloop.io/license/',
@@ -31,12 +31,11 @@ const p = product('iot');
   <section class="page-hero">
     <div class="wrap stack">
       <div class="cluster"><span class="label">HotLoop IoT</span><span class="chip warn">Upcoming release</span></div>
-      <h1>Home Assistant, rewritten in Go for the plant floor.</h1>
+      <h1>The automation base for the plant floor.</h1>
       <p class="lede">
-        Everything Home Assistant does that a factory actually wants, rebuilt natively: entities, automations,
-        helpers, scripts, the logbook, dashboards, notifications and MCP, on MQTT with discovery, with every
-        industrial protocol driver HotLoop has. One static binary. No Python, no add-on store, no privileged
-        container sniffing the LAN for light bulbs.
+        Entities, automations, helpers, scripts, the logbook, dashboards, notifications and MCP, on MQTT with
+        discovery, with every industrial protocol driver HotLoop has. Written natively in Go. One static binary,
+        a non-root user, every capability dropped.
       </p>
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
@@ -61,16 +60,16 @@ const p = product('iot');
     <div class="wrap grid grid-2 split">
       <div class="stack">
         <span class="label">Why it exists</span>
-        <h2>We do not run Home Assistant. We rebuilt what it does.</h2>
+        <h2>Everything is an entity, and everything else is built on that.</h2>
         <p class="muted">
-          Home Assistant got the model right: everything is an entity, rules react to entities, and the people in
-          the building own a few values of their own. It was also built for somebody's living room, in Python, with
-          thousands of integrations for gadgets no plant has ever owned. Pointing that at a PLC is how you end
-          up with a light switch UI on a press line.
+          A tag is what a driver talks about: a register, a NodeId, a DB offset. An entity is what people and rules
+          talk about: the zone 1 temperature, the conveyor run switch. IoT puts every signal in the plant behind an
+          entity whose id never changes, lets rules react to them, and gives the people on the floor values of their
+          own, like today's batch target or which shift is on.
         </p>
         <p class="muted">
-          So IoT is the model, rebuilt in Go, for OT. We don't embed Home Assistant, bridge to it, or fork it. Every
-          command still goes through the one write gate, and a failed read is bad quality, never a zero.
+          Every line of it is ours, written in Go, for OT. Nothing embedded, bridged or forked. Every command goes
+          through the one write gate, and a failed read is bad quality, never a zero.
         </p>
       </div>
       <div class="stack">
