@@ -114,11 +114,11 @@ export const IOT_FEATURES: Feature[] = [
   { name: 'Dashboards', status: 'planned', note: 'A card builder, a dashboard per role or screen, and the same layout on a panel PC, a laptop and a phone. This is where it has to look better from across the room.' },
   { name: 'ISA-18.2 alarms', status: 'released', note: 'rtn-unack included, so a trip that fixed itself is still there at shift change. Shelving ends, and unshelve brings the alarm back in the state it\'s really in.' },
   { name: 'Notifications', status: 'released', note: 'ntfy, Gotify, Discord, webhooks and email. Press Acknowledge on your phone and the alarm is acknowledged, signed and single use.' },
-  { name: 'MCP', status: 'released', note: 'An agent can read the whole plant and touch only what you armed, through the write gate, with its reason written next to every write.' },
+  { name: 'MCP', status: 'released', note: 'An agent can read the whole plant and touch only what you armed, through the write gate, and never without a stated reason, which goes in the system log next to the write.' },
   { name: 'MQTT and an embedded broker', status: 'released', note: 'Plain topics with JSON paths, Sparkplug B, and a broker in the same process, so one box can be the whole install.' },
   { name: 'MQTT discovery', status: 'planned', note: 'Shelly, ESPHome, Tasmota and Zigbee2MQTT devices show up by themselves. IoT doesn\'t ship until this works, because an automation base that can\'t find a smart plug is a joke.' },
   { name: 'Every protocol driver', status: 'released', note: 'OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect and HTTP. Protocols don\'t split the products, so nobody runs the Gateway just to reach one PLC.' },
-  { name: 'UniFi', status: 'building', note: 'The read-only Network driver is on main: devices, ports, PoE and WAN failover as tags. It reads WAN health the way the console's own checks do, so a backup link that's been dead for two days reads dead. Screens and writes are next.' },
+  { name: 'UniFi', status: 'building', note: 'The read-only Network driver is on main: devices, ports, PoE and WAN failover as tags. It reads WAN health the way the console\'s own checks do, so a backup link that\'s been dead for two days reads dead. Screens and writes are next.' },
   { name: 'Backups and restore', status: 'released', note: 'Pure Go over the database connection, in IoT, Edge and the Gateway. It\'s also how you move between them, so it has to work every time.' },
 ];
 
