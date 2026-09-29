@@ -48,12 +48,17 @@ const order: [string, Status, string][] = [
     <div class="wrap">
       <div class="section-head">
         <span class="label">Already paid for itself</span>
-        <h2>Its first real read found a dead backup link.</h2>
+        <h2>It got fooled by a dead backup link, once.</h2>
         <p class="lede">
-          On 2026-09-28 the read-only driver went onto the house Cloud Gateway and an Express 7 for the first time.
-          The 5G backup WAN had been dead for two days, and the console's own summary still called it up. Nobody
-          knew, because nothing had needed the backup yet. That's the whole reason this integration exists: you find
-          out on a Tuesday afternoon, not the night the fiber gets cut.
+          On 2026-09-28 the read-only driver went onto the house Cloud Gateway and an Express 7 for the first time,
+          and it said the 5G backup WAN was up. It wasn't. It had been unplugged for two days. The console's WAN
+          block still said up, with a stale 80% signal, and that's the field HotLoop read. Only the console's own
+          health checks knew the truth, and nothing had needed the backup yet, so nobody else knew either.
+        </p>
+        <p class="lede">
+          So the driver reads the health checks now, a dead backup reads down, and a test holds it to those exact
+          fields. That's the whole reason this integration exists: you find out on a Monday afternoon, not the night
+          the fiber gets cut.
         </p>
       </div>
     </div>
@@ -88,10 +93,10 @@ const order: [string, Status, string][] = [
         </p>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>One login, not forty</h3><p>One session per console, reused by every poll, screen and write, with a budget on how often it logs in. Logging in on every check got our own Cloud Gateway to lock us out, twice. HotLoop waits a lockout out instead of making it longer.</p></article>
+        <article class="card reveal"><h3>One login, not forty</h3><p>One session per console, reused for every read, with a budget on how often it logs in. Logging in on every check got our own Cloud Gateway to lock us out, twice. HotLoop waits a lockout out instead of making it longer.</p></article>
         <article class="card reveal"><h3>A pinned certificate</h3><p>The first connect fails on purpose and shows you the console's key fingerprint. Check it, paste it in. From then on a console with a different key is refused during the handshake, before your password goes anywhere.</p></article>
         <article class="card reveal"><h3>WAN failover</h3><p>Which WAN is carrying traffic, as a tag you can alarm on. Know the plant failed over to the backup link before the data bill tells you.</p></article>
-        <article class="card reveal"><h3>Protected ports, when writes land</h3><p>An uplink, a WAN port, or a port powering another UniFi device won't be cycled or shut from HotLoop, no matter who asks. Worked out from the topology, not typed in by hand, so nobody forgets one.</p></article>
+        <article class="card reveal"><h3>Protected ports, when writes land</h3><p>HotLoop won't cycle an uplink, or the port powering the backup WAN, no matter who asks. Worked out from the topology, not typed in by hand, so nobody forgets one.</p></article>
         <article class="card reveal"><h3>A cooldown on power-cycles</h3><p>Fifteen minutes per port. A rule that cycles a PLC every two minutes is how you cook a power supply, and one that needs more than one cycle has a problem a cycle won't fix.</p></article>
         <article class="card reveal"><h3>What it will never do</h3><p>No VLANs, firewall rules, DHCP, static IPs, SSIDs or firmware. We've watched a switch lose its controller over one static IP change. That's the UniFi app's job. HotLoop does the few things an operator needs at 2am.</p></article>
       </div>
