@@ -4,12 +4,13 @@
 // list is the page's content and renders with JavaScript off. The panel above
 // it is a simulation that lights the list up, and it says so.
 const steps: [string, string, string][] = [
-  ['door', 'The caller may write.', 'A logged-in user needs values.write, and a viewer does not have it. An agent needs the MCP token. Fail this and the API answers 403 before the gate hears a word.'],
+  ['door', 'The caller may write.', 'A logged-in user needs values.write, and a viewer does not have it. An agent needs the MCP token, or it gets a 401. A write straight to a tag that fails this is a 403 before the gate hears a word. (A call through an entity hands this check to the gate instead, so that refusal is audited.)'],
   ['writes', 'Writes are on.', 'safety.allowWrites. It ships off, and it has shipped off since 4.4.0, because a fresh install that can move machinery before anybody decided it should is a lawsuit with a web UI.'],
   ['agents', 'Agent writes are on.', 'safety.allowMcpWrites, checked only for an agent. It narrows the master switch. It can never open a door the master switch closed.'],
   ['armed', 'The tag is armed.', 'Every tag is read-only until somebody marks it writable, one at a time, on purpose. A browse import of 4,000 tags arms none of them.'],
   ['range', 'The value is in range.', 'Out of range is refused, never clamped. Somebody who typed 500 on a 0 to 250 setpoint made a mistake, and quietly sending 250 means they never find out.'],
-  ['device', 'The device is actually there.', 'No live session, no write. The gate refuses up front instead of throwing a value at a socket that is reconnecting.'],
+  ['check', 'The entity agrees.', "A call through an entity adds the entity's own rules: a number's step, a text's pattern, an entity somebody disabled. They're checked here, inside the gate, so that refusal is audited like any other. A write straight to a tag has none."],
+  ['device', 'The device is running.', "No running device, no write, and the refusal is audited. One that's up but mid-reconnect gets past this, the audit row opens, and the write fails there with a 503, on the record as a failed attempt. The dry run checks the live session itself, so a recipe or a script finds out before anything moves."],
   ['audit', 'The audit row is written, then the value goes out.', 'In that order. A refusal is recorded as a refusal, and a write that hangs or crashes the process still left evidence that it was attempted.'],
 ];
 ---
@@ -33,7 +34,7 @@ const steps: [string, string, string][] = [
       <label class="sw"><input type="checkbox" data-sw="writes" /><span><code>safety.allowWrites</code></span></label>
       <label class="sw"><input type="checkbox" data-sw="agents" /><span><code>safety.allowMcpWrites</code></span></label>
       <label class="sw"><input type="checkbox" data-sw="armed" /><span>Tag marked writable</span></label>
-      <label class="sw"><input type="checkbox" data-sw="device" checked /><span>Device connected</span></label>
+      <label class="sw"><input type="checkbox" data-sw="device" checked /><span>Device running</span></label>
     </div>
 
     <div class="send">
@@ -49,8 +50,8 @@ const steps: [string, string, string][] = [
     </div>
 
     <p class="foot">
-      A simulation in your browser. The checks, their order and what they refuse are the Gateway's, straight out
-      of <code>internal/runtime/gate.go</code>.
+      A simulation in your browser. The checks, their order and what they refuse are the Gateway's: the first from
+      its API, the rest straight out of <code>internal/runtime/gate.go</code>.
     </p>
   </section>
 
@@ -133,7 +134,7 @@ const steps: [string, string, string][] = [
 
 <script>
   type State = 'pass' | 'fail' | 'skip' | 'never';
-  const ORDER = ['door', 'writes', 'agents', 'armed', 'range', 'device', 'audit'] as const;
+  const ORDER = ['door', 'writes', 'agents', 'armed', 'range', 'check', 'device', 'audit'] as const;
   const MIN = 0, MAX = 250, PRIOR = '210';
 
   function bind(root: HTMLElement) {
@@ -174,7 +175,10 @@ const steps: [string, string, string][] = [
       else check('agents', sw('agents'), 'Agent writes are on.', 'Refused: writes from MCP clients are disabled.');
       check('armed', sw('armed'), 'Tag is armed.', 'Refused: this tag is not marked writable.');
       check('range', Number.isFinite(v) && v >= MIN && v <= MAX, `${shown} is inside ${MIN}..${MAX}.`, Number.isFinite(v) ? `Refused: ${shown} is outside ${MIN}..${MAX}. Not clamped.` : `Refused: ${shown} is not a number.`);
-      check('device', sw('device'), 'Session to press-01 is live.', 'Refused: the device is not connected.');
+      // The demo writes straight to a tag, so there are no entity rules to add.
+      if (!stop) out.check = ['skip', 'Straight to a tag. No entity rules to add.'];
+      else out.check = ['never', 'Never reached.'];
+      check('device', sw('device'), 'press-01 is running.', 'Refused: the device is not connected.');
 
       // The API's 403 never reaches the gate, so it never reaches the audit.
       if (refusedAt === 'door') out.audit = ['never', 'The gate never heard about it, so there is nothing to audit.'];

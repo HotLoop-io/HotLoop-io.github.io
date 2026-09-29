@@ -184,8 +184,9 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
       <WriteGate />
       <p class="prose muted after">
         An agent gets no side door. <code>write_tag</code> and <code>call_service</code> hit the same gate an operator
-        does, and neither one runs without a stated reason, which lands in the audit next to the write. An audit row
-        nobody can explain six months later is just a timestamp with a guilty conscience.
+        does, and neither one runs without a stated reason. The audit row records who and what, and the reason lands
+        in the system log right next to the write it explains. A write nobody can explain six months later is just a
+        timestamp with a guilty conscience.
       </p>
     </div>
   </section>
@@ -214,7 +215,7 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
           16 tools and 4 resources in {latest.data.version}, 25 tools on main, over streamable HTTP and stdio. An
           agent reads the plant in entities, the infeed pump rather than register 40001, and it can only act through
           the gate. So you can ask it why line 3 is slow and let it read everything, knowing it can only touch what
-          you armed, with its reason on file.
+          you armed, and every write it makes comes with a reason in the log.
         </p>
         <p class="muted">
           It goes the other way too: a rule can call a tool on another MCP server.
