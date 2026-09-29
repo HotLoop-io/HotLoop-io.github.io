@@ -46,7 +46,7 @@ export const PRODUCTS: Product[] = [
     id: 'iot',
     name: 'HotLoop IoT',
     href: '/iot/',
-    tagline: 'Home Assistant, rewritten in Go for OT.',
+    tagline: 'The automation base, built in Go for OT.',
     summary:
       'The base everything else is built on: entities, automations, helpers, scripts, the logbook, dashboards, notifications, MCP, and MQTT with discovery, plus every protocol driver HotLoop has.',
     installable: false,
@@ -106,7 +106,7 @@ export const IOT_FEATURES: Feature[] = [
   { name: 'Entities and the equipment tree', status: 'released', note: 'Every tag is an entity with an id that never changes, on one ISA-95 tree. A motor is one entity built from the tags it really is.' },
   { name: 'Automations', status: 'released', note: 'Ten trigger types, entity state triggers included, compiled when you save the rule so a broken one is caught in the editor.' },
   { name: 'The automation language', status: 'main', note: 'Condition, wait and stop steps inside a sequence, and forSec on a state trigger, for "the pump has been on for five minutes".' },
-  { name: 'Helpers', status: 'main', note: 'The seven Home Assistant input helpers: toggles, numbers, selects, text, counters, timers and schedules. Kept across restarts, never clamped.' },
+  { name: 'Helpers', status: 'main', note: 'Seven kinds of value the plant owns: toggles, numbers, selects, text, counters, timers and schedules. Kept across restarts, never clamped.' },
   { name: 'Logbook', status: 'main', note: 'One timeline of state changes, writes, alarms, automation runs and config changes, for the plant, one area, or one entity.' },
   { name: 'Scripts', status: 'main', note: 'Write the CIP cycle once, give it a name, and run it from a rule, the Scripts screen, MCP or its own entity. Typed fields, and a dry run through the real gate.' },
   { name: 'Recipes and blueprints', status: 'planned', note: 'Scenes as recipes: a set of setpoints captured and applied together, audited. Then reusable automation templates.' },
