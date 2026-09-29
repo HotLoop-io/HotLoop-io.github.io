@@ -32,9 +32,10 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
       <span class="label">Products</span>
       <h1>One codebase. Four products. One version number.</h1>
       <p class="lede">
-        HotLoop is built once and shipped four ways, each with its own image and its own chart, all released
-        together from the same tag. Protocols don't split the products, because every one of them speaks every
-        protocol, MQTT included. Features do.
+        HotLoop is built once and shipped four ways, each with its own image and chart, all from the same tag.
+        Every one of them speaks every protocol, MQTT included. Features split the products, protocols don't, so
+        nobody ever has to run the Gateway just to reach one PLC. What you're really picking is how much of the
+        plant the box has to run.
       </p>
     </div>
   </section>
@@ -56,8 +57,8 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
 
     <h2 class="sub">Side by side</h2>
     <p class="muted intro">
-      What each product has, not whether it is finished. The product pages say which pieces ship today and which
-      are still being built, piece by piece.
+      What each product has, not whether it's finished. For that, open the product's page: every piece on it says
+      whether it ships today, is merged and waiting, or hasn't been built.
     </p>
     <div class="table-wrap">
       <table class="data stack">
@@ -89,24 +90,26 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
         <h2 class="sub">Moving up keeps your data</h2>
         <p class="muted">
           Every product runs the same schema. Going from IoT to Edge to the Gateway is designed to be an image swap
-          on the same database, with your devices, entities, automations, alarms, history and users already there.
-          Going back down deletes nothing: what the smaller product doesn't have just sits there until you come back.
+          on the same database, with your devices, entities, rules, alarms, history and users already there. Going
+          back down deletes nothing: what the smaller product doesn't have just sits there until you come back. The
+          point: once the split ships, outgrowing the Pi is supposed to cost you an image pull, not a migration
+          project.
         </p>
       </div>
       <div class="stack">
         <h2 class="sub">No keys, no tiers</h2>
         <p class="muted">
-          There are no license keys and nothing unlocks at runtime. The product is what was compiled, so a feature
-          that isn't in your image can't be switched on by accident. All four are under the HotLoop Community
-          License: free for individuals, and free for business through <a href="https://embernet.ai">EmberNET</a>.
-          {' '}<a href="/license/">Which license applies to you</a>.
+          No license keys, and nothing unlocks at runtime. The product is what got compiled, so a feature that isn't
+          in your image can't be flipped on by accident, and nobody can flip one off to squeeze you later. All four
+          are under the HotLoop Community License: free for individuals, free for business through
+          {' '}<a href="https://embernet.ai">EmberNET</a>. <a href="/license/">Which license applies to you</a>.
         </p>
       </div>
     </div>
 
     <p class="muted flow">
-      Looking for a Node-RED style flow engine? That's <a href="/flow/">HotLoop Flow</a>, a separate product under
-      Apache-2.0, free for everyone, businesses included.
+      Want Node-RED's wires instead? That's <a href="/flow/">HotLoop Flow</a>, a separate product under Apache-2.0,
+      free for everyone, businesses included, no sign-up.
     </p>
   </section>
 </Base>

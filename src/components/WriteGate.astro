@@ -1,0 +1,243 @@
+---
+// The write gate, in the order internal/runtime/gate.go runs it: permission at
+// the door, then the gate's own checks, then the audit row, then the wire. The
+// list is the page's content and renders with JavaScript off. The panel above
+// it is a simulation that lights the list up, and it says so.
+const steps: [string, string, string][] = [
+  ['door', 'The caller may write.', 'A logged-in user needs values.write, and a viewer does not have it. An agent needs the MCP token. Fail this and the API answers 403 before the gate hears a word.'],
+  ['writes', 'Writes are on.', 'safety.allowWrites. It ships off, and it has shipped off since 4.4.0, because a fresh install that can move machinery before anybody decided it should is a lawsuit with a web UI.'],
+  ['agents', 'Agent writes are on.', 'safety.allowMcpWrites, checked only for an agent. It narrows the master switch. It can never open a door the master switch closed.'],
+  ['armed', 'The tag is armed.', 'Every tag is read-only until somebody marks it writable, one at a time, on purpose. A browse import of 4,000 tags arms none of them.'],
+  ['range', 'The value is in range.', 'Out of range is refused, never clamped. Somebody who typed 500 on a 0 to 250 setpoint made a mistake, and quietly sending 250 means they never find out.'],
+  ['device', 'The device is actually there.', 'No live session, no write. The gate refuses up front instead of throwing a value at a socket that is reconnecting.'],
+  ['audit', 'The audit row is written, then the value goes out.', 'In that order. A refusal is recorded as a refusal, and a write that hangs or crashes the process still left evidence that it was attempted.'],
+];
+---
+
+<div class="wg" data-writegate>
+  <section class="wg-panel card" data-panel hidden aria-labelledby="wg-title">
+    <h3 id="wg-title">Go on, try to move a machine.</h3>
+    <p class="muted">
+      <code>press-01/Setpoint</code>, range 0 to 250 degC, sitting at 210. Everything ships locked, so your first
+      try is going to bounce. Unlock it one switch at a time and watch where it stops.
+    </p>
+
+    <fieldset class="who">
+      <legend>Who's asking</legend>
+      <input type="radio" name="wg-who" id="wg-op" value="operator" checked /><label for="wg-op">Operator</label>
+      <input type="radio" name="wg-who" id="wg-view" value="viewer" /><label for="wg-view">Viewer</label>
+      <input type="radio" name="wg-who" id="wg-mcp" value="agent" /><label for="wg-mcp">Agent over MCP</label>
+    </fieldset>
+
+    <div class="switches">
+      <label class="sw"><input type="checkbox" data-sw="writes" /><span><code>safety.allowWrites</code></span></label>
+      <label class="sw"><input type="checkbox" data-sw="agents" /><span><code>safety.allowMcpWrites</code></span></label>
+      <label class="sw"><input type="checkbox" data-sw="armed" /><span>Tag marked writable</span></label>
+      <label class="sw"><input type="checkbox" data-sw="device" checked /><span>Device connected</span></label>
+    </div>
+
+    <div class="send">
+      <label>Setpoint <span class="val"><input type="number" data-value value="212.5" step="0.5" inputmode="decimal" /> degC</span></label>
+      <button type="button" class="btn primary" data-send>Send the write</button>
+    </div>
+
+    <p class="verdict" data-verdict role="status" aria-live="polite"></p>
+
+    <div class="audit" aria-label="Write audit, newest first">
+      <div class="audit-head"><span>Write audit</span><span class="mono" data-count>0 rows</span></div>
+      <ol class="mono" data-audit><li class="empty">Nothing yet. Every attempt lands here, refused or not.</li></ol>
+    </div>
+
+    <p class="foot">
+      A simulation in your browser. The checks, their order and what they refuse are the Gateway's, straight out
+      of <code>internal/runtime/gate.go</code>.
+    </p>
+  </section>
+
+  <ol class="gate">
+    {steps.map(([key, head, body], i) => (
+      <li class="card" data-step={key}>
+        <span class="step mono">{String(i + 1).padStart(2, '0')}</span>
+        <div><h3>{head}</h3><p>{body}</p><p class="why mono" data-why></p></div>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .wg { display: grid; gap: var(--hl-s5); grid-template-columns: minmax(0, 1fr); align-items: start; }
+  @media (min-width: 1000px) {
+    .wg:has(.wg-panel:not([hidden])) { grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); }
+    .wg-panel { position: sticky; top: calc(var(--hl-s8) + var(--hl-s4)); }
+  }
+
+  .wg-panel { display: grid; gap: var(--hl-s4); padding: var(--hl-s5) var(--hl-s6); }
+  /* A class that sets display beats the hidden attribute, and this panel does
+     nothing without its script. */
+  .wg-panel[hidden] { display: none; }
+  .wg-panel h3 { font-size: var(--hl-fs-lg); margin: 0; }
+
+  .who { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--hl-s2); align-items: center; }
+  .who legend { font-size: var(--hl-fs-xs); font-weight: 600; color: var(--hl-ink-soft); margin-bottom: var(--hl-s2); float: left; width: 100%; }
+  .who input { position: absolute; opacity: 0; pointer-events: none; }
+  .who label {
+    padding: 0.45em 1em; border-radius: var(--hl-r-pill); border: 1px solid var(--hl-border); background: var(--hl-card);
+    font-size: var(--hl-fs-sm); font-weight: 600; color: var(--hl-ink-soft); cursor: pointer;
+  }
+  .who input:checked + label { background: var(--hl-ink); border-color: var(--hl-ink); color: var(--hl-bg); }
+  .who input:focus-visible + label { outline: 2px solid var(--hl-focus); outline-offset: 2px; }
+
+  /* Wide enough that safety.allowMcpWrites never breaks mid-word. */
+  .switches { display: grid; gap: var(--hl-s2); grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); }
+  .sw { display: flex; gap: var(--hl-s2); align-items: center; padding: 0.55em 0.8em; border-radius: var(--hl-r-sm); background: var(--hl-sunken); font-size: var(--hl-fs-sm); cursor: pointer; }
+  .sw input { accent-color: var(--hl-orange); width: 18px; height: 18px; flex: none; }
+  .sw code { font-size: var(--hl-fs-xs); }
+
+  .send { display: flex; flex-wrap: wrap; gap: var(--hl-s4); align-items: end; justify-content: space-between; }
+  .send label { display: grid; gap: var(--hl-s1); font-size: var(--hl-fs-xs); font-weight: 600; color: var(--hl-ink-soft); }
+  .val { display: flex; align-items: center; gap: var(--hl-s2); color: var(--hl-ink); font-weight: 600; }
+  .val input { width: 9ch; padding: 0.5em 0.7em; background: var(--hl-card); border: 1px solid var(--hl-line-strong); border-radius: var(--hl-r-sm); color: var(--hl-ink); font: inherit; font-family: var(--hl-font-mono); font-size: var(--hl-fs-md); }
+
+  .verdict { min-height: 3em; font-weight: 600; font-size: var(--hl-fs-sm); padding: var(--hl-s3) var(--hl-s4); border-radius: var(--hl-r-sm); border: 1px solid var(--hl-border); color: var(--hl-ink-soft); }
+  .verdict:empty { display: none; }
+  .verdict.ok { color: var(--hl-ok-text); background: var(--hl-ok-tint); border-color: color-mix(in srgb, var(--hl-ok) 35%, transparent); }
+  .verdict.no { color: var(--hl-danger-text); background: var(--hl-danger-tint); border-color: color-mix(in srgb, var(--hl-danger) 35%, transparent); }
+
+  .audit { border: 1px solid var(--hl-border); border-radius: var(--hl-r-sm); overflow: hidden; }
+  .audit-head { display: flex; justify-content: space-between; padding: 0.5em var(--hl-s4); background: var(--hl-sunken); font-size: var(--hl-fs-2xs); letter-spacing: var(--hl-ls-label); text-transform: uppercase; color: var(--hl-ink-soft); font-weight: 600; }
+  .audit ol { list-style: none; margin: 0; padding: 0; font-size: var(--hl-fs-2xs); max-height: 11.5em; overflow-y: auto; }
+  .audit li { padding: 0.5em var(--hl-s4); border-top: 1px solid var(--hl-border); overflow-wrap: anywhere; }
+  .audit li:first-child { border-top: 0; }
+  .audit li.empty { color: var(--hl-ink-soft); font-family: var(--hl-font); }
+  .audit li .r-no { color: var(--hl-danger-text); font-weight: 700; }
+  .audit li .r-ok { color: var(--hl-ok-text); font-weight: 700; }
+  .audit li .r-door { color: var(--hl-ink-soft); font-weight: 700; }
+
+  .foot { font-size: var(--hl-fs-xs); color: var(--hl-ink-soft); border-top: 1px solid var(--hl-border); padding-top: var(--hl-s3); }
+
+  ol.gate { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--hl-s3); }
+  ol.gate li { display: grid; grid-template-columns: auto 1fr; gap: var(--hl-s5); align-items: start; padding: var(--hl-s5) var(--hl-s6); transition: border-color var(--hl-transition-med), background var(--hl-transition-med), opacity var(--hl-transition-med); }
+  ol.gate .step { font-size: var(--hl-fs-xl); font-weight: 800; color: var(--hl-ink-faint); line-height: 1; padding-top: 2px; transition: color var(--hl-transition-med); }
+  ol.gate h3 { font-size: var(--hl-fs-md); margin-bottom: var(--hl-s1); }
+  ol.gate .why { display: none; margin-top: var(--hl-s2); font-size: var(--hl-fs-xs); font-weight: 700; }
+  ol.gate li[data-state] .why { display: block; }
+
+  /* State comes from the semantic ramp. The accent is never used for state. */
+  ol.gate li[data-state='pass'] { border-color: color-mix(in srgb, var(--hl-ok) 45%, transparent); }
+  ol.gate li[data-state='pass'] .step, ol.gate li[data-state='pass'] .why { color: var(--hl-ok-text); }
+  ol.gate li[data-state='fail'] { border-color: var(--hl-danger); background: var(--hl-danger-tint); }
+  ol.gate li[data-state='fail'] .step, ol.gate li[data-state='fail'] .why { color: var(--hl-danger-text); }
+  ol.gate li[data-state='skip'], ol.gate li[data-state='never'] { opacity: 0.5; }
+  ol.gate li[data-state='skip'] .why, ol.gate li[data-state='never'] .why { color: var(--hl-ink-soft); }
+</style>
+
+<script>
+  type State = 'pass' | 'fail' | 'skip' | 'never';
+  const ORDER = ['door', 'writes', 'agents', 'armed', 'range', 'device', 'audit'] as const;
+  const MIN = 0, MAX = 250, PRIOR = '210';
+
+  function bind(root: HTMLElement) {
+    if (root.dataset.bound) return;
+    root.dataset.bound = '1';
+
+    const panel = root.querySelector<HTMLElement>('[data-panel]')!;
+    const valueIn = root.querySelector<HTMLInputElement>('[data-value]')!;
+    const verdict = root.querySelector<HTMLElement>('[data-verdict]')!;
+    const auditList = root.querySelector<HTMLOListElement>('[data-audit]')!;
+    const count = root.querySelector<HTMLElement>('[data-count]')!;
+    const sw = (k: string) => root.querySelector<HTMLInputElement>(`[data-sw="${k}"]`)!.checked;
+    const who = () => root.querySelector<HTMLInputElement>('input[name="wg-who"]:checked')!.value as 'operator' | 'viewer' | 'agent';
+    const li = (k: string) => root.querySelector<HTMLElement>(`li[data-step="${k}"]`)!;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let rows = 0;
+    let run = 0;
+
+    panel.hidden = false;
+
+    function evaluate() {
+      const w = who();
+      const v = Number(valueIn.value.trim());
+      const shown = valueIn.value.trim() || 'nothing';
+      const out: Partial<Record<(typeof ORDER)[number], [State, string]>> = {};
+      let stop: string | null = null;
+      let refusedAt: string | null = null;
+
+      const check = (k: (typeof ORDER)[number], ok: boolean, pass: string, fail: string) => {
+        if (stop) { out[k] = ['never', 'Never reached.']; return; }
+        if (ok) { out[k] = ['pass', pass]; return; }
+        out[k] = ['fail', fail]; stop = fail; refusedAt = k;
+      };
+
+      check('door', w !== 'viewer', w === 'agent' ? 'Agent holds the MCP token.' : 'Operator holds values.write.', '403. A viewer does not hold values.write.');
+      check('writes', sw('writes'), 'Master switch is on.', 'Refused: writes are disabled on this deployment.');
+      if (w !== 'agent' && !stop) out.agents = ['skip', 'Not an agent. Not asked.'];
+      else check('agents', sw('agents'), 'Agent writes are on.', 'Refused: writes from MCP clients are disabled.');
+      check('armed', sw('armed'), 'Tag is armed.', 'Refused: this tag is not marked writable.');
+      check('range', Number.isFinite(v) && v >= MIN && v <= MAX, `${shown} is inside ${MIN}..${MAX}.`, Number.isFinite(v) ? `Refused: ${shown} is outside ${MIN}..${MAX}. Not clamped.` : `Refused: ${shown} is not a number.`);
+      check('device', sw('device'), 'Session to press-01 is live.', 'Refused: the device is not connected.');
+
+      // The API's 403 never reaches the gate, so it never reaches the audit.
+      if (refusedAt === 'door') out.audit = ['never', 'The gate never heard about it, so there is nothing to audit.'];
+      else out.audit = ['pass', stop ? 'Row written: refused.' : 'Row written, then sent.'];
+      return { out, stop, refusedAt, w, shown };
+    }
+
+    function logRow(w: string, shown: string, refusedAt: string | null, stop: string | null) {
+      if (refusedAt === 'door') return;
+      const t = new Date();
+      const hh = [t.getHours(), t.getMinutes(), t.getSeconds()].map((n) => String(n).padStart(2, '0')).join(':');
+      const actor = w === 'agent' ? 'mcp:plant-agent' : 'dana';
+      const source = w === 'agent' ? 'mcp' : 'ui';
+      const row = document.createElement('li');
+      const tag = document.createElement('span');
+      tag.className = stop ? 'r-no' : 'r-ok';
+      tag.textContent = stop ? 'REFUSED' : 'WRITTEN';
+      row.append(`${hh}  ${actor}  ${source}  press-01/Setpoint  ${shown} (was ${PRIOR})  `, tag);
+      if (stop) row.append(`  ${stop.replace(/^Refused: /, '')}`);
+      auditList.querySelector('.empty')?.remove();
+      auditList.prepend(row);
+      rows++;
+      count.textContent = `${rows} ${rows === 1 ? 'row' : 'rows'}`;
+    }
+
+    function send() {
+      const mine = ++run;
+      const { out, stop, refusedAt, w, shown } = evaluate();
+      ORDER.forEach((k) => { li(k).removeAttribute('data-state'); li(k).querySelector<HTMLElement>('[data-why]')!.textContent = ''; });
+      verdict.className = 'verdict';
+      verdict.textContent = '';
+
+      const paint = (i: number) => {
+        if (mine !== run) return;
+        if (i === ORDER.length) {
+          if (!stop) {
+            verdict.className = 'verdict ok';
+            verdict.textContent = `Written. ${shown} degC went to press-01, and the audit has who, from where, and the 210 it replaced.`;
+          } else if (refusedAt === 'door') {
+            verdict.className = 'verdict no';
+            verdict.textContent = 'Bounced at the door with a 403. The Board still shows a viewer the value. It just never offers them a Write button.';
+          } else {
+            verdict.className = 'verdict no';
+            verdict.textContent = `${stop} The audit got a row anyway, because somebody hammering a tag they can't touch is exactly what an engineer wants to find next week.`;
+          }
+          logRow(w, shown, refusedAt, stop);
+          return;
+        }
+        const k = ORDER[i];
+        const [state, why] = out[k]!;
+        li(k).dataset.state = state;
+        li(k).querySelector<HTMLElement>('[data-why]')!.textContent = why;
+        if (reduce) paint(i + 1);
+        else window.setTimeout(() => paint(i + 1), 140);
+      };
+      paint(0);
+    }
+
+    root.querySelector<HTMLButtonElement>('[data-send]')!.addEventListener('click', send);
+    valueIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
+  }
+
+  const init = () => document.querySelectorAll<HTMLElement>('[data-writegate]').forEach(bind);
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>

@@ -1,0 +1,219 @@
+---
+// A fast sensor into a slow sink, twice. Node-RED's queue has no ceiling, so it
+// grows until the kubelet kills the pod. Flow's inbox holds 1024 messages
+// (DefaultInboxCapacity in internal/runtime/runner.go) and the overflow policy
+// decides what happens past that. The policies and the capacity are Flow's; the
+// memory numbers are illustrative, and the widget says so.
+//
+// It is an enhancement. The four cards above it make the argument with
+// JavaScript off, so the whole thing stays hidden until the script runs.
+const POLICIES: [string, string][] = [
+  ['block', 'block'],
+  ['drop-newest', 'drop newest'],
+  ['drop-oldest', 'drop oldest'],
+  ['error', 'raise to Catch'],
+];
+---
+
+<section class="bp card" data-bp hidden aria-labelledby="bp-title">
+  <h3 id="bp-title">Turn the sensor up and watch who dies.</h3>
+  <p class="muted">
+    One sensor, one database insert that can take 100 messages a second. Push the sensor past that and the
+    difference between the two runtimes stops being a table row.
+  </p>
+
+  <div class="controls">
+    <label class="rate">
+      <span>Sensor rate <strong class="mono"><span data-rate-val>250</span> msg/s</strong></span>
+      <input type="range" min="20" max="600" step="10" value="250" data-rate />
+    </label>
+    <fieldset class="pol">
+      <legend>Flow's overflow policy</legend>
+      {POLICIES.map(([v, l], i) => (
+        <>
+          <input type="radio" name="bp-pol" id={`bp-${v}`} value={v} checked={i === 0} />
+          <label for={`bp-${v}`}>{l}</label>
+        </>
+      ))}
+    </fieldset>
+  </div>
+
+  <div class="lanes">
+    <div class="lane" data-lane="nr">
+      <div class="lane-head"><strong>Node-RED</strong><span class="mono" data-mem>55 MB</span></div>
+      <div class="bar" aria-hidden="true"><span data-fill></span></div>
+      <dl class="stats mono">
+        <div><dt>queued</dt><dd data-queued>0</dd></div>
+        <div><dt>restarts</dt><dd data-restarts>0</dd></div>
+        <div><dt>lost with the pod</dt><dd data-lost>0</dd></div>
+      </dl>
+      <p class="status" data-status role="status">Unbounded queue. Limit 512 MiB.</p>
+    </div>
+
+    <div class="lane" data-lane="fl">
+      <div class="lane-head"><strong>HotLoop Flow</strong><span class="mono" data-mem>5 MB</span></div>
+      <div class="bar" aria-hidden="true"><span data-fill></span></div>
+      <dl class="stats mono">
+        <div><dt>queued</dt><dd data-queued>0</dd></div>
+        <div><dt data-counter-label>source waited</dt><dd data-counter>0</dd></div>
+        <div><dt>restarts</dt><dd>0</dd></div>
+      </dl>
+      <p class="status" data-status role="status">Inbox holds 1024.</p>
+    </div>
+  </div>
+
+  <p class="verdict" data-verdict aria-live="polite"></p>
+  <p class="foot">
+    A simulation in your browser, with a second of it standing in for a minute on the plant. Flow's inbox size and
+    its four policies are the real ones. The memory figures are illustrative. The shape of the failure is not.
+  </p>
+</section>
+
+<style>
+  .bp { display: grid; gap: var(--hl-s4); padding: var(--hl-s5) var(--hl-s6); margin-top: var(--hl-s6); }
+  .bp[hidden] { display: none; }
+  .bp h3 { font-size: var(--hl-fs-lg); margin: 0; }
+  .controls { display: grid; gap: var(--hl-s4); }
+  .rate { display: grid; gap: var(--hl-s2); font-size: var(--hl-fs-xs); font-weight: 600; color: var(--hl-ink-soft); }
+  .rate > span { display: flex; justify-content: space-between; }
+  .rate strong { color: var(--hl-ink); }
+  .rate input { width: 100%; accent-color: var(--hl-orange); height: 28px; }
+  .pol { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--hl-s2); }
+  .pol legend { font-size: var(--hl-fs-xs); font-weight: 600; color: var(--hl-ink-soft); margin-bottom: var(--hl-s2); float: left; width: 100%; }
+  .pol input { position: absolute; opacity: 0; pointer-events: none; }
+  .pol label { padding: 0.4em 0.95em; border-radius: var(--hl-r-pill); border: 1px solid var(--hl-border); background: var(--hl-card); font-size: var(--hl-fs-sm); font-weight: 600; color: var(--hl-ink-soft); cursor: pointer; font-family: var(--hl-font-mono); }
+  .pol input:checked + label { background: var(--hl-ink); border-color: var(--hl-ink); color: var(--hl-bg); }
+  .pol input:focus-visible + label { outline: 2px solid var(--hl-focus); outline-offset: 2px; }
+
+  .lanes { display: grid; gap: var(--hl-s4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+  .lane { display: grid; gap: var(--hl-s3); padding: var(--hl-s4); border-radius: var(--hl-r-sm); background: var(--hl-sunken); border: 1px solid transparent; transition: border-color var(--hl-transition-med), background var(--hl-transition-med); }
+  .lane.dead { border-color: var(--hl-danger); background: var(--hl-danger-tint); }
+  .lane-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .lane-head .mono { font-size: var(--hl-fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+  .bar { height: 12px; border-radius: var(--hl-r-pill); background: var(--hl-card); border: 1px solid var(--hl-border); overflow: hidden; }
+  .bar span { display: block; height: 100%; width: 0%; background: var(--hl-ok); border-radius: inherit; transition: width 0.1s linear, background var(--hl-transition-med); }
+  .bar span.hot { background: var(--hl-warn); }
+  .bar span.full { background: var(--hl-danger); }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--hl-s2); margin: 0; }
+  .stats div { display: grid; gap: 2px; }
+  .stats dt { font-size: var(--hl-fs-2xs); color: var(--hl-ink-soft); font-family: var(--hl-font); }
+  .stats dd { margin: 0; font-size: var(--hl-fs-sm); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .status { font-size: var(--hl-fs-xs); color: var(--hl-ink-soft); min-height: 2.9em; }
+  .lane.dead .status { color: var(--hl-danger-text); font-weight: 700; }
+  .verdict { font-weight: 600; min-height: 1.6em; }
+  .foot { font-size: var(--hl-fs-xs); color: var(--hl-ink-soft); border-top: 1px solid var(--hl-border); padding-top: var(--hl-s3); }
+</style>
+
+<script>
+  const SINK = 100;          // messages a second the database insert can take
+  const CAP = 1024;          // Flow's DefaultInboxCapacity
+  const SCALE = 60;          // a second here is a minute on the plant
+  const MSG_KB = 8;          // illustrative size of one queued message in memory
+  const NR_BASE = 55, NR_LIMIT = 512, FL_BASE = 5;
+  const DT = 0.1;
+
+  const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
+
+  function bind(root: HTMLElement) {
+    if (root.dataset.bound) return;
+    root.dataset.bound = '1';
+    root.hidden = false;
+
+    const rateIn = root.querySelector<HTMLInputElement>('[data-rate]')!;
+    const rateVal = root.querySelector<HTMLElement>('[data-rate-val]')!;
+    const verdict = root.querySelector<HTMLElement>('[data-verdict]')!;
+    const lane = (k: string) => {
+      const el = root.querySelector<HTMLElement>(`[data-lane="${k}"]`)!;
+      const q = <T extends HTMLElement>(s: string) => el.querySelector<T>(s)!;
+      return { el, mem: q('[data-mem]'), fill: q('[data-fill]'), queued: q('[data-queued]'), status: q('[data-status]'), extra: el };
+    };
+    const nr = lane('nr');
+    const fl = lane('fl');
+    const nrRestarts = nr.el.querySelector<HTMLElement>('[data-restarts]')!;
+    const nrLost = nr.el.querySelector<HTMLElement>('[data-lost]')!;
+    const flCounter = fl.el.querySelector<HTMLElement>('[data-counter]')!;
+    const flCounterLabel = fl.el.querySelector<HTMLElement>('[data-counter-label]')!;
+    const policy = () => root.querySelector<HTMLInputElement>('input[name="bp-pol"]:checked')!.value;
+
+    let rate = Number(rateIn.value);
+    let nrQ = 0, restarts = 0, lost = 0, deadFor = 0;
+    let flQ = 0, counter = 0;
+
+    const LABEL: Record<string, string> = { block: 'source waited', 'drop-newest': 'dropped, counted', 'drop-oldest': 'evicted, counted', error: 'raised to Catch' };
+
+    rateIn.addEventListener('input', () => { rate = Number(rateIn.value); rateVal.textContent = String(rate); });
+    root.querySelectorAll<HTMLInputElement>('input[name="bp-pol"]').forEach((r) =>
+      r.addEventListener('change', () => { counter = 0; flCounterLabel.textContent = LABEL[policy()]; }),
+    );
+
+    function step() {
+      const inflow = rate * SCALE * DT;
+      const drain = SINK * SCALE * DT;
+
+      // Node-RED: everything that can't be handled right now waits in memory.
+      if (deadFor > 0) {
+        deadFor -= DT;
+        if (deadFor <= 0) { nrQ = 0; nr.el.classList.remove('dead'); }
+      } else {
+        nrQ = Math.max(0, nrQ + inflow - drain);
+        const mem = NR_BASE + (nrQ * MSG_KB) / 1024;
+        if (mem >= NR_LIMIT) {
+          lost += nrQ; restarts++; deadFor = 2.5;
+          nr.el.classList.add('dead');
+        }
+      }
+
+      // Flow: 1024 fit, and the policy decides what happens to the rest. Every
+      // policy caps the queue; they differ in who pays for the excess.
+      const want = flQ + inflow - drain;
+      counter += Math.max(0, want - CAP);
+      flQ = Math.min(CAP, Math.max(0, want));
+      render();
+    }
+
+    function render() {
+      const p = policy();
+      const nrMem = deadFor > 0 ? 0 : NR_BASE + (nrQ * MSG_KB) / 1024;
+      nr.mem.textContent = deadFor > 0 ? 'OOMKilled' : `${Math.round(nrMem)} MB`;
+      const nrPct = deadFor > 0 ? 100 : Math.min(100, ((nrMem - NR_BASE) / (NR_LIMIT - NR_BASE)) * 100);
+      nr.fill.style.width = `${nrPct}%`;
+      nr.fill.className = deadFor > 0 || nrPct > 85 ? 'full' : nrPct > 40 ? 'hot' : '';
+      nr.queued.textContent = deadFor > 0 ? '0' : fmt(nrQ);
+      nrRestarts.textContent = String(restarts);
+      nrLost.textContent = fmt(lost);
+      nr.status.textContent = deadFor > 0
+        ? 'OOMKilled. Exit code 137. The log says nothing about why.'
+        : nrQ > 0 ? 'Queue growing with no ceiling. Memory follows it.' : 'Keeping up.';
+
+      const flMem = FL_BASE + (flQ * MSG_KB) / 1024;
+      fl.mem.textContent = `${Math.round(flMem)} MB`;
+      const flPct = (flQ / CAP) * 100;
+      fl.fill.style.width = `${flPct}%`;
+      fl.fill.className = flPct >= 99.9 ? 'hot' : '';
+      fl.queued.textContent = fmt(flQ);
+      flCounter.textContent = fmt(counter);
+      const full = flQ >= CAP - 0.5;
+      fl.status.textContent = !full ? 'Keeping up.' : ({
+        block: 'Inbox full, so the sender waits for room, up to blockTimeout. The pressure goes upstream, not into memory.',
+        'drop-newest': 'Inbox full, so each arriving message is dropped, counted and announced.',
+        'drop-oldest': 'Inbox full, so the oldest queued message makes room for the newest. The sink always gets fresh values.',
+        error: 'Inbox full, so each send that does not fit goes to a Catch node, and the flow decides.',
+      } as Record<string, string>)[p];
+
+      if (rate <= SINK) verdict.textContent = 'At this rate nobody is in trouble. Push the sensor past 100 a second.';
+      else if (restarts === 0) verdict.textContent = 'Node-RED is buffering the difference in memory. Give it a few seconds.';
+      else verdict.textContent = `Node-RED never dropped a message. It dropped ${fmt(lost)} of them at once, with the pod. Flow made you choose what gets lost, ahead of time, and it is still running.`;
+    }
+
+    render();
+    const timer = window.setInterval(() => {
+      if (!root.isConnected) { window.clearInterval(timer); return; }
+      if (document.hidden) return;
+      step();
+    }, DT * 1000);
+  }
+
+  const init = () => document.querySelectorAll<HTMLElement>('[data-bp]').forEach(bind);
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>

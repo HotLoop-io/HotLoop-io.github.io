@@ -33,18 +33,19 @@ const p = product('edge');
       <div class="cluster"><span class="label">HotLoop Edge</span><span class="chip warn">Upcoming release</span></div>
       <h1>IoT, plus everything that lives next to a machine.</h1>
       <p class="lede">
-        Ignition Edge is the right idea, and this is our take on it. Everything in <a href="/iot/">HotLoop IoT</a>, plus
-        HMI screens for the touch panel on the machine, PLCs, CODESYS and Pi PLCs, store-and-forward to whatever
-        sits upstream, and an OPC UA server so the SCADA you already own can read it.
+        Ignition Edge had the right idea, and this is ours. Everything in <a href="/iot/">HotLoop IoT</a>, plus HMI
+        screens for the touch panel on the machine, PLCs, CODESYS and Pi PLCs, store-and-forward to whatever sits
+        upstream, and an OPC UA server. The upshot: the machine keeps running its screens and its logic when the
+        network doesn't, and the SCADA you already paid for can still read it.
       </p>
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>HotLoop Edge is not out yet. It arrives in an upcoming release, alongside IoT.</strong>
+          <strong>HotLoop Edge is not out yet. It comes in an upcoming release, alongside IoT.</strong>
           <p>
-            There is no Edge image or chart to install today, and no date on it. What you can run right now is the
-            {' '}<a href="/gateway/">Gateway</a>, which already has the store-and-forward and the OPC UA server Edge
-            will carry, or the <a href="/edge-relay/">Edge Relay</a>, if all the box has to do is poll and forward.
+            No Edge image or chart today, and no date. If you need it now, run the <a href="/gateway/">Gateway</a>,
+            which already has the store-and-forward and the OPC UA server Edge will carry. If all the box has to do is
+            poll and forward, run the <a href="/edge-relay/">Edge Relay</a>.
           </p>
         </div>
       </div>
@@ -61,17 +62,19 @@ const p = product('edge');
         <span class="label">What it is for</span>
         <h2>A box at the machine that keeps working when the network doesn't.</h2>
         <p class="muted">
-          The operator's screen runs against the box on the machine, not a server three buildings away. Readings
-          buffer to disk when the uplink drops and replay in order, flagged historical, when it comes back. An
-          alarm still raises, a rule still runs, and the panel still answers with the plant network down.
+          The operator's screen runs against the box on the machine, not a server three buildings away. When the
+          uplink drops, readings buffer to disk and replay in order, flagged historical, when it comes back. The
+          alarm still raises, the rule still runs, the panel still answers. A backhoe through the fiber is an IT
+          ticket, not a line down.
         </p>
       </div>
       <div class="stack">
         <span class="label">The database</span>
         <h2>{p.databases}.</h2>
         <p class="muted">
-          Picked by a setting, in the same image. TimescaleDB when the box keeps real history, SQLite when it's a
-          small PC with a small disk. Moving up to the Gateway is designed to keep your data and your config.
+          Picked by a setting, same image. TimescaleDB when the box keeps real history, SQLite when it's a small PC
+          with a small disk. Moving up to the Gateway is designed to keep your data and your config, so the box you
+          start with isn't a dead end.
         </p>
       </div>
     </div>
@@ -83,9 +86,9 @@ const p = product('edge');
         <span class="label">What Edge adds to IoT</span>
         <h2>The machine layer, and where each piece stands.</h2>
         <p class="lede">
-          "{STATUS.released.label}" means it runs in the published Gateway today. "{STATUS.unverified.label}" means
-          the path exists and nobody has pointed it at the real thing yet. "{STATUS.planned.label}" means exactly
-          that. Everything in <a href="/iot/">IoT</a> comes with it.
+          "{STATUS.released.label}" means it runs in the published Gateway today. "{STATUS.unverified.label}" means the
+          path exists and nobody has pointed it at the real thing yet, so your first one is a test, not an install.
+          "{STATUS.planned.label}" means exactly that. Everything in <a href="/iot/">IoT</a> comes along too.
         </p>
       </div>
       <FeatureList features={EDGE_FEATURES} />
@@ -98,13 +101,14 @@ const p = product('edge');
         <span class="label">HMI, the plan</span>
         <h2>One UI, not two.</h2>
         <p class="lede">
-          HMI screens are not a second front end bolted on the side. They are a layout and a symbol library on top of
-          the same dashboards IoT gets, with the same bindings and the same write gate.
+          HMI screens aren't a second front end bolted on the side. They're a layout and a symbol library on top of
+          the dashboards IoT gets, same bindings, same write gate. Two UIs means two sets of bugs and two places to
+          forget a permission check, and we're not signing up for that.
         </p>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>A canvas that never reflows</h3><p>A fixed screen that scales and never moves things around, because an operator's muscle memory depends on the pump being where it was yesterday.</p></article>
-        <article class="card reveal"><h3>ISA-101 by default</h3><p>Gray backgrounds and color only for abnormal. Alarm priority by shape as well as color. No 3D gradients on the tank.</p></article>
+        <article class="card reveal"><h3>A canvas that never reflows</h3><p>A fixed screen that scales and never shuffles things around, because an operator's thumb goes to where the pump was yesterday, and it better still be there.</p></article>
+        <article class="card reveal"><h3>ISA-101 by default</h3><p>Gray backgrounds, color only for abnormal, alarm priority by shape as well as color. When the whole screen is gray, the one red thing gets seen. No 3D gradients on the tank.</p></article>
         <article class="card reveal"><h3>Faceplates</h3><p>Click a motor and get its popup: start, stop, reset, mode, speed, its interlocks and its alarms, built from the motor entity that already exists.</p></article>
         <article class="card reveal"><h3>Panel mode</h3><p>Fullscreen on the touch panel on the machine, a persistent alarm banner, and big touch targets. It works against the box itself with the uplink down.</p></article>
         <article class="card reveal"><h3>A person behind every write</h3><p>On your own computer you're already signed in. A shared panel signs operators in with a PIN or a badge and signs them out when idle, so the audit names a human, not "panel 3".</p></article>
@@ -121,8 +125,8 @@ const p = product('edge');
           <h2>Free, with no license key, when it ships.</h2>
           <p class="muted">
             Edge is under the HotLoop Community License, like the rest of the lineup. Individuals use it free.
-            Businesses sign up for <a href="https://embernet.ai">EmberNET</a> free and use it there free. Nothing about
-            Edge is a paid tier of anything.
+            Businesses sign up for <a href="https://embernet.ai">EmberNET</a> free and use it there free. Edge isn't a
+            paid tier of anything, because there is no paid tier to be one of.
           </p>
         </div>
         <a class="btn primary" href="/license/">Read the terms</a>

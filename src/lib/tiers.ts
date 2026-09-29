@@ -14,22 +14,22 @@ export const TIERS: Record<Tier, { label: string; chip: 'ok' | 'warn' | 'info' |
     label: 'Certified',
     chip: 'none',
     blurb:
-      'Proven on real plant equipment, by someone who was standing there. Nothing has earned this yet, and we would rather say so than round up.',
+      'Proven on real plant equipment by somebody standing next to it. Nothing has earned this yet. The day something does, that zero becomes a one, and not a day before.',
   },
   live: {
     label: 'Verified live',
     chip: 'ok',
-    blurb: 'Ran against a real target, and the row names exactly what. That is not the same as certified.',
+    blurb: 'Ran against a real target, and the row names exactly which one. Real is not the same as certified, so it doesn\'t get to say certified.',
   },
   decode: {
     label: 'Decode tested',
     chip: 'warn',
-    blurb: 'Thorough frame-level tests, and never run against a physical PLC.',
+    blurb: 'Tested hard at the frame level and never run against a physical PLC. The first real one is commissioning, not a formality.',
   },
   'gateway-mode': {
     label: 'Gateway mode',
     chip: 'info',
-    blurb: 'No driver, by choice. Reached through the gateway a site already has.',
+    blurb: 'No driver, on purpose. These come in through the gateway your site already has, instead of a half-built one of ours.',
   },
 };
 

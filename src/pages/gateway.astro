@@ -3,7 +3,9 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import JsonLd from '../components/JsonLd.astro';
 import FeatureList from '../components/FeatureList.astro';
-import { TIERS, TIER_ORDER } from '../lib/tiers';
+import WriteGate from '../components/WriteGate.astro';
+import BadNotZero from '../components/BadNotZero.astro';
+import { TIERS } from '../lib/tiers';
 import { CURRENT, GATEWAY_FEATURES, product } from '../lib/products';
 
 const protocols = (await getCollection('protocols')).sort((a, b) => a.data.order - b.data.order);
@@ -13,15 +15,6 @@ const releases = (await getCollection('releases'))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
 const latest = releases.find((r) => r.data.published)!;
 const gw = product('gateway');
-
-const gate = [
-  ['Writes are enabled.', 'safety.allowWrites is off by default, and has been since 4.4.0.'],
-  ['Agent writes are enabled.', 'safety.allowMcpWrites is a narrowing of the master switch, not a way around it.'],
-  ['The caller has permission.', 'values.write for a logged-in user, which a viewer does not have, or the MCP write setting for an agent.'],
-  ['The tag is marked writable.', 'Tags are read-only until somebody decides otherwise, one at a time. A browse import never arms anything.'],
-  ['The value is within range.', 'It is rejected, not clamped, because sending 400 when someone asked for 500 is quietly doing something else.'],
-  ['The attempt is audited.', 'Before the value reaches the wire, including every refusal, with the actor and the source.'],
-];
 ---
 
 <Base
@@ -51,26 +44,28 @@ const gate = [
       <div class="cluster"><span class="label">HotLoop Gateway</span><span class="chip ok">{latest.data.version} is out</span></div>
       <h1>An industrial gateway that tells you what it has not proven.</h1>
       <p class="lede">
-        It polls real equipment over real protocols, keeps what it reads, alarms on it, automates against it, and
-        exposes the whole plant to agents over MCP. One static Go binary, no sidecar, running as a non-root user
-        with every capability dropped.
+        It reads real equipment over real protocols, keeps every reading with its quality, alarms on it, automates
+        against it, and lets agents read the whole plant over MCP. What makes it worth running: it won't lie to you
+        about a sensor it can't see, and it won't move a machine nobody said it could.
       </p>
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>HotLoop Gateway {latest.data.version} is out. It is the first published release since 4.3.1.</strong>
+          <strong>{latest.data.version} is out, and it's the first published release since 4.3.1.</strong>
           <p>
-            Everything merged from 4.4.0 to 4.15.3 ships in it at once. The image is <code>{gw.image}:{latest.data.version}</code>,
-            the chart is <code>{gw.chart}</code> from <code>https://hotloop.io/hotloop</code>, and both pull with no
-            login. The source repository, HotLoop-io/hotloop, is still private. Coming from 4.3.1? It is not a plain
-            {' '}<code>helm upgrade</code>, so read <a href="#upgrading">the upgrade</a> before you touch a running plant.
+            Every version from 4.4.0 to 4.15.3 got merged and never tagged, so they all ship at once, in this one.
+            The image is <code>{gw.image}:{latest.data.version}</code>, the chart is <code>{gw.chart}</code> from
+            {' '}<code>https://hotloop.io/hotloop</code>, and both pull with no login. The source repo is still private.
+            On 4.3.1? Don't just <code>helm upgrade</code>. The chart changed its name, Kubernetes won't rename a
+            selector in place, and you want to find that out from <a href="#upgrading">the upgrade notes</a>, not
+            from a stuck rollout.
           </p>
         </div>
       </div>
       <div class="cluster">
         <a class="btn primary" href="#install">Install it</a>
+        <a class="btn" href="#the-gate">Try to break the write gate</a>
         <a class="btn" href="/releases/gateway/">Release notes</a>
-        <a class="btn" href="/products/">Compare the lineup</a>
       </div>
     </div>
   </section>
@@ -81,14 +76,15 @@ const gate = [
         <span class="label">Where it sits</span>
         <h2>The top of the lineup. Everything, for the whole site.</h2>
         <p class="muted">
-          HotLoop is one codebase and four products, released together from one tag.
-          {' '}<a href="/iot/">IoT</a> is the automation base, <a href="/edge/">Edge</a> adds the machine
-          layer, and the Gateway is everything in both plus what a site needs: fleet management, multi-site roll-ups
-          and scheduled reports. The <a href="/edge-relay/">Edge Relay</a> is the headless one that polls and forwards.
+          HotLoop is one codebase shipped as four products, all from the same tag.
+          {' '}<a href="/iot/">IoT</a> is the automation base, <a href="/edge/">Edge</a> adds the machine layer, and
+          the Gateway is both of those plus what a whole site needs: fleet management, multi-site roll-ups and
+          scheduled reports. The <a href="/edge-relay/">Edge Relay</a> is the headless one that polls and forwards.
         </p>
         <p class="muted">
-          Today the Gateway and the Edge Relay are the two you can install. IoT and Edge arrive in an upcoming
-          release, and everything they will have is in the Gateway already or on its way to it.
+          Right now the Gateway and the Edge Relay are the two you can install. IoT and Edge come in an upcoming
+          release, and nearly everything they'll carry already runs in the Gateway. So if you need one box running a
+          site today, this is the box.
         </p>
       </div>
       <div class="stack">
@@ -104,8 +100,9 @@ const gate = [
         <span class="label">Install</span>
         <h2>Helm, from the published chart.</h2>
         <p class="lede">
-          On any Kubernetes, k3s included. The chart deploys the Gateway and a TimescaleDB, generates the database
-          password, the MCP token and an admin account, and keeps them across upgrades.
+          Any Kubernetes, k3s included. The chart brings its own TimescaleDB, generates the database password, the
+          MCP token and an admin account, and keeps all three across upgrades, so an upgrade never logs you out of
+          your own plant.
         </p>
       </div>
       <div class="grid grid-2 split">
@@ -115,7 +112,7 @@ helm repo update
 helm install hotloop hotloop/hotloop --version {latest.data.version} \
   --namespace hotloop --create-namespace</code></pre>
           <p class="muted">
-            The user is <code>admin</code>. The chart generates the password and keeps it in the release Secret, and
+            The user is <code>admin</code>. The chart generates the password, keeps it in the release Secret, and
             the install notes print the command that reads it back:
           </p>
 <pre><code>kubectl -n hotloop get secret hotloop \
@@ -124,17 +121,18 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
         </div>
         <div class="stack">
           <p class="muted">
-            Then open <code>http://localhost:8080</code>, sign in, add a device and discover its tags. Writes ship
-            off. Tags are read-only until you arm them one at a time, and <code>safety.allowWrites</code> stays off
-            until you decide this pod gets to move machinery.
+            Open <code>http://localhost:8080</code>, sign in, add a device, discover its tags. Then notice that you
+            can't write to anything. That's on purpose. Every tag starts read-only and gets armed one at a time, and
+            {' '}<code>safety.allowWrites</code> stays off until you decide this pod gets to move machinery. Nobody's
+            first day with HotLoop should end with a press doing something they didn't ask for.
           </p>
           <p class="muted">
-            The image is <code>{gw.image}:{latest.data.version}</code> for amd64 and arm64, about 34 MB, and it pulls
-            anonymously. The database today is TimescaleDB, or plain PostgreSQL when the extension is missing.
-            SQLite is on its way, in the same image.
+            The image is <code>{gw.image}:{latest.data.version}</code>, amd64 and arm64, about 34 MB, and it pulls
+            anonymously. The database is TimescaleDB, or plain PostgreSQL when the extension isn't there. SQLite is
+            coming, in the same image.
           </p>
           <p class="muted">
-            There is no Quadlet unit for the Gateway yet, so off a cluster it's the chart on k3s. The
+            There's no Quadlet unit for the Gateway yet, so off a cluster it's the chart on k3s. The
             {' '}<a href="/edge-relay/">Edge Relay</a> has one today. The
             {' '}<a href="https://docs.hotloop.io/gateway/install/">install docs</a> cover the values worth setting
             before a real plant sees it.
@@ -146,55 +144,64 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
         <span class="label">Coming from 4.3.1</span>
         <h3>It is not a plain helm upgrade.</h3>
         <p>
-          Nothing between 4.3.1 and {latest.data.version} was ever published, so you get every version from 4.4.0 to
-          4.15.3 at once, under a new name. The image was <code>ghcr.io/embernet-ai/industrial-iot</code>, the chart was
-          {' '}<code>industrial-iot</code>, and every <code>IIOT_</code> variable is <code>HOTLOOP_</code> now. The
-          chart name is baked into the workload selectors, and Kubernetes won't change a selector in place. Keep the
-          release name and the namespace, and:
+          Nothing between 4.3.1 and {latest.data.version} was ever published, so you're taking every version from
+          4.4.0 to 4.15.3 in one jump, under a new name. The image was <code>ghcr.io/embernet-ai/industrial-iot</code>,
+          the chart was <code>industrial-iot</code>, and every <code>IIOT_</code> variable is <code>HOTLOOP_</code> now.
+          The chart name is baked into the workload selectors, and Kubernetes flat out refuses to change a selector
+          in place. Keep the release name and the namespace, and:
         </p>
         <ol>
-          <li><code>pg_dump</code> the database. Belt and braces.</li>
+          <li><code>pg_dump</code> the database. Belt and braces, and you'll be glad you did.</li>
           <li>Delete the old Deployment (<code>&lt;release&gt;</code>) and StatefulSet (<code>&lt;release&gt;-postgresql</code>). The database volume is its own claim and stays put.</li>
           <li><code>helm upgrade &lt;release&gt; hotloop/hotloop -f your-4.3.1-values.yaml</code>, with any <code>IIOT_</code> in <code>extraEnv</code> renamed and any <code>image.repository</code> override dropped. Not <code>--reuse-values</code>, which skips every default the chart added since.</li>
         </ol>
         <p>
-          The new database pod mounts the old volume and the Gateway migrates it forward on start. We checked that by
-          rendering both charts side by side, not by running it on a live cluster, which is exactly why step one is
-          there.
+          The new database pod mounts the old volume and the Gateway migrates it forward on start. We proved that by
+          rendering both charts side by side, not by running it on a live cluster. That gap is exactly why step one
+          exists.
         </p>
         <p>
-          There is a login now, writes default to off, and the license is the HotLoop Community License rather than
-          Apache-2.0. The API changed in a handful of places a script will notice, like empty lists being
-          {' '}<code>[]</code> and never <code>null</code>. The whole list, and the procedure in full, is in
+          Three more things will surprise a script. There's a login now. Writes default to off. And the API changed
+          in a handful of places, like empty lists coming back as <code>[]</code> and never <code>null</code>. The
+          license is the HotLoop Community License now, not Apache-2.0. The full list and the procedure are in
           {' '}<a href="https://docs.hotloop.io/gateway/upgrading/">the upgrade docs</a>.
         </p>
       </div>
     </div>
   </section>
 
-  <section class="block">
+  <section class="block" id="the-gate">
     <div class="wrap">
       <div class="section-head">
         <span class="label">The write gate</span>
-        <h2>Every write goes through one function that cannot be routed around.</h2>
+        <h2>Every write goes through one function, and nothing routes around it.</h2>
         <p class="lede">
-          From the UI, the API, an automation, or an agent. Policy lives in that one place rather than being
-          re-implemented at each call site, where one of them would eventually be forgotten.
+          The UI, the API, a rule, a script, an agent: same function, same checks, same order. Policy lives in one
+          place because the day it lives in five, somebody forgets the fifth, and that somebody's write goes to a
+          live press.
         </p>
       </div>
-      <ol class="gate">
-        {gate.map(([head, body], i) => (
-          <li class="card reveal">
-            <span class="step mono">{String(i + 1).padStart(2, '0')}</span>
-            <div><h3>{head}</h3><p>{body}</p></div>
-          </li>
-        ))}
-      </ol>
+      <WriteGate />
       <p class="prose muted after">
-        An MCP client gets no special path. <code>write_tag</code> hits the same gate an operator does, and it
-        requires a stated reason that is recorded next to the write, because an audit row nobody can interpret six
-        months later is barely better than none.
+        An agent gets no side door. <code>write_tag</code> and <code>call_service</code> hit the same gate an operator
+        does, and neither one runs without a stated reason, which lands in the audit next to the write. An audit row
+        nobody can explain six months later is just a timestamp with a guilty conscience.
       </p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Bad is not zero</span>
+        <h2>A failed read is not a value.</h2>
+        <p class="lede">
+          Every reading carries good, uncertain or bad. A driver that can't read a point still reports, marked bad,
+          because silence looks exactly like a value that hasn't changed. Alarms hold their state on a bad reading
+          instead of evaluating it, so a dead instrument shows up as a dead instrument and not as a process upset.
+        </p>
+      </div>
+      <BadNotZero />
     </div>
   </section>
 
@@ -204,29 +211,26 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
         <span class="label">Built for agents</span>
         <h2>MCP in both directions.</h2>
         <p class="muted">
-          16 tools and 4 resources, over streamable HTTP and over stdio, so an agent can read the plant and,
-          only through the gate, act on it. An agent can work in entities, the infeed pump rather than
-          register 40001, and <code>call_service</code> crosses the same gate <code>write_tag</code> does. There is also an outbound client, so a rule can call a tool on
-          another system.
+          16 tools and 4 resources in {latest.data.version}, 25 tools on main, over streamable HTTP and stdio. An
+          agent reads the plant in entities, the infeed pump rather than register 40001, and it can only act through
+          the gate. So you can ask it why line 3 is slow and let it read everything, knowing it can only touch what
+          you armed, with its reason on file.
         </p>
         <p class="muted">
-          The Sites screen uses the same mechanism. Point one gateway at the others as outbound MCP servers and it
-          asks each of them the question it would answer itself. A site that does not answer is shown as
-          unreachable, with the reason, and is left out of the roll-up, because counting a plant you cannot reach
-          as zero alarms would be the worst possible default.
+          It goes the other way too: a rule can call a tool on another MCP server.
         </p>
       </div>
       <div class="stack">
-        <span class="label">Bad is not zero</span>
-        <h2>A failed read is not a value.</h2>
+        <span class="label">Many sites</span>
+        <h2>One question, every plant.</h2>
         <p class="muted">
-          Every reading carries good, uncertain, or bad. A driver that cannot read a point still emits a reading,
-          marked bad, because silence looks identical to a value that has not changed.
+          Point one Gateway at the others and the Sites screen asks each of them the question it would answer
+          itself. Each site keeps its own database, so a dead WAN link takes out a roll-up, never a plant.
         </p>
         <p class="muted">
-          Alarm evaluation holds its previous state on a bad reading rather than evaluating it. A sensor that
-          fails to zero would otherwise trip every low alarm on the unit and look like a process event, when it is
-          an instrument problem.
+          A site that doesn't answer shows as unreachable, with the reason, and stays out of the totals. Counting a
+          plant you can't reach as zero alarms is how a head office decides everything is fine on the worst night
+          of the year.
         </p>
       </div>
     </div>
@@ -236,7 +240,7 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
     <div class="wrap">
       <div class="section-head">
         <span class="label">What it speaks</span>
-        <h2>Seven native protocols, and a table that says how far each has been proven.</h2>
+        <h2>Seven native protocols, and a table that admits how far each has been proven.</h2>
       </div>
       <div class="grid grid-4">
         {native.map((p) => (
@@ -252,11 +256,11 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
       <div class="notice after">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
         <div>
-          <strong>S7comm and EtherNet/IP have never been run against a physical PLC.</strong>
+          <strong>S7comm and EtherNet/IP have never talked to a physical PLC.</strong>
           <p>
-            Their decoding is tested thoroughly, but tested decoding is not the same as a value that came off a
-            real controller. If you are the first to point either at real hardware, treat it as commissioning and
-            check a known value before you trust a screen.
+            Their decoding is tested hard, and tested decoding is still not a value that came off a real controller.
+            If you're the first to point either one at real hardware, treat it as commissioning: check a value you
+            already know before you trust a single screen.
           </p>
         </div>
       </div>
@@ -266,22 +270,26 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
   <section class="block">
     <div class="wrap">
       <div class="section-head">
-        <span class="label">What is inside</span>
+        <span class="label">What's inside</span>
         <h2>The rest of the plant, in one binary.</h2>
+        <p class="lede">
+          No sidecar, no second service to keep alive, no runtime to babysit. One static Go binary running as a
+          non-root user with every capability dropped.
+        </p>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>Historian</h3><p>TimescaleDB, promoted to a hypertable when the extension is there and falling back to native range partitioning when it is not. Per-tag deadband filtering, so a sensor jittering in its last bit does not write a row every scan forever.</p></article>
-        <article class="card reveal"><h3>Alarms</h3><p>ISA-18.2, including <code>rtn-unack</code> for an alarm that cleared before anybody saw it. Acknowledgement and return-to-normal are independent axes, so a transient trip at 03:00 is still on the list when the morning shift arrives.</p></article>
-        <article class="card reveal"><h3>Automations</h3><p>Ten trigger types, entity state changes included, a sandboxed condition, and actions. Conditions are compiled when a rule is saved, so a broken rule is caught in the editor and not at 3am.</p></article>
-        <article class="card reveal"><h3>The Board</h3><p>The screen that gets left on a wall. Pinned tags are gauges with their alarm limits marked where they fall, layout stored with the plant so the panel PC and the laptop show the same board.</p></article>
-        <article class="card reveal"><h3>Entities</h3><p>The plant the way people talk about it: the infeed pump, not register 40001. Every tag gets an entity on its own, and a motor, a valve or a PID loop is one entity built from the tags it really is. Commands go through the write gate like everything else.</p></article>
-        <article class="card reveal"><h3>Plant tree</h3><p>One ISA-95 equipment tree, enterprise down to equipment, plus labels. Devices and entities hang off it, and the site, area and line a device already carried stay in step with it.</p></article>
-        <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook and email, so a 03:00 alarm reaches a phone. ntfy's Acknowledge button and the Discord bot's Acknowledge and Shelve buttons act on the alarm itself, through signed, single-use links. Discord has only been run against a stand-in, not the real thing. Rate limited, retried, and off by default.</p></article>
-        <article class="card reveal"><h3>Reports</h3><p>Historian numbers on a schedule, as CSV or HTML, stored and optionally emailed. Only good readings are counted, each row says how many it left out, and a period with no readings says no data, never zero.</p></article>
-        <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, so a third-party client can browse and read the Gateway's tags. Secure channels, the same users as the web login, no write handler at all, and no holes in the address space while somebody edits a device.</p></article>
-        <article class="card reveal"><h3>Edge Relay</h3><p>Its own product now, with its own image and chart: no database, no UI, about 15 MB against the Gateway's 34, polling and forwarding over Sparkplug B. Fleet management here tracks and commands the relays. <a href="/edge-relay/">More on the Edge Relay</a>.</p></article>
-        <article class="card reveal"><h3>Embedded broker</h3><p>An optional in-process MQTT broker, so a single-box install can be its own Sparkplug hub. There is no per-topic access control by design, so use a dedicated broker at scale.</p></article>
-        <article class="card reveal"><h3>Backups</h3><p>A logical snapshot taken in pure Go over the existing connection, with a restore that refuses to touch a database that already has data. It loads an older backup by column name, and refuses one from a newer version outright.</p></article>
+        <article class="card reveal"><h3>Historian</h3><p>TimescaleDB when the extension's there, native partitioning when it isn't. Per-tag deadband, so a sensor twitching in its last bit doesn't write a row every scan until the disk fills.</p></article>
+        <article class="card reveal"><h3>Alarms</h3><p>ISA-18.2, <code>rtn-unack</code> included. Acknowledged and cleared are separate, so the trip at 03:00 that fixed itself is still on the list when the morning shift walks in.</p></article>
+        <article class="card reveal"><h3>Automations</h3><p>Ten trigger types, entity state included, and conditions compiled on save. A broken rule gets caught in the editor, not at 3am halfway through a batch.</p></article>
+        <article class="card reveal"><h3>The Board</h3><p>The screen that lives on a wall. Gauges with the alarm limits drawn where they fall, and a layout stored with the plant, so the panel PC and your laptop always show the same thing.</p></article>
+        <article class="card reveal"><h3>Entities</h3><p>The infeed pump, not register 40001. Every tag gets an entity for free, and a motor, valve or PID loop is one entity built from the tags it really is. Rules, screens and agents read like the plant, not like a register map.</p></article>
+        <article class="card reveal"><h3>Plant tree</h3><p>One ISA-95 tree, enterprise down to equipment, plus labels. Filter a whole area in one click, and the site, area and line your devices already carry stay in step with it.</p></article>
+        <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook and email. Press Acknowledge on your phone and the alarm is acknowledged in the Gateway, signed and single use. Discord has only met a stand-in, not the real thing.</p></article>
+        <article class="card reveal"><h3>Reports</h3><p>Historian numbers on a schedule, as CSV or HTML, stored and emailed. Only good readings count, every row says how many it threw out, and an empty period says no data, never zero.</p></article>
+        <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, secured, and Ignition 8.3.9 reads it end to end. The SCADA you already paid for can see every tag, and there is no write handler in there to worry about.</p></article>
+        <article class="card reveal"><h3>Edge Relay</h3><p>Its own product with its own image and chart: about 15 MB against the Gateway's 34, no database, no UI. The Gateway's fleet view tracks and commands every relay. <a href="/edge-relay/">More on the Edge Relay</a>.</p></article>
+        <article class="card reveal"><h3>Embedded broker</h3><p>An optional MQTT broker in the same process, so a single box can be its own Sparkplug hub. No per-topic access control, by design. At scale, run a real broker.</p></article>
+        <article class="card reveal"><h3>Backups</h3><p>A snapshot in pure Go over the connection it already has. Restore loads an older backup by column name and flat refuses one from a newer version, so a restore can't half-work.</p></article>
       </div>
     </div>
   </section>
@@ -290,21 +298,23 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
     <div class="wrap">
       <div class="section-head">
         <span class="label">On main since {latest.data.version}</span>
-        <h2>Merged, and landing in the next release.</h2>
+        <h2>Merged, tested, and landing in the next release.</h2>
         <p class="lede">
-          None of this is in {latest.data.version}. It merged after the tag, it is on main, and it ships in the next
-          release. Until then it is not something you can install, and we are not going to pretend it is.
+          None of this is in {latest.data.version}. It merged after the tag and ships in the next release. Until then
+          you can't install it, and this page isn't going to pretend otherwise.
         </p>
       </div>
-      <div class="grid grid-2">
-        <article class="card reveal"><h3>Helpers</h3><p>Seven kinds of helper: toggles, numbers, selects, text, counters, timers and schedules. The values a plant's people own, like today's batch target or which shift is on, kept across restarts and never clamped.</p></article>
-        <article class="card reveal"><h3>Logbook</h3><p>One timeline of state changes, writes, alarms, automation runs and config changes, for the plant, one place on the tree, or one entity. The answer to "what happened just before?" in one list instead of five.</p></article>
-        <article class="card reveal"><h3>The automation language</h3><p>Condition, wait and stop steps inside a sequence, and <code>forSec</code> on a state trigger, so "the pump has been on for five minutes" is one trigger and not a hack.</p></article>
-        <article class="card reveal"><h3>Scripts</h3><p>Write the CIP cycle once, give it a name, and run it the same way from the Scripts screen, a rule, MCP or its own entity. Typed fields that are refused, never trimmed, and a dry run through the real gate. A script an agent starts still writes as the agent.</p></article>
+      <div class="grid grid-3">
+        <article class="card reveal"><h3>Recipes</h3><p>Grade A's zone temps, line speed and die gap, off the laminated sheet and into the plant in one go. Checked whole and refused whole, written in order, read back from the device. Nobody fat-fingers the changeover at 2am again.</p></article>
+        <article class="card reveal"><h3>Scripts</h3><p>Write the CIP cycle once, name it, and run it the same way from a screen, a rule, MCP or its own entity. A dry run goes through the real gate, so you find out what it would refuse before anything moves.</p></article>
+        <article class="card reveal"><h3>Blueprints</h3><p>Write the rule once with blanks, fill it in per pump. A rule keeps the blueprint version it was made from, so editing the blueprint on Wednesday doesn't quietly change the rule that was right on Tuesday.</p></article>
+        <article class="card reveal"><h3>Helpers</h3><p>Toggles, numbers, selects, text, counters, timers and schedules: the values the plant's people own, like today's batch target or which shift is on. Kept across restarts, never clamped.</p></article>
+        <article class="card reveal"><h3>Logbook</h3><p>State changes, writes, alarms, rule runs and config changes on one timeline, for the plant, one place on the tree, or one entity. "What happened right before?" becomes one list instead of five screens.</p></article>
+        <article class="card reveal"><h3>The automation language</h3><p>Condition, wait and stop steps inside a sequence, and <code>forSec</code> on a state trigger. "The pump has been on for five minutes" is one trigger now, not a timer hack.</p></article>
       </div>
       <p class="prose muted after">
-        Recipes and blueprints come next. And a native <a href="/unifi/">UniFi integration</a> is in development,
-        Network first.
+        Also on main: the read-only half of a native <a href="/unifi/">UniFi integration</a>. Its first real read
+        found a 5G backup link that had been dead for two days while the console's own summary still called it up.
       </p>
     </div>
   </section>
@@ -314,15 +324,15 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
       <div class="card cta reveal">
         <div class="stack">
           <span class="label">Licensing</span>
-          <h2>Free. For individuals, and for business through EmberNET.</h2>
+          <h2>Free. For you, and for your business through EmberNET.</h2>
           <p class="muted">
-            Every HotLoop product except Flow is source-available under the HotLoop Community License, which is not
-            an OSI open source license. There are no license keys and nothing unlocks at runtime. Individual, home,
-            hobbyist, nonprofit, and educational use is free. Any business or for-profit use goes through
-            {' '}<a href="https://embernet.ai">EmberNET</a>, where signing up is free and business use of HotLoop is
-            free. Support, SLAs, and warranties come from our Official Systems Integrators,
-            {' '}<a href="https://fireballz.ai">Fireball Industries</a>, who will also design, install, and support the
-            rollout for you.
+            The Gateway is source-available under the HotLoop Community License, which is not an OSI open source
+            license. There are no license keys and nothing unlocks at runtime. Individual, home, hobbyist, nonprofit
+            and educational use is free. Any business or for-profit use goes through
+            {' '}<a href="https://embernet.ai">EmberNET</a>, where signing up is free and running HotLoop is free.
+            Support, SLAs and warranties come from our Official Systems Integrators,
+            {' '}<a href="https://fireballz.ai">Fireball Industries</a>, who'll also design, install and support the
+            rollout if you'd rather not.
           </p>
         </div>
         <a class="btn primary" href="/license/">Read the terms</a>
@@ -339,11 +349,6 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
   .upgrade { margin-top: var(--hl-s7); display: grid; gap: var(--hl-s3); }
   .upgrade ol { padding-left: 1.3em; display: grid; gap: var(--hl-s2); color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); }
   pre { max-width: 100%; }
-
-  ol.gate { list-style: none; padding: 0; display: grid; gap: var(--hl-s3); counter-reset: none; }
-  ol.gate li { display: grid; grid-template-columns: auto 1fr; gap: var(--hl-s5); align-items: start; padding: var(--hl-s5) var(--hl-s6); }
-  ol.gate .step { font-size: var(--hl-fs-xl); font-weight: 800; color: var(--hl-ink-faint); line-height: 1; padding-top: 2px; }
-  ol.gate h3 { font-size: var(--hl-fs-md); margin-bottom: var(--hl-s1); }
   .after { margin-top: var(--hl-s6); }
 
   .split { align-items: start; gap: var(--hl-s8); }
