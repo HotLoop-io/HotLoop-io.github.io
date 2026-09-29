@@ -13,7 +13,7 @@
 export type Status = 'released' | 'unverified' | 'main' | 'building' | 'planned';
 
 // The one published version. Change it here when the next release ships.
-export const CURRENT = '4.16.0';
+export const CURRENT = '4.17.0';
 
 export const STATUS: Record<Status, { label: string; chip: 'ok' | 'info' | 'warn' | 'none' }> = {
   released: { label: `In ${CURRENT}`, chip: 'ok' },
@@ -105,12 +105,12 @@ export const product = (id: ProductId) => PRODUCTS.find((p) => p.id === id)!;
 export const IOT_FEATURES: Feature[] = [
   { name: 'Entities and the equipment tree', status: 'released', note: 'Every tag gets an entity with an id that never changes, on one ISA-95 tree. A motor is one entity built from the tags it really is, so rules and agents talk about the pump, not register 40001.' },
   { name: 'Automations', status: 'released', note: 'Ten trigger types, entity state included, compiled when you save. A broken rule dies in the editor, not at 3am halfway through a batch.' },
-  { name: 'The automation language', status: 'main', note: 'Condition, wait and stop steps inside a sequence, and forSec on a state trigger. "The pump has been on for five minutes" is one trigger, not a timer hack.' },
-  { name: 'Helpers', status: 'main', note: 'The values the plant\'s people own, like today\'s batch target or which shift is on: toggles, numbers, selects, text, counters, timers and schedules. Kept across restarts, never clamped.' },
-  { name: 'Logbook', status: 'main', note: 'State changes, writes, alarms, rule runs and config changes on one timeline, for the plant, one area or one entity. "What happened right before?" is one list, not five screens.' },
-  { name: 'Scripts', status: 'main', note: 'Write the CIP cycle once, name it, run it from a rule, a screen, MCP or its own entity. A dry run goes through the real gate, so you see the refusal before anything moves.' },
-  { name: 'Recipes', status: 'main', note: 'Grade A\'s setpoints off the laminated sheet and into the plant in one go: checked whole, refused whole, written in order and read back from the device.' },
-  { name: 'Blueprints', status: 'main', note: 'Write a rule once with blanks and fill it in per pump. Each rule keeps the blueprint version it was made from, so one edit never quietly changes forty rules.' },
+  { name: 'The automation language', status: 'released', note: 'Condition, wait and stop steps inside a sequence, and forSec on a state trigger. "The pump has been on for five minutes" is one trigger, not a timer hack.' },
+  { name: 'Helpers', status: 'released', note: 'The values the plant\'s people own, like today\'s batch target or which shift is on: toggles, numbers, selects, text, counters, timers and schedules. Kept across restarts, never clamped.' },
+  { name: 'Logbook', status: 'released', note: 'State changes, writes, alarms, rule runs and config changes on one timeline, for the plant, one area or one entity. "What happened right before?" is one list, not five screens.' },
+  { name: 'Scripts', status: 'released', note: 'Write the CIP cycle once, name it, run it from a rule, a screen, MCP or its own entity. A dry run goes through the real gate, so you see the refusal before anything moves.' },
+  { name: 'Recipes', status: 'released', note: 'Grade A\'s setpoints off the laminated sheet and into the plant in one go: checked whole, refused whole, written in order and read back from the device.' },
+  { name: 'Blueprints', status: 'released', note: 'Write a rule once with blanks and fill it in per pump. Each rule keeps the blueprint version it was made from, so one edit never quietly changes forty rules.' },
   { name: 'Dashboards', status: 'planned', note: 'A card builder, a dashboard per role or screen, and the same layout on a panel PC, a laptop and a phone. This is where it has to look better from across the room.' },
   { name: 'ISA-18.2 alarms', status: 'released', note: 'rtn-unack included, so a trip that fixed itself is still there at shift change. Shelving ends, and unshelve brings the alarm back in the state it\'s really in.' },
   { name: 'Notifications', status: 'released', note: 'ntfy, Gotify, Discord, webhooks and email. Press Acknowledge on your phone and the alarm is acknowledged, signed and single use.' },
@@ -118,7 +118,8 @@ export const IOT_FEATURES: Feature[] = [
   { name: 'MQTT and an embedded broker', status: 'released', note: 'Plain topics with JSON paths, Sparkplug B, and a broker in the same process, so one box can be the whole install.' },
   { name: 'MQTT discovery', status: 'planned', note: 'Shelly, ESPHome, Tasmota and Zigbee2MQTT devices show up by themselves. IoT doesn\'t ship until this works, because an automation base that can\'t find a smart plug is a joke.' },
   { name: 'Every protocol driver', status: 'released', note: 'OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect and HTTP. Protocols don\'t split the products, so nobody runs the Gateway just to reach one PLC.' },
-  { name: 'UniFi', status: 'building', note: 'The read-only Network driver is on main: devices, ports, PoE and WAN failover as tags. It reads WAN health the way the console\'s own checks do, so a backup link that\'s been dead for two days reads dead. Screens and writes are next.' },
+  { name: 'UniFi, read-only', status: 'released', note: 'Devices, ports, PoE, WAN failover and clients as tags, and a quiet PLC tells you which switch port it\'s on. WAN health comes from the console\'s own checks, so a backup link that\'s been dead for two days reads dead. Nothing writes to a console yet.' },
+  { name: 'UniFi screens and writes', status: 'planned', note: 'A topology map, switch faceplates, and writes through the gate starting with the locate LED. Then Protect, Access and PDUs, each only after it has run on real gear.' },
   { name: 'Backups and restore', status: 'released', note: 'Pure Go over the database connection, in IoT, Edge and the Gateway. It\'s also how you move between them, so it has to work every time.' },
 ];
 
@@ -134,7 +135,7 @@ export const EDGE_FEATURES: Feature[] = [
 
 // What the Gateway adds on top of Edge.
 export const GATEWAY_FEATURES: Feature[] = [
-  { name: 'Fleet', status: 'released', note: 'Knows every Edge Relay from its Sparkplug births and deaths, and sends rebirth, restart and a new device file without anybody driving out to the box.' },
+  { name: 'Fleet', status: 'released', note: 'Knows every Edge Relay from its Sparkplug births and deaths, and sends rebirth, restart and a new device file without anybody driving out to the box. API only, no screen yet. A pushed file lands from 4.17.0 on; 4.16.0 relays dropped it.' },
   { name: 'Multi-site', status: 'released', note: 'One Gateway asks the others what it would answer itself. A site that doesn\'t answer shows as unreachable, never as zero alarms.' },
   { name: 'Scheduled reports', status: 'released', note: 'Historian numbers on a schedule, as CSV or HTML, stored and emailed. Only good readings count, and every row says how many it threw out.' },
 ];

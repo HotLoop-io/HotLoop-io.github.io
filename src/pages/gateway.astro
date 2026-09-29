@@ -51,14 +51,15 @@ const gw = product('gateway');
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>{latest.data.version} is out, and it's the first published release since 4.3.1.</strong>
+          <strong>{latest.data.version} is out: recipes, scripts, blueprints, helpers, the logbook, and UniFi read-only.</strong>
           <p>
-            Every version from 4.4.0 to 4.15.3 got merged and never tagged, so they all ship at once, in this one.
             The image is <code>{gw.image}:{latest.data.version}</code>, the chart is <code>{gw.chart}</code> from
             {' '}<code>https://hotloop.io/hotloop</code>, and both pull with no login. The source repo is still private.
-            On 4.3.1? Don't just <code>helm upgrade</code>. The chart changed its name, Kubernetes won't rename a
-            selector in place, and you want to find that out from <a href="#upgrading">the upgrade notes</a>, not
-            from a stuck rollout.
+            On 4.16.0 it's a plain <code>helm upgrade</code>, with two catches: use
+            {' '}<code>--reset-then-reuse-values</code>, not <code>--reuse-values</code>, and back up the new
+            {' '}<code>&lt;release&gt;-secret-key</code> Secret, because the first start encrypts your device passwords
+            with it. <a href="#upgrading">The upgrade notes</a> have both. Still on 4.3.1? That one is not a plain
+            upgrade at all, and the notes have that too.
           </p>
         </div>
       </div>
@@ -141,11 +142,31 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
       </div>
 
       <div class="card upgrade reveal" id="upgrading">
+        <span class="label">Coming from 4.16.0</span>
+        <h3>A plain helm upgrade, with two catches.</h3>
+<pre><code>helm repo update hotloop
+helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --reset-then-reuse-values</code></pre>
+        <p>
+          <strong>Not <code>--reuse-values</code>.</strong> That replays 4.16.0's values, drops every default this chart
+          added, and the render dies on the first one it needs. Nothing changes on the cluster when it does, so just
+          run it again the right way.
+        </p>
+        <p>
+          <strong>Your device passwords get encrypted on the first start</strong>, with a key the chart makes in
+          {' '}<code>&lt;release&gt;-secret-key</code>. From then on that key is part of your data: a backup taken
+          after the upgrade only restores where the key is mounted, and going back to 4.16.0 hands every device the
+          sealed text as its password. So <code>pg_dump</code> before you upgrade, and keep that Secret somewhere
+          other than next to your backups, because a key sitting beside the thing it protects protects nothing.
+          Migrations 0009 to 0015 run on start, all additive.
+        </p>
+      </div>
+
+      <div class="card upgrade reveal" id="upgrading-from-431">
         <span class="label">Coming from 4.3.1</span>
         <h3>It is not a plain helm upgrade.</h3>
         <p>
-          Nothing between 4.3.1 and {latest.data.version} was ever published, so you're taking every version from
-          4.4.0 to 4.15.3 in one jump, under a new name. The image was <code>ghcr.io/embernet-ai/industrial-iot</code>,
+          4.16.0 was the first published release after 4.3.1, so from 4.3.1 you're taking every version from 4.4.0
+          on in one jump, under a new name. The image was <code>ghcr.io/embernet-ai/industrial-iot</code>,
           the chart was <code>industrial-iot</code>, and every <code>IIOT_</code> variable is <code>HOTLOOP_</code> now.
           The chart name is baked into the workload selectors, and Kubernetes flat out refuses to change a selector
           in place. Keep the release name and the namespace, and:
@@ -212,7 +233,7 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
         <span class="label">Built for agents</span>
         <h2>MCP in both directions.</h2>
         <p class="muted">
-          16 tools and 4 resources in {latest.data.version}, 25 tools on main, over streamable HTTP and stdio. An
+          25 tools and 4 resources, over streamable HTTP and stdio, up from 16 in 4.16.0. An
           agent reads the plant in entities, the infeed pump rather than register 40001, and it can only act through
           the gate. So you can ask it why line 3 is slow and let it read everything, knowing it can only touch what
           you armed, and every write it makes comes with a reason in the log.
@@ -288,7 +309,7 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
         <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook and email. Press Acknowledge on your phone and the alarm is acknowledged in the Gateway, signed and single use. Discord has only met a stand-in, not the real thing.</p></article>
         <article class="card reveal"><h3>Reports</h3><p>Historian numbers on a schedule, as CSV or HTML, stored and emailed. Only good readings count, every row says how many it threw out, and an empty period says no data, never zero.</p></article>
         <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, secured, and Ignition 8.3.9 reads it end to end. The SCADA you already paid for can see every tag, and there is no write handler in there to worry about.</p></article>
-        <article class="card reveal"><h3>Edge Relay</h3><p>Its own product with its own image and chart: about 15 MB against the Gateway's 34, no database, no UI. The Gateway's fleet view tracks and commands every relay. <a href="/edge-relay/">More on the Edge Relay</a>.</p></article>
+        <article class="card reveal"><h3>Edge Relay</h3><p>Its own product with its own image and chart: about 15 MB against the Gateway's 34, no database, no UI. The Gateway's fleet API tracks and commands every relay (no screen for it yet). <a href="/edge-relay/">More on the Edge Relay</a>.</p></article>
         <article class="card reveal"><h3>Embedded broker</h3><p>An optional MQTT broker in the same process, so a single box can be its own Sparkplug hub. No per-topic access control, by design. At scale, run a real broker.</p></article>
         <article class="card reveal"><h3>Backups</h3><p>A snapshot in pure Go over the connection it already has. Restore loads an older backup by column name and flat refuses one from a newer version, so a restore can't half-work.</p></article>
       </div>
@@ -298,11 +319,12 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
   <section class="block">
     <div class="wrap">
       <div class="section-head">
-        <span class="label">On main since {latest.data.version}</span>
-        <h2>Merged, tested, and landing in the next release.</h2>
+        <span class="label">New in {latest.data.version}</span>
+        <h2>The plant's own logic, finally somewhere it can live.</h2>
         <p class="lede">
-          None of this is in {latest.data.version}. It merged after the tag and ships in the next release. Until then
-          you can't install it, and this page isn't going to pretend otherwise.
+          Every plant runs on setpoint sheets, copy-pasted rules and whatever's on the whiteboard. This release gives
+          each of those a real home, behind the same write gate as everything else, so the plant stops depending on
+          somebody remembering the right numbers at 2am.
         </p>
       </div>
       <div class="grid grid-3">
@@ -314,9 +336,10 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
         <article class="card reveal"><h3>The automation language</h3><p>Condition, wait and stop steps inside a sequence, and <code>forSec</code> on a state trigger. "The pump has been on for five minutes" is one trigger now, not a timer hack.</p></article>
       </div>
       <p class="prose muted after">
-        Also on main: the read-only half of a native <a href="/unifi/">UniFi integration</a>. Its first real
-        read called a dead 5G backup link up, because it trusted the same stale field the console did. It reads the
-        console's health checks now, so a backup that's been dead for two days reads dead.
+        Also new: the read-only half of a native <a href="/unifi/">UniFi integration</a>, and every stored device
+        password encrypted with a key that lives outside the database. UniFi's first real read called a dead 5G
+        backup link up, because it trusted the same stale field the console did. It reads the console's health
+        checks now, so a backup that's been dead for two days reads dead.
       </p>
     </div>
   </section>

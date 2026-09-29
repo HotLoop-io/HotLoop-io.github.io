@@ -2,11 +2,11 @@
 import Base from '../layouts/Base.astro';
 import { CURRENT, STATUS, type Status } from '../lib/products';
 
-// In the order it lands, and where each piece stands on main right now. The
-// statuses come from the Gateway's ROADMAP, "UniFi", and nowhere else.
+// In the order it lands, and where each piece stands. The statuses come from
+// the Gateway's ROADMAP, "UniFi", and nowhere else.
 const order: [string, Status, string][] = [
-  ['Network, read-only', 'main', 'Every adopted device, switch port, PoE draw and WAN link, and which WAN is carrying traffic, as tags that sync themselves. A switch adopted tomorrow shows up by itself, and one that disappears goes bad quality instead of vanishing out from under its alarms.'],
-  ['Clients and OT watch', 'main', 'Clients keyed by MAC, never IP, because the controller shows addresses a machine left hours ago. Mark a network as OT, accept what is on it, and anything new raises an alarm. Link a PLC to its switch port once, and when it goes quiet it tells you which port and whether the link is up. It gets called done after a real cable pull and a phone joining SCADA on purpose.'],
+  ['Network, read-only', 'released', 'Every adopted device, switch port, PoE draw and WAN link, and which WAN is carrying traffic, as tags that sync themselves. A switch adopted tomorrow shows up by itself, and one that disappears goes bad quality instead of vanishing out from under its alarms.'],
+  ['Clients and OT watch', 'released', 'Clients keyed by MAC, never IP, because the controller shows addresses a machine left hours ago. Mark a network as OT, accept what is on it, and anything new raises an alarm. Link a PLC to its switch port once, and when it goes quiet it tells you which port and whether the link is up. Proven against a lab controller and read on two real consoles. A real cable pull and a phone joining SCADA on purpose still have to happen on real gear, and until they do, those two alarms are proven in the lab and nowhere else.'],
   ['Screens and the topology map', 'planned', 'An overview with a WAN strip that goes amber when the site is running on the backup link, and a topology map laid out the same way every time, so nothing jiggles on a wall board. Click a switch, see which lines on the Plant tree it feeds.'],
   ['Events', 'planned', "The controller's events websocket, so a switch dropping off shows up in seconds and lands in the logbook. Polling stays the truth: a dead websocket costs speed, never correctness."],
   ['Network writes', 'planned', 'Locate LED first, because it is zero risk and proves the whole write path on real gear. Then PoE mode, port power-cycle, WLAN on and off, client block, and shutting the port an unknown device just showed up on. Every one through the write gate.'],
@@ -15,29 +15,30 @@ const order: [string, Status, string][] = [
 ---
 
 <Base
-  title="UniFi in HotLoop: in development, Network first"
-  description="A native UniFi integration for HotLoop, written in Go. The read-only Network driver is on main. Screens, writes, Protect, Access and PDUs come next."
-  ogAlt="UniFi in HotLoop, in development."
+  title="UniFi in HotLoop: read-only today, Network first"
+  description="A native UniFi integration for HotLoop, written in Go. The read-only Network driver shipped in 4.17.0. Screens, writes, Protect, Access and PDUs come next."
+  ogAlt="UniFi in HotLoop, read-only in 4.17.0."
 >
   <section class="page-hero">
     <div class="wrap stack">
-      <div class="cluster"><span class="label">UniFi</span><span class="chip warn">In development</span></div>
+      <div class="cluster"><span class="label">UniFi</span><span class="chip ok">Read-only in {CURRENT}</span></div>
       <h1>Your UniFi network, next to the machines it feeds.</h1>
       <p class="lede">
         When a PLC goes quiet, the first question is always the same: is it the PLC or the wire? Today you answer it
-        by walking to the UniFi app, or to the rack. HotLoop is getting a native UniFi integration, built in Go from
+        by walking to the UniFi app, or to the rack. HotLoop has a native UniFi integration, built in Go from
         scratch, so the answer sits on the same screen as the machine: which switch port it's on, whether that port
         is up, and what it's drawing.
       </p>
       <div class="notice">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
         <div>
-          <strong>The read-only half is on main. None of it has shipped.</strong>
+          <strong>The read-only half shipped in {CURRENT}. Nothing writes to a console yet.</strong>
           <p>
-            It isn't in {CURRENT}. The Network driver and the clients work are merged and land in the next release.
-            Nothing writes to a controller yet, and nothing will until the write path has been proven on a lab
-            controller and one empty port. When it ships it goes in the base of the lineup, so
-            {' '}<a href="/products/">every HotLoop product</a> gets it, and the Edge Relay can poll a console too.
+            The Network driver and the clients work are in the Gateway today, and the Edge Relay can poll a console
+            too. Writes come only after the write path has been proven on a lab controller and one empty port, so
+            nothing in this release can cycle a port or change a setting on your network. It lives in the base of the
+            lineup, so <a href="/products/">every HotLoop product</a> gets it. The setup, down to pinning the
+            console's certificate, is in <a href="https://docs.hotloop.io/gateway/unifi/">the docs</a>.
           </p>
         </div>
       </div>
