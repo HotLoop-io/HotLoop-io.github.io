@@ -11,8 +11,6 @@ const level = (l: string) => nodes.filter((n) => n.data.level === l).length;
 // rounded in Flow's favor.
 const bench = [
   ['Image size', '25.1 MB', '717 MB', '29×'],
-  ['Memory, idle', '4.8 MB', '54.6 MB', '11×'],
-  ['Memory, under load', '12.3 MB', '179.6 MB', '15×'],
   ['Throughput', '3,460 req/s', '1,290 req/s', '2.7×'],
   ['Latency p50', '1.03 ms', '4.61 ms', '4.5×'],
   ['Latency p99', '16.72 ms', '23.14 ms', '1.4×'],
@@ -23,7 +21,7 @@ const different = [
   ['Runtime', 'Node.js, one event loop', 'Go, goroutine per node'],
   ['Back-pressure', 'None, unbounded queue', 'Bounded inbox, four policies'],
   ['Message cloning', 'First recipient aliases the sender', 'Every recipient gets a copy'],
-  ['Function sandbox', 'node:vm, explicitly not a boundary', 'goja with no host bindings, plus WASM guests with a hard memory ceiling'],
+  ['Function sandbox', 'node:vm, explicitly not a boundary', 'goja with no host bindings. A WASM host with a hard memory ceiling is built and tested, but no node uses it yet'],
   ['exec node', 'Any command, through a shell', 'Disabled until allowlisted, and no shell at all'],
   ['File nodes', 'Any path the process can reach', 'Scoped to the volume, symlinks resolved'],
   ['Credentials', 'AES-256-CTR, SHA-256 as the key', 'AES-256-GCM, Argon2id'],
@@ -105,8 +103,8 @@ const notDone = [
         <p class="lede">
           Both runtimes ran in rootless Podman on one box, with the same five-node flow file deployed to each
           unchanged, driven by the same load generator in the same sitting. Linux, 12 CPUs, the latest Node-RED
-          image, 8 connections, 30 seconds. Short version: a lot smaller, a lot lighter, faster where it counts,
-          and the caveats underneath say exactly where it doesn't count.
+          image, 8 connections, 30 seconds. Short version: a lot smaller, faster where it counts, and the caveats
+          underneath say exactly where it doesn't count.
         </p>
       </div>
       <div class="table-wrap">
@@ -139,6 +137,14 @@ const notDone = [
             per-request cost actually shows up.
           </li>
         </ol>
+        <p class="muted">
+          Memory used to be in that table too, and it's gone on purpose. Those numbers came off
+          {' '}<code>podman stats</code>, which reports what the kernel charges the container, not what the process
+          holds, and nobody could reproduce them, the author included. Measured on the native binary, Flow holds
+          16.6 MiB idle and peaks at 26.6 MiB under the same load. There's no Node-RED column next to that, because
+          nobody has measured Node-RED the same way yet, and a ratio across two methods is exactly the mistake that
+          got the old numbers pulled.
+        </p>
         <p class="muted">
           Produced by the benchmark command that ships in the repository, so you can disagree with it on your own
           hardware. The method, the flow file, the exact commands, and the caveats live in the repo's bench docs.
