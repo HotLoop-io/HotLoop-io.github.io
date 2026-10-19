@@ -1,0 +1,38 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const terms = await getEntry('legal', 'terms');
+if (!terms) throw new Error('src/legal/TERMS.md is missing, so /terms has nothing to render.');
+// A page with a hole in it is worse than no page. Fail the build on a placeholder.
+if (/\[[A-Z][A-Z ]+\]/.test(terms.body ?? '')) throw new Error('src/legal/TERMS.md still has a [PLACEHOLDER].');
+const { Content } = await render(terms);
+---
+
+<Base
+  title="HotLoop Terms of Service"
+  description="The terms for downloading, installing and using HotLoop IoT, Edge, Gateway, Edge Relay, Flow and Cascade, from HotLoop LLC."
+  ogAlt="The HotLoop Terms of Service."
+>
+  <section class="page-hero">
+    <div class="wrap stack">
+      <span class="label">Terms</span>
+      <p class="lede">
+        What you can do with HotLoop, what we do for you, and what happens when something goes wrong. Where these
+        terms and the <a href="/license/">license</a> disagree about what you may do with the software, the license wins.
+      </p>
+    </div>
+  </section>
+
+  <section class="wrap body stack">
+    <div class="legal"><Content /></div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s6); }
+  .body { max-width: 860px; padding-bottom: var(--hl-s8); }
+  .legal :global(h1) { margin-bottom: var(--hl-s3); }
+  .legal :global(h2) { font-size: var(--hl-fs-xl); margin-top: var(--hl-s7); }
+  .legal :global(p) { margin-block: var(--hl-s3); overflow-wrap: anywhere; }
+</style>
