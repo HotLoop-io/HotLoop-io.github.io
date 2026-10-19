@@ -11,6 +11,8 @@ const situations: [string, boolean][] = [
   ['A hobby project you are building for fun', true],
   ['A home lab, however large and however much of your weekend it eats', true],
   ['A class project or a student lab', true],
+  ['An accredited school or university running it for its own operations', true],
+  ['A nonprofit, or a city or other government body, running it for its own operations', true],
   ['Running it inside a company, internal only, no customers touching it', false],
   ['Deploying it as part of a product or service you sell', false],
   ['A landlord automating a rental property they operate as a business', false],
@@ -29,7 +31,7 @@ const products: [string, string][] = [
 
 <Base
   title="HotLoop license: one license for every product"
-  description="Every HotLoop product is under HotLoop's Business Source License 1.1. Free for home and lab, free for business through EmberNET, GPL-3.0 after four years."
+  description="Every HotLoop product is under HotLoop's Business Source License 1.1. Free for home and lab, free for schools, nonprofits and government, free for business through EmberNET, GPL-3.0 or later after four years."
   ogAlt="HotLoop licensing, in plain language."
 >
   <section class="page-hero">
@@ -56,6 +58,11 @@ const products: [string, string][] = [
             <td data-label="How to get it">Self-host directly, no agreement and no key</td>
           </tr>
           <tr>
+            <td>Accredited schools, nonprofits and government bodies</td>
+            <td data-label="Cost"><span class="chip ok">Free</span></td>
+            <td data-label="How to get it">Self-host directly for your own operations, no agreement and no key</td>
+          </tr>
+          <tr>
             <td>Business use</td>
             <td data-label="Cost"><span class="chip info">Free, through EmberNET</span></td>
             <td data-label="How to get it">Run it through <a href="https://embernet.ai">EmberNET</a>, HotLoop's free business-use channel</td>
@@ -78,7 +85,7 @@ const products: [string, string][] = [
       and nothing unlocks at runtime. Which product you run is which image you pulled.
     </p>
     <p>
-      Each version converts to GPL-3.0 four years after it is released. A release from today is a GPL-3.0 release in
+      Each version converts to GPL-3.0 or later four years after it is released. A release from today is a GPL-3.0 release in
       2030, so what you build on HotLoop doesn't depend on HotLoop staying in business.
     </p>
 
