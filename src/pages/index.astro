@@ -33,7 +33,7 @@ const fmt = (d: Date) =>
 
 <Base
   title="HotLoop: automation loops for the real world"
-  description="HotLoop closes the loop between what a sensor says and what a machine does: IoT, Edge, Gateway and Edge Relay from one codebase, and Flow, a flow engine."
+  description="HotLoop closes the loop between what a sensor says and what a machine does: IoT, Edge, Gateway, Edge Relay, Flow and Cascade. Free for home, lab and EmberNET."
   ogAlt="HotLoop. Automation loops for the real world."
 >
   <section class="hero">
@@ -70,7 +70,7 @@ const fmt = (d: Date) =>
         <p>Node types in Flow. Each one says how close it is to Node-RED, and the build fails if one lies about it.</p>
       </div>
       <div class="stat">
-        <div class="n mono">25.1<small>MB</small></div>
+        <div class="n mono">32.1<small>MB</small></div>
         <p>The whole Flow image. Node-RED's is 717. The caveats are on <a href="/flow/#numbers">the Flow page</a>, because a benchmark without caveats is marketing in a lab coat.</p>
       </div>
     </div>
@@ -120,13 +120,14 @@ const fmt = (d: Date) =>
     <div class="wrap">
       <div class="section-head">
         <span class="label">The products</span>
-        <h2>Four products from one codebase, and Flow beside them.</h2>
+        <h2>Four products from one codebase, with Flow and Cascade beside them.</h2>
         <p class="lede">
           Every one of the four speaks every protocol, so you pick the one that fits the box, not the one that
-          happens to have your driver. Flow is its own thing with its own license, for people who think in wires.
+          happens to have your driver. Flow is for people who think in wires, and Cascade is for the plant that has
+          to talk to everything that isn't a PLC. One license covers all six.
         </p>
       </div>
-      <div class="grid grid-2">
+      <div class="grid grid-3">
         <article class="card product reveal">
           <div class="cluster head"><h3>HotLoop Gateway</h3><span class="chip ok">Version {gwOut.data.version} is out</span></div>
           <p class="what">
@@ -139,7 +140,7 @@ const fmt = (d: Date) =>
             <li>Entities on an ISA-95 tree, so the plant has names instead of register addresses.</li>
             <li>One write gate for people, rules and agents, and a row in the audit for every refusal.</li>
           </ul>
-          <p class="license">Source-available under the HotLoop Community License. Free for individuals, and free for business through EmberNET.</p>
+          <p class="license">HotLoop Business Source License 1.1. Free for home and lab, and free for business through EmberNET.</p>
           <a class="btn primary" href="/gateway/">About the Gateway</a>
         </article>
 
@@ -155,8 +156,24 @@ const fmt = (d: Date) =>
             <li>Won't start without authentication, and ships <code>exec</code> disabled. Node-RED ships with the door open.</li>
             <li>Bounded queues, and a race detector that comes back clean on every package.</li>
           </ul>
-          <p class="license">Apache-2.0. Free for everyone, businesses included, nobody to ask.</p>
+          <p class="license">HotLoop Business Source License 1.1. Free for home and lab, and free for business through EmberNET.</p>
           <a class="btn primary" href="/flow/">About Flow</a>
+        </article>
+
+        <article class="card product reveal">
+          <div class="cluster head"><h3>HotLoop Cascade</h3><span class="chip warn">Release candidate</span></div>
+          <p class="what">
+            The plant talking to everything else. An alarm, a webhook, a schedule or an MQTT burst becomes a batch of
+            items that run through checkpointed steps against real systems, so a dead API or a rebooted box doesn't
+            lose the job.
+          </p>
+          <ul>
+            <li>Every step is checkpointed and a retry is a row in the database, with no Redis to babysit.</li>
+            <li>ntfy, Discord, Gotify, webhooks, email and ERPNext, and it never writes to your equipment.</li>
+            <li>One static Go binary on SQLite for a Pi, or Postgres with as many workers as you want.</li>
+          </ul>
+          <p class="license">HotLoop Business Source License 1.1. Free for home and lab, and free for business through EmberNET.</p>
+          <a class="btn primary" href="/cascade/">About Cascade</a>
         </article>
       </div>
       <div class="grid grid-4 lineup">
@@ -228,16 +245,16 @@ const fmt = (d: Date) =>
       <div class="card licensing reveal">
         <div>
           <span class="label">Licensing</span>
-          <h2>Two licenses, no keys.</h2>
+          <h2>One license, no keys.</h2>
           <p class="lede">
-            Flow is Apache-2.0: run it, fork it, sell it, nobody to ask. IoT, Edge, the Gateway and the Edge Relay
-            are free for individuals, and a business signs up for <a href="https://embernet.ai">EmberNET</a>, free,
-            and runs them there, free. There's no key to type in and nothing waiting behind a paywall. Want somebody
-            else to own the rollout, SLAs and warranty included? That's our Official Systems Integrators,
-            {' '}<a href="https://fireballz.ai">Fireball Industries</a>.
+            Every HotLoop product is under the HotLoop Business Source License 1.1. Home and lab use is free. A
+            business signs up for <a href="https://embernet.ai">EmberNET</a>, free, and runs HotLoop there, free.
+            Each version turns into GPL-3.0 four years after it ships. There's no key to type in and nothing waiting
+            behind a paywall. Want somebody else to own the rollout, SLAs and warranty included? That's our Official
+            Systems Integrator, {' '}<a href="https://fireballz.ai">Fireball Industries</a>.
           </p>
         </div>
-        <a class="btn primary" href="/license/">Which license applies to me?</a>
+        <a class="btn primary" href="/license/">What the license means</a>
       </div>
     </div>
   </section>

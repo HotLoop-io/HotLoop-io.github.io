@@ -18,7 +18,7 @@ export const CURRENT = '4.17.0';
 export const STATUS: Record<Status, { label: string; chip: 'ok' | 'info' | 'warn' | 'none' }> = {
   released: { label: `In ${CURRENT}`, chip: 'ok' },
   unverified: { label: 'Works on paper', chip: 'warn' },
-  main: { label: 'On main', chip: 'info' },
+  main: { label: 'Next release', chip: 'info' },
   building: { label: 'Being built', chip: 'warn' },
   planned: { label: 'Not built yet', chip: 'none' },
 };
@@ -75,7 +75,7 @@ export const PRODUCTS: Product[] = [
     image: 'ghcr.io/hotloop-io/hotloop',
     chart: 'hotloop',
     databases: 'SQLite, PostgreSQL or TimescaleDB',
-    databasesToday: 'TimescaleDB, or plain PostgreSQL. SQLite is on its way, in the same image.',
+    databasesToday: 'TimescaleDB, or plain PostgreSQL. SQLite is merged and ships in the next release, in the same image.',
     adds: 'Fleet, multi-site, reports',
   },
   {
@@ -111,25 +111,32 @@ export const IOT_FEATURES: Feature[] = [
   { name: 'Scripts', status: 'released', note: 'Write the CIP cycle once, name it, run it from a rule, a screen, MCP or its own entity. A dry run goes through the real gate, so you see the refusal before anything moves.' },
   { name: 'Recipes', status: 'released', note: 'Grade A\'s setpoints off the laminated sheet and into the plant in one go: checked whole, refused whole, written in order and read back from the device.' },
   { name: 'Blueprints', status: 'released', note: 'Write a rule once with blanks and fill it in per pump. Each rule keeps the blueprint version it was made from, so one edit never quietly changes forty rules.' },
-  { name: 'Dashboards', status: 'planned', note: 'A card builder, a dashboard per role or screen, and the same layout on a panel PC, a laptop and a phone. This is where it has to look better from across the room.' },
+  { name: 'Dashboards', status: 'main', note: 'A card builder with drag and drop: gauges, numbers, trends, entity lists, write buttons, script and recipe buttons, alarm lists, cameras and a floor plan. One layout folds from twelve columns on a panel PC to one on a phone, so nobody ever builds the phone version. A card commands nothing itself, so a button still meets the write gate.' },
   { name: 'ISA-18.2 alarms', status: 'released', note: 'rtn-unack included, so a trip that fixed itself is still there at shift change. Shelving ends, and unshelve brings the alarm back in the state it\'s really in.' },
   { name: 'Notifications', status: 'released', note: 'ntfy, Gotify, Discord, webhooks and email. Press Acknowledge on your phone and the alarm is acknowledged, signed and single use.' },
   { name: 'MCP', status: 'released', note: 'An agent can read the whole plant and touch only what you armed, through the write gate, and never without a stated reason, which goes in the system log next to the write.' },
   { name: 'MQTT and an embedded broker', status: 'released', note: 'Plain topics with JSON paths, Sparkplug B, and a broker in the same process, so one box can be the whole install.' },
-  { name: 'MQTT discovery', status: 'planned', note: 'Shelly, ESPHome, Tasmota and Zigbee2MQTT devices show up by themselves. IoT doesn\'t ship until this works, because an automation base that can\'t find a smart plug is a joke.' },
+  { name: 'MQTT discovery', status: 'main', note: 'ESPHome, Zigbee2MQTT, Tasmota and Shelly Gen2 and later show up on their own, reading, on the embedded broker or any other. Nothing is armed until a person accepts the device and arms each point, so a device announcing itself never earns the right to flip a relay. Proven against recordings of real devices, not yet a bench of them.' },
+  { name: 'Network discovery', status: 'main', note: 'mDNS and SSDP are overheard, and DHCP is heard if the deployment allows it. Finds land next to the MQTT devices with what they are and how HotLoop could talk to them. Probing stays off until a network is named, because a port sweep has knocked over PLCs. Nothing is added by itself.' },
+  { name: 'Broker logins with rules', status: 'main', note: 'A twelve dollar plug\'s login can\'t publish to the boiler\'s command topic. Logins made in HotLoop carry publish and subscribe rules from a profile, checked on every publish, subscription and outgoing message.' },
+  { name: 'Historian targets', status: 'main', note: 'Every reading also goes to the plant\'s own database: PostgreSQL and TimescaleDB, SQL Server, InfluxDB 2 and 3, MySQL and MariaDB. Same readings, same deadband, same quality. Polling never waits for a target, and one that falls behind catches up from HotLoop\'s own history.' },
+  { name: 'SQLite or PostgreSQL, your pick', status: 'main', note: 'The database is a setting. A Pi can run any product on a SQLite file with no second container and no 300 MB database image on the SD card. Moving between databases is a backup and a restore.' },
+  { name: 'Updates that roll themselves back', status: 'main', note: 'Boxes follow the stable tag and update themselves, and an update that can\'t pass its healthcheck is rolled back instead of reported as a success. That is only safe because migrations only add.' },
   { name: 'Every protocol driver', status: 'released', note: 'OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect and HTTP. Protocols don\'t split the products, so nobody runs the Gateway just to reach one PLC.' },
   { name: 'UniFi, read-only', status: 'released', note: 'Devices, ports, PoE, WAN failover and clients as tags, and a quiet PLC tells you which switch port it\'s on. WAN health comes from the console\'s own checks, so a backup link that\'s been dead for two days reads dead. Nothing writes to a console yet.' },
-  { name: 'UniFi screens and writes', status: 'planned', note: 'A topology map, switch faceplates, and writes through the gate starting with the locate LED. Then Protect, Access and PDUs, each only after it has run on real gear.' },
+  { name: 'UniFi screens and events', status: 'main', note: 'An overview with the WAN strip, a topology map laid out the same way every time, switch faceplates, clients, networks and WiFi, plus the console\'s event stream so a switch dropping off lands in the logbook in seconds. Proven against a lab controller, not yet looked at on real gear.' },
+  { name: 'UniFi writes', status: 'planned', note: 'Writes through the gate, starting with the locate LED. Then Protect, Access and PDUs, each only after it has run on real gear. Nothing writes to a console today.' },
   { name: 'Backups and restore', status: 'released', note: 'Pure Go over the database connection, in IoT, Edge and the Gateway. It\'s also how you move between them, so it has to work every time.' },
 ];
 
 // What Edge adds on top of IoT.
 export const EDGE_FEATURES: Feature[] = [
-  { name: 'HMI screens', status: 'planned', note: 'Fixed canvas screens that never reflow, ISA-101 graphics, motor and valve faceplates, and a kiosk mode for the touch panel on the machine.' },
+  { name: 'HMI screens', status: 'main', note: 'A dashboard bound to a physical screen opens full bleed on the machine\'s panel with no header, no tabs and bigger touch targets. That is all of it so far: the ISA-101 symbol library, the motor and valve faceplates and PIN sign-in for shared panels are not built.' },
   { name: 'PLCs', status: 'released', note: 'The native drivers read and write PLCs directly. S7comm and EtherNet/IP are decode tested and have never touched a physical PLC, and the integrations page says so.' },
   { name: 'CODESYS', status: 'unverified', note: 'A CODESYS runtime is an OPC UA server or a Modbus TCP slave, and HotLoop speaks both. It has not been run against a CODESYS runtime yet.' },
   { name: 'Pi PLCs', status: 'unverified', note: 'Raspberry Pi based PLCs talk Modbus TCP, and most can run CODESYS. Reached that way today. Not yet run against one on the bench.' },
   { name: 'Store-and-forward', status: 'released', note: 'Publishes upstream as a Sparkplug B edge node. When the link drops it buffers to disk and replays in order, so the historian upstream has no hole in it.' },
+  { name: 'Runs with the WAN dead', status: 'main', note: 'A real Edge was booted with its uplink pointed at a link that eats every packet, and the screen, a write, a script, a recipe, an automation and an alarm all worked. A box rebooted mid-outage used to crash-loop. The queue is memory first and disk only when the broker stops confirming, replays oldest first, and is capped at 64 MiB by default.' },
   { name: 'OPC UA server', status: 'released', note: 'Read-only and secured, and Ignition 8.3.9 reads it end to end. The SCADA you already own sees every tag without a new driver.' },
 ];
 
@@ -139,3 +146,9 @@ export const GATEWAY_FEATURES: Feature[] = [
   { name: 'Multi-site', status: 'released', note: 'One Gateway asks the others what it would answer itself. A site that doesn\'t answer shows as unreachable, never as zero alarms.' },
   { name: 'Scheduled reports', status: 'released', note: 'Historian numbers on a schedule, as CSV or HTML, stored and emailed. Only good readings count, and every row says how many it threw out.' },
 ];
+
+// Cascade is its own product and is not one of the four from the shared codebase,
+// so it lives beside PRODUCTS. It has no 0.1.0 yet: 0.1.0-rc.8 is a published
+// pre-release, and the repository and image stay private until 0.1.0 is verified
+// on a real Podman host and a real k3s cluster.
+export const CASCADE_RC = '0.1.0-rc.8';
