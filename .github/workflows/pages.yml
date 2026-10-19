@@ -39,6 +39,13 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/HotLoop-io/HotLoop-io/main/brand/tokens.css -o "$RUNNER_TEMP/canonical-tokens.css"
           diff -u --strip-trailing-cr "$RUNNER_TEMP/canonical-tokens.css" src/styles/tokens.css
 
+      # src/legal/LICENSE.md is a vendored copy of the canonical license. Fail here
+      # rather than render a license the org does not publish.
+      - name: License text matches the canonical copy
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/HotLoop-io/HotLoop-io/main/LICENSE.md -o "$RUNNER_TEMP/canonical-license.md"
+          diff -u --strip-trailing-cr "$RUNNER_TEMP/canonical-license.md" src/legal/LICENSE.md
+
       - uses: actions/configure-pages@v6
 
       # Regenerates the Open Graph cards and icons, then builds. The build also
