@@ -126,19 +126,20 @@ const nativeCount = protocols.filter((p) => p.verification !== 'gateway-mode').l
 const certified = protocols.filter((p) => p.verification === 'certified').length;
 
 const pages = [
-  ['home', 'Automation loops for the real world.', 'IoT, Edge, Gateway and Edge Relay from one codebase, and Flow beside them.', 'HotLoop'],
+  ['home', 'Automation loops for the real world.', 'IoT, Edge, Gateway and Edge Relay from one codebase, with Flow and Cascade beside them.', 'HotLoop'],
   ['products', 'One codebase. Four products.', 'HotLoop IoT, Edge, Gateway and Edge Relay, released together from one tag.', 'Products'],
-  ['iot', 'HotLoop IoT', 'The automation base for the plant floor, built in Go. Arrives in an upcoming release.', 'Product'],
+  ['iot', 'HotLoop IoT', 'The automation base for the plant floor, built in Go. Ships in the next release.', 'Product'],
   ['edge', 'HotLoop Edge', 'IoT plus the machine layer: HMI, PLCs, store-and-forward, an OPC UA server.', 'Product'],
   ['gateway', 'HotLoop Gateway', 'An industrial gateway that tells you what it has not proven. Seven native protocols, one write gate.', 'Product'],
   ['edge-relay', 'HotLoop Edge Relay', 'Poll, forward over Sparkplug B, survive the uplink dying. No database, no UI.', 'Product'],
   ['unifi', 'UniFi in HotLoop', 'In development, built natively in Go. Network first, then Protect, Access and PDUs.', 'In development'],
-  ['flow', 'HotLoop Flow', "Node-RED's idea, with a runtime that does not fall over. Apache-2.0, free for everyone.", 'Product'],
+  ['flow', 'HotLoop Flow', "Node-RED's idea, with a runtime that does not fall over. Free for home and lab, free for business through EmberNET.", 'Product'],
+  ['cascade', 'HotLoop Cascade', 'The plant talking to everything else, with every step checkpointed. Release candidate.', 'Product'],
   ['integrations', 'What it speaks, and how far each one has been proven.', `${nativeCount} Gateway protocols and ${nodeCount} Flow nodes. ${certified === 0 ? 'None are certified, and we say so.' : `${certified} certified.`}`, 'Integrations'],
-  ['license', 'Which license applies to you?', 'IoT, Edge, Gateway, Edge Relay: free for individuals, business free through EmberNET. Flow: Apache-2.0.', 'License'],
+  ['license', 'Which license applies to you?', 'One license for every HotLoop product: free for home and lab, free for business through EmberNET.', 'License'],
   ['releases', 'Release notes', 'What changed in HotLoop Gateway and HotLoop Flow, including which versions are actually published.', 'Releases'],
   ['releases-gateway', 'Gateway release notes', 'Which versions are published, and which are only merged. Every entry says which.', 'Releases'],
-  ['releases-flow', 'Flow release notes', 'Every Flow release, Apache-2.0 from the first one to the current one.', 'Releases'],
+  ['releases-flow', 'Flow release notes', 'Every Flow release, from the first one to the current one.', 'Releases'],
   ['404', 'That loop did not close.', 'The page you were looking for is not here.', 'Error 404'],
   ...protocols.map((p) => [`integrations-${p.id}`, p.name, p.summary, 'Integration']),
 ];

@@ -57,6 +57,7 @@ const v = latest.data.version;
       <div class="cluster">
         <a class="btn primary" href="#install">Install it</a>
         <a class="btn" href="/products/">Compare the lineup</a>
+        <a class="btn" href="https://docs.hotloop.io/edge-relay/overview/">Docs</a>
       </div>
     </div>
   </section>
@@ -76,9 +77,10 @@ const v = latest.data.version;
       <div class="grid grid-3">
         <article class="card reveal"><h3>Every driver</h3><p>OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect and HTTP. The same code the Gateway polls with, down to the reconnect and back-off, so a bug fixed there is fixed here.</p></article>
         <article class="card reveal"><h3>Store-and-forward</h3><p>Births, sequence numbers and deaths the way Sparkplug B says. When the link drops it queues to one file on disk and replays in order, flagged historical, when it's back. The historian upstream gets the gap filled instead of a hole.</p></article>
-        <article class="card reveal"><h3>Configured by a file</h3><p>Devices and tags come from one JSON file, read at start. An edge box has one person who can edit a file and restart a service, and that's simpler and harder to break than any live-reload we could bolt on.</p></article>
+        <article class="card reveal"><h3>Configured by a file</h3><p>Devices and tags come from one JSON file, and a file the Gateway pushes is read at start. A bad file is refused and the old one keeps running. In the next release a pushed file also applies the moment it lands: new devices connect, removed ones let go, changed ones reconnect, and the ones nobody touched keep their sessions. The Sparkplug session stays up with no death certificate, and a removed metric goes out once as null so the Gateway stops showing its last good value forever.</p></article>
+        <article class="card reveal"><h3>Finds devices that announce themselves</h3><p>Next release: the relay listens to MQTT brokers for ESPHome, Zigbee2MQTT, Tasmota and Shelly devices, read and forward only. It still can't write to a thing.</p></article>
         <article class="card reveal"><h3>No write path</h3><p>It reads and forwards. It can't take a write, serve a screen or answer an agent, because every one of those needs a signed-in person to pin the action on, and it has no users at all.</p></article>
-        <article class="card reveal"><h3>Managed from the Gateway</h3><p>The Gateway's fleet API (no screen yet) tracks every relay from its births and deaths, and sends a rebirth, a restart or a new device file over the connection the relay already dialed out on. A pushed file lands on the relay's volume and wins over the chart's devices from 4.17.0 on; a 4.16.0 relay dropped it on the floor. Commands need no way in to the edge box, and nobody drives out to it.</p></article>
+        <article class="card reveal"><h3>Managed from the Gateway</h3><p>The Gateway's fleet API (no screen yet) tracks every relay from its births and deaths, and sends a rebirth, a restart or a new device file over the connection the relay already dialed out on. In the next release every birth also carries the relay's version and image digest, so the fleet list shows what each one runs, and an admin can approve an update a relay is holding. A pushed file lands on the relay's volume and wins over the chart's devices from 4.17.0 on; a 4.16.0 relay dropped it on the floor. Commands need no way in to the edge box, and nobody drives out to it.</p></article>
         <article class="card reveal"><h3>Honest about what's proven</h3><p>Run end to end against a real Mosquitto broker, with an HTTP endpoint standing in for the plant. It hasn't polled real PLC hardware or met a certified Sparkplug host yet. Until it has, this card stays here.</p></article>
       </div>
     </div>
@@ -146,13 +148,13 @@ curl localhost:8081/status</code></pre>
           <span class="label">Licensing</span>
           <h2>Free, with no license key.</h2>
           <p class="muted">
-            The Edge Relay is under the HotLoop Community License, like the rest of the lineup. Individuals use it
-            free. Businesses sign up for <a href="https://embernet.ai">EmberNET</a> free and use it there free.
-            Support, SLAs, and warranties come from our Official Systems Integrators,
+            The Edge Relay is under the HotLoop Business Source License 1.1, like the rest of the lineup. Home and
+            lab use is free. Business use is free through <a href="https://embernet.ai">EmberNET</a>.
+            Support, SLAs, and warranties come from our Official Systems Integrator,
             {' '}<a href="https://fireballz.ai">Fireball Industries</a>.
           </p>
         </div>
-        <a class="btn primary" href="/license/">Read the terms</a>
+        <a class="btn primary" href="/license/">Read the license</a>
       </div>
     </div>
   </section>

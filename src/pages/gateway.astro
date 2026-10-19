@@ -61,12 +61,19 @@ const gw = product('gateway');
             with it. <a href="#upgrading">The upgrade notes</a> have both. Still on 4.3.1? That one is not a plain
             upgrade at all, and the notes have that too.
           </p>
+          <p>
+            <strong>Merged, and in the next release:</strong> the four-product split, MQTT and network discovery,
+            historian targets in your own database, SQLite as a database choice, dashboards, UniFi screens and events,
+            and boxes that update themselves from the stable tag and roll a bad update back. None of it is in
+            {' '}{latest.data.version}, and nothing here claims it is.
+          </p>
         </div>
       </div>
       <div class="cluster">
         <a class="btn primary" href="#install">Install it</a>
         <a class="btn" href="#the-gate">Try to break the write gate</a>
         <a class="btn" href="/releases/gateway/">Release notes</a>
+        <a class="btn" href="https://docs.hotloop.io/gateway/overview/">Docs</a>
       </div>
     </div>
   </section>
@@ -83,7 +90,7 @@ const gw = product('gateway');
           scheduled reports. The <a href="/edge-relay/">Edge Relay</a> is the headless one that polls and forwards.
         </p>
         <p class="muted">
-          Right now the Gateway and the Edge Relay are the two you can install. IoT and Edge come in an upcoming
+          Right now the Gateway and the Edge Relay are the two you can install. IoT and Edge ship in the next
           release, and nearly everything they'll carry already runs in the Gateway. So if you need one box running a
           site today, this is the box.
         </p>
@@ -130,7 +137,7 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
           <p class="muted">
             The image is <code>{gw.image}:{latest.data.version}</code>, amd64 and arm64, about 34 MB, and it pulls
             anonymously. The database is TimescaleDB, or plain PostgreSQL when the extension isn't there. SQLite is
-            coming, in the same image.
+            merged, in the same image, and ships in the next release.
           </p>
           <p class="muted">
             There's no Quadlet unit for the Gateway yet, so off a cluster it's the chart on k3s. The
@@ -184,7 +191,7 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
         <p>
           Three more things will surprise a script. There's a login now. Writes default to off. And the API changed
           in a handful of places, like empty lists coming back as <code>[]</code> and never <code>null</code>. The
-          license is the HotLoop Community License now, not Apache-2.0. The full list and the procedure are in
+          license is HotLoop's own now, the Business Source License 1.1. The full list and the procedure are in
           {' '}<a href="https://docs.hotloop.io/gateway/upgrading/">the upgrade docs</a>.
         </p>
       </div>
@@ -351,16 +358,16 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
           <span class="label">Licensing</span>
           <h2>Free. For you, and for your business through EmberNET.</h2>
           <p class="muted">
-            The Gateway is source-available under the HotLoop Community License, which is not an OSI open source
-            license. There are no license keys and nothing unlocks at runtime. Individual, home, hobbyist, nonprofit
-            and educational use is free. Any business or for-profit use goes through
-            {' '}<a href="https://embernet.ai">EmberNET</a>, where signing up is free and running HotLoop is free.
-            Support, SLAs and warranties come from our Official Systems Integrators,
+            The Gateway is source-available under the HotLoop Business Source License 1.1, which is not an OSI open
+            source license. There are no license keys and nothing unlocks at runtime. Home and lab use is free. Any
+            business use is free through {' '}<a href="https://embernet.ai">EmberNET</a>, where signing up is free and
+            running HotLoop is free.
+            Support, SLAs and warranties come from our Official Systems Integrator,
             {' '}<a href="https://fireballz.ai">Fireball Industries</a>, who'll also design, install and support the
             rollout if you'd rather not.
           </p>
         </div>
-        <a class="btn primary" href="/license/">Read the terms</a>
+        <a class="btn primary" href="/license/">Read the license</a>
       </div>
     </div>
   </section>

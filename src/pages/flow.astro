@@ -10,7 +10,7 @@ const level = (l: string) => nodes.filter((n) => n.data.level === l).length;
 // Straight from the benchmark table in Flow's own README. Nothing here is
 // rounded in Flow's favor.
 const bench = [
-  ['Image size', '25.1 MB', '717 MB', '29×'],
+  ['Image size', '32.1 MB', '717 MB', '22×'],
   ['Throughput', '3,460 req/s', '1,290 req/s', '2.7×'],
   ['Latency p50', '1.03 ms', '4.61 ms', '4.5×'],
   ['Latency p99', '16.72 ms', '23.14 ms', '1.4×'],
@@ -34,18 +34,18 @@ const different = [
 ];
 
 const notDone = [
-  ['Partial deploy.', 'A redeploy currently restarts every node rather than only the ones that changed. Node-RED diffs. This is the last big runtime gap.'],
-  ['Link Call, and Link Out’s return mode.', 'Both are refused with an error rather than silently doing nothing, which is the right behavior while they do not exist, and is still a gap.'],
-  ['JSONata.', 'Every jsonata-typed property is refused today. Refusing beats returning the expression text and letting a flow route on a literal string, but it is also the most common thing an imported flow trips over.'],
-  ['Cron-style Inject scheduling.', 'Interval and startup injection work. “At a specific time, on these days” does not, and crontab is ignored.'],
-  ['Editor click-through for the newer nodes.', 'The dialogs are descriptor-driven, so they render, but nothing has been clicked through by hand for the HTTP, WebSocket, TCP, or UDP nodes.'],
-  ['Multipart uploads on HTTP In, and cookies on HTTP Response.', ''],
+  ['S7 and EtherNet/IP.', 'Modbus TCP, OPC UA and Sparkplug B are built and tried against a real simulator or broker. S7 and EtherNet/IP nodes are not built, so a flow that has to talk to a Siemens or Rockwell PLC today goes through the Gateway.'],
+  ['HotLoop nodes.', 'Entity changes in, entity state, call a script, apply a recipe, with every command through HotLoop’s write gate. Not built. Until it is, a Flow node that writes to equipment goes straight to the device and not through the gate.'],
+  ['Plugins without npm.', 'The WASM host with a hard memory ceiling exists and no node uses it. The plugin format, the capability grants and the signing are not built. Community nodes stay unsupported, because they are npm packages.'],
+  ['Typed wires and MCP.', 'Schemas on ports, flows served as MCP tools and an MCP client node are all planned and none of them is built.'],
+  ['A real Pi.', 'The durable store’s writes per hour are measured on x86 under WSL. A Pi 4 and a Zero 2 W have not run it yet, and an SD card is the first place a context store would show a bug.'],
+  ['The editor.', 'It is hand-built TypeScript and it does not look like the rest of HotLoop yet. A rewrite comes last, after a design pass, and the browser tests are the bar it has to clear.'],
 ];
 ---
 
 <Base
   title="HotLoop Flow: a Node-RED alternative in Go"
-  description="A Node-RED-compatible flow engine in one static Go binary, with bounded queues, a goroutine per node, and an Apache-2.0 license for everyone."
+  description="A Node-RED-compatible flow engine in one static Go binary, with bounded queues and a goroutine per node. Free for home and lab and for business via EmberNET."
   ogAlt="HotLoop Flow, a flow engine in one static Go binary."
 >
   <JsonLd
@@ -59,7 +59,7 @@ const notDone = [
         'A flow engine in one static Go binary that reads Node-RED v1 flow files, with bounded queues, a goroutine per node, and a security posture built for plant floors.',
       applicationCategory: 'DeveloperApplication',
       operatingSystem: 'Linux',
-      license: 'https://www.apache.org/licenses/LICENSE-2.0',
+      license: 'https://hotloop.io/license/',
       isAccessibleForFree: true,
       softwareVersion: '2.1.0',
       publisher: { '@id': 'https://hotloop.io/#organization' },
@@ -67,7 +67,7 @@ const notDone = [
   />
   <section class="page-hero">
     <div class="wrap stack">
-      <div class="cluster"><span class="label">HotLoop Flow</span><span class="chip ok">Apache-2.0</span></div>
+      <div class="cluster"><span class="label">HotLoop Flow</span><span class="chip ok">License: BSL 1.1</span></div>
       <h1>Node-RED's idea, with a runtime that does not fall over.</h1>
       <p class="lede">
         A flow engine in Go, one static binary, with its own editor and a scheduler that holds up when a sensor
@@ -83,7 +83,8 @@ const notDone = [
             The code is at <a href="https://github.com/HotLoop-io/hotloop-flow">github.com/HotLoop-io/hotloop-flow</a>, and
             the image is <code>ghcr.io/hotloop-io/hotloop-flow</code>. Version 0.1.0 was published as Emberwire, and 2.0.0
             does not read what the old names wrote, so read the <a href="/releases/flow/">release notes</a> before you
-            upgrade. It is Apache-2.0 and stays Apache-2.0.
+            upgrade. Flow is under the same HotLoop Business Source License 1.1 as the rest of the lineup: free for
+            home and lab, and free for business through <a href="https://embernet.ai">EmberNET</a>.
           </p>
         </div>
       </div>
@@ -91,6 +92,7 @@ const notDone = [
         <a class="btn primary" href="https://docs.hotloop.io/flow/install/">Install it</a>
         <a class="btn" href="/integrations/#flow-nodes">Browse the {nodes.length} nodes</a>
         <a class="btn" href="/releases/flow/">Release notes</a>
+        <a class="btn" href="https://docs.hotloop.io/flow/overview/">Docs</a>
       </div>
     </div>
   </section>
@@ -248,9 +250,36 @@ const notDone = [
       </div>
       <div class="grid grid-2 after">
         <div class="card"><h3 class="t-md">Not supported at all: community nodes</h3><p>They are npm packages that need Node.js. There is no version of this where they work.</p></div>
-        <div class="card"><h3 class="t-md">Not supported at all: JSONata</h3><p>Any property typed <code>jsonata</code> is refused with an error rather than ignored, because returning the expression text would make a flow look like it works while routing on a literal string.</p></div>
+        <div class="card"><h3 class="t-md">JSONata, checked against the published examples</h3><p>Every property typed <code>jsonata</code> is evaluated by a pure Go JSONata 2.x, and it passes 1,673 of the 1,686 cases in the published test suite. The 13 it misses are listed in the repository.</p></div>
       </div>
       <p class="after"><a class="btn" href="/integrations/#flow-nodes">Browse all {nodes.length} nodes</a></p>
+    </div>
+  </section>
+
+  <section class="block" id="next">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Next release</span>
+        <h2>Merged on main, not in 2.1.0.</h2>
+        <p class="lede">
+          None of this is in a published image yet. It is merged and tested, and it ships with the next version, so
+          2.1.0 is still what you can pull.
+        </p>
+      </div>
+      <div class="grid grid-3">
+        <article class="card reveal">
+          <div class="cluster head"><h3>Tracing and replay</h3><span class="chip info">Next release</span></div>
+          <p>Click a debug message and the canvas lights up the path it took, with timing and the payload at every hop, through splits, joins and subflows. Replay a captured message into a draft of the flow and compare the output, or turn a trace into a test. The trace buffer is bounded, and OpenTelemetry export is proven against a real collector.</p>
+        </article>
+        <article class="card reveal">
+          <div class="cluster head"><h3>Durable state</h3><span class="chip info">Next release</span></div>
+          <p>Context survives a restart, in SQLite with no cgo. Mark a wire durable and its queue touches the disk only when the node behind it stops answering. A real InfluxDB was killed for ten minutes under steady input and brought back, and the rows came out none missing and none doubled. The consequence: a historian going down for an hour no longer costs you an hour of readings.</p>
+        </article>
+        <article class="card reveal">
+          <div class="cluster head"><h3>The plant floor</h3><span class="chip info">Next release</span></div>
+          <p>Modbus TCP read and write, OPC UA read, subscribe and write, and Sparkplug B as an edge node and as a host. Modbus was tried against pymodbus, OPC UA against Microsoft's OPC PLC, and Sparkplug B against a real Mosquitto, each with the device silent and switched off. None has met a physical PLC.</p>
+        </article>
+      </div>
     </div>
   </section>
 
@@ -262,7 +291,7 @@ const notDone = [
         <p class="lede">
           Verified against real infrastructure, not just its own encoders: MQTT, InfluxDB 2.7 and PostgreSQL 16 in
           Podman. The race detector is clean on every package. Here's what isn't done, roughly in the order it bugs
-          me, so you know before you import a flow that trips on one of them.
+          me, so you know before you plan around it.
         </p>
       </div>
       <ul class="notdone">
@@ -280,10 +309,11 @@ const notDone = [
       <div class="card cta reveal">
         <div class="stack">
           <span class="label">Licensing</span>
-          <h2>Apache-2.0. Free for everyone.</h2>
+          <h2>One license, like the rest of HotLoop.</h2>
           <p class="muted">
-            A business can run Flow, change it and ship it commercially without asking anybody, EmberNET included.
-            That's the point, and it's why Flow isn't under the Community License the rest of the lineup uses.
+            Flow is under the HotLoop Business Source License 1.1. Home and lab use is free, and business use is free
+            through <a href="https://embernet.ai">EmberNET</a>. Each version converts to GPL-3.0 four years after
+            its release. The Flow repository is public, so you can read all of it.
           </p>
         </div>
         <a class="btn primary" href="/license/">Read the license</a>
