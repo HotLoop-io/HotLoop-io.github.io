@@ -137,6 +137,7 @@ const pages = [
   ['cascade', 'HotLoop Cascade', 'The plant talking to everything else, with every step checkpointed. Release candidate.', 'Product'],
   ['integrations', 'What it speaks, and how far each one has been proven.', `${nativeCount} Gateway protocols and ${nodeCount} Flow nodes. ${certified === 0 ? 'None are certified, and we say so.' : `${certified} certified.`}`, 'Integrations'],
   ['license', 'Which license applies to you?', 'One license for every HotLoop product: free for home and lab, free for business through EmberNET.', 'License'],
+  ['terms', 'HotLoop Terms of Service', 'What you can do with HotLoop, what we do for you, and what happens when something goes wrong.', 'Terms'],
   ['releases', 'Release notes', 'What changed in HotLoop Gateway and HotLoop Flow, including which versions are actually published.', 'Releases'],
   ['releases-gateway', 'Gateway release notes', 'Which versions are published, and which are only merged. Every entry says which.', 'Releases'],
   ['releases-flow', 'Flow release notes', 'Every Flow release, from the first one to the current one.', 'Releases'],

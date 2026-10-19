@@ -13,7 +13,7 @@ Node 22.12 or newer is required, and `.nvmrc` pins the version CI uses.
 ## How it is put together
 
 - **Design tokens** live in `src/styles/tokens.css`, a vendored copy of `brand/tokens.css` in [HotLoop-io/HotLoop-io](https://github.com/HotLoop-io/HotLoop-io). CI fetches the canonical file and fails the build if the two differ, so change a value there first and then copy it here.
-- **The license text** on `/license` is `src/legal/LICENSE.md`, a vendored copy of `LICENSE.md` in the same repository as the tokens. CI diffs it against the canonical file the same way. `/terms` is not built yet: `TERMS.md` there still has placeholders for the effective date and the address, and I won't publish a page with holes in it.
+- **The license and terms text** on `/license` and `/terms` is `src/legal/LICENSE.md`, a vendored copy of `LICENSE.md` in the same repository as the tokens. CI diffs it against the canonical file the same way. `/terms` renders `src/legal/TERMS.md` the same way, and the build fails if it has a `[PLACEHOLDER]` in it.
 - **Fonts** are Inter Variable and JetBrains Mono, self-hosted through `@fontsource`. Nothing loads from a CDN.
 - **Integrations data** is in `src/data`. `protocols.json` is written from the Gateway's protocol docs. `nodes.json` is generated from Flow's compatibility document with `node scripts/import-flow-compat.mjs <path to compatibility.md>`.
 - **Release notes** are markdown files in `src/content/releases/<product>/<version>.md`. To add one, add a file. Each states whether it has actually been published, and the page prints that.

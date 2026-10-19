@@ -41,10 +41,12 @@ jobs:
 
       # src/legal/LICENSE.md is a vendored copy of the canonical license. Fail here
       # rather than render a license the org does not publish.
-      - name: License text matches the canonical copy
+      - name: License and terms match the canonical copies
         run: |
           curl -fsSL https://raw.githubusercontent.com/HotLoop-io/HotLoop-io/main/LICENSE.md -o "$RUNNER_TEMP/canonical-license.md"
           diff -u --strip-trailing-cr "$RUNNER_TEMP/canonical-license.md" src/legal/LICENSE.md
+          curl -fsSL https://raw.githubusercontent.com/HotLoop-io/HotLoop-io/main/TERMS.md -o "$RUNNER_TEMP/canonical-terms.md"
+          diff -u --strip-trailing-cr "$RUNNER_TEMP/canonical-terms.md" src/legal/TERMS.md
 
       - uses: actions/configure-pages@v6
 
