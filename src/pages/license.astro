@@ -1,5 +1,10 @@
 ---
+import { getEntry, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
+
+const licenseText = await getEntry('legal', 'license');
+if (!licenseText) throw new Error('src/legal/LICENSE.md is missing, so /license has no license to render.');
+const { Content: LicenseText } = await render(licenseText);
 
 const situations: [string, boolean][] = [
   ['Automating your own house', true],
@@ -112,9 +117,16 @@ const products: [string, string][] = [
     </p>
 
     <p class="muted">
-      This page is a plain-language summary and the license text wins every argument, including this one. Questions
-      go to <a href="mailto:support@hotloop.io">support@hotloop.io</a>.
+      The summary above is plain language and the license text below wins every argument, including this one.
+      Questions go to <a href="mailto:support@hotloop.io">support@hotloop.io</a>.
     </p>
+
+    <h2 id="text">The license text</h2>
+    <p class="muted">
+      This is HotLoop-io/HotLoop-io <a href="https://github.com/HotLoop-io/HotLoop-io/blob/main/LICENSE.md">LICENSE.md</a>,
+      word for word. The site's build fails if this copy and that one ever differ.
+    </p>
+    <div class="legal"><LicenseText /></div>
   </section>
 </Base>
 
@@ -124,5 +136,7 @@ const products: [string, string][] = [
   .body h2 { font-size: var(--hl-fs-xl); margin-top: var(--hl-s7); }
   td.cost { width: 1%; white-space: nowrap; }
   @media (max-width: 480px) { td.cost { white-space: normal; } }
+  .legal { padding: var(--hl-s5); border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); background: var(--hl-card); }
+  .legal :global(p) { margin-block: var(--hl-s3); overflow-wrap: anywhere; }
   ul.products { display: flex; flex-wrap: wrap; gap: var(--hl-s2) var(--hl-s5); list-style: none; padding: 0; }
 </style>

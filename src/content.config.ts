@@ -95,4 +95,11 @@ const releases = defineCollection({
   }),
 });
 
-export const collections = { protocols, nodes, releases };
+// The license text, vendored byte for byte from HotLoop-io/HotLoop-io. CI diffs it
+// against the canonical file and fails the build if they differ, so this page can
+// never show a license the org does not publish.
+const legal = defineCollection({
+  loader: glob({ pattern: '*.md', base: 'src/legal' }),
+});
+
+export const collections = { protocols, nodes, releases, legal };
