@@ -32,7 +32,7 @@
     "type": "inject",
     "category": "Common",
     "level": "partial",
-    "notes": "Interval and startup injection are supported. Cron-style scheduling (\"at a specific time\", \"on these days\") is not implemented in this build. Ignored properties: `crontab`."
+    "notes": "Interval, startup and cron-scheduled injection are supported. The crontab is read the way Node-RED's own scheduler, cronosjs, reads it, in the process's local time, including what it does with the hour that goes missing or repeats when the clocks change. A manual inject from the admin API always sends the configured properties: Node-RED's inject-with-these-values (msg.__user_inject_props__) is not implemented."
   },
   {
     "id": "junction",
@@ -40,6 +40,13 @@
     "category": "Common",
     "level": "full",
     "notes": ""
+  },
+  {
+    "id": "link-call",
+    "type": "link call",
+    "category": "Common",
+    "level": "full",
+    "notes": "Calls a Link In and sends on whatever a Link Out in return mode sends back, including calls made from inside a call. A static target is chosen by id. In dynamic mode msg.target is an id or a name, looked up on the calling flow first and then across every flow, never inside a subflow instance. A call with no return within the timeout raises an error with the original message; a return that turns up after that still goes out, as it does in Node-RED."
   },
   {
     "id": "link-in",
@@ -52,8 +59,8 @@
     "id": "link-out",
     "type": "link out",
     "category": "Common",
-    "level": "partial",
-    "notes": "Link Out in \"send to\" mode is supported. \"Return to calling Link Call\" requires the Link Call node, which is not implemented in this build."
+    "level": "divergent",
+    "notes": "Both modes are supported: send to Link In nodes, and return to the Link Call that sent the message. One deliberate difference: a Link In that is not running, and a return with no Link Call to go back to, raise an error a Catch node can see. Node-RED drops the first quietly and only logs a warning for the second, which makes a deleted or mistyped link very hard to find."
   },
   {
     "id": "status",
@@ -63,11 +70,32 @@
     "notes": ""
   },
   {
+    "id": "hotloop-flow-ethernetip",
+    "type": "hotloop-flow-ethernetip",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own EtherNet/IP connection, for tag access on ControlLogix, CompactLogix and Micro800 controllers. It connects on the first request, drops the connection on any failure that makes it untrustworthy, and reconnects on the next one."
+  },
+  {
     "id": "hotloop-flow-influxdb",
     "type": "hotloop-flow-influxdb",
     "category": "Config",
     "level": "flow-only",
     "notes": "Flow's own InfluxDB connection, targeting the App Store's influxdb-app."
+  },
+  {
+    "id": "hotloop-flow-modbus",
+    "type": "hotloop-flow-modbus",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own Modbus TCP connection. It connects on the first request, drops the connection on any failure that makes it untrustworthy, and reconnects on the next one."
+  },
+  {
+    "id": "hotloop-flow-opcua",
+    "type": "hotloop-flow-opcua",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own OPC UA connection. It connects on first use, notices when the server goes away, and opens a new session on the next request or, for a subscription, by itself with a growing wait between tries."
   },
   {
     "id": "hotloop-flow-postgres",
@@ -77,18 +105,39 @@
     "notes": "Flow's own PostgreSQL connection. Targets the App Store's postgresql-app and timescale-db-pod, which share a wire protocol."
   },
   {
+    "id": "hotloop-flow-s7",
+    "type": "hotloop-flow-s7",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own Siemens S7 connection, over ISO on TCP. It connects on the first request, drops the connection on any failure that makes it untrustworthy, and reconnects on the next one."
+  },
+  {
+    "id": "hotloop-flow-sparkplug",
+    "type": "hotloop-flow-sparkplug",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own Sparkplug B connection, either as an edge node or as a host application, on MQTT 3.1.1. An edge node can wait for a primary host application's STATE before it is born and can move through a list of brokers. A host application connects to one broker. Metrics carry arrays, DataSet, Template and PropertySet values. A metric's MetaData (files and multi-part bytes) is not carried."
+  },
+  {
     "id": "mqtt-broker",
     "type": "mqtt-broker",
     "category": "Config",
     "level": "partial",
-    "notes": "Connection, credentials, TLS, clean session, keepalive, birth and close messages are supported. Will messages and MQTT v5 properties are not implemented in this build. Ignored properties: `willTopic`, `willPayload`, `protocolVersion:5`."
+    "notes": "MQTT 3.1, 3.1.1 and 5. Connection, credentials, TLS, clean session, keepalive, and birth, close and will messages with their QoS, retain flag and, on version 5, their properties and the will delay. On version 5 also the session expiry interval and connect user properties. The receive maximum, maximum packet size and topic alias maximum settings are not implemented, and the broker's defaults apply. TLS is Node-RED's usetls with a tls-config for the CA, client certificate and server name; a broker saved by an earlier Flow with tls: true still connects over TLS with the system roots. Ignored properties: `receiveMaximum`, `maximumPacketSize`, `topicAliasMaximum`."
+  },
+  {
+    "id": "tls-config",
+    "type": "tls-config",
+    "category": "Config",
+    "level": "divergent",
+    "notes": "Certificate, key and CA from files, from environment variables, from uploaded PEM text, or from a PKCS#12 bundle, with a passphrase for an encrypted key or bundle, server name, ALPN protocol and the verify switch. Two differences. A path is read through the secret scope, the data directory plus secrets.allowedPaths, because a TLS config that can read any path is a way to probe the filesystem from the editor. And a config that is broken, a certificate without its key or a file that is not there, fails to deploy. Node-RED logs it and carries on, so the connection quietly goes out without the client certificate you configured."
   },
   {
     "id": "websocket-client",
     "type": "websocket-client",
     "category": "Config",
     "level": "partial",
-    "notes": "Connects out and reconnects on its own when the connection drops, in payload mode or whole-message mode. Per-node TLS configuration is not implemented; the system trust store is used. Ignored properties: `tls`."
+    "notes": "Connects out and reconnects on its own when the connection drops, in payload mode or whole-message mode. A wss:// URL checks the server against the system roots, or against a tls-config's CA, with its client certificate and server name, as in Node-RED."
   },
   {
     "id": "websocket-listener",
@@ -116,7 +165,7 @@
     "type": "change",
     "category": "Function",
     "level": "partial",
-    "notes": "set, change, delete and move are supported for msg, flow and global targets. JSONata-typed values are not evaluated in this build."
+    "notes": "set, change, delete and move are supported for msg, flow and global targets, including JSONata-typed values. The deep copy option is ignored: a value set from another property is shared with it, as it is in Node-RED with the option off. Ignored properties: `dc`."
   },
   {
     "id": "delay",
@@ -130,7 +179,7 @@
     "type": "exec",
     "category": "Function",
     "level": "divergent",
-    "notes": "The three outputs, both buffered and streaming modes, the timeout and the appended message property all behave as Node-RED's do. Two things do not, and neither is negotiable. There is no shell: the command line is split on quoting rules only, and an unquoted shell metacharacter is refused rather than run, so one allowed command cannot become an arbitrary one. And the node is disabled until an operator names the commands a flow may run. Node-RED's exec node against a default configuration is CVE-2025-41656, unauthenticated remote code execution. Output is capped per stream; a command that exceeds it is killed and reported rather than being allowed to fill the heap. A command that forks children of its own may leave them behind when it is killed."
+    "notes": "The three outputs, both buffered and streaming modes, the timeout and the appended message property all behave as Node-RED's do. Two things do not, and neither is negotiable. There is no shell: the command line is split on quoting rules only, and an unquoted shell metacharacter is refused rather than run, so one allowed command cannot become an arbitrary one. And the node is disabled until an operator names the commands a flow may run. Node-RED's exec node runs anything, and Node-RED starts with no authentication by default; a vendor shipping that default became CVE-2025-41656 (Pilz IndustrialPI 4, VDE-2025-045), unauthenticated command execution on the device. Output is capped per stream; a command that exceeds it is killed and reported rather than being allowed to fill the heap. A command that forks children of its own may leave them behind when it is killed."
   },
   {
     "id": "function",
@@ -158,7 +207,7 @@
     "type": "switch",
     "category": "Function",
     "level": "partial",
-    "notes": "All comparison operators are supported except jsonata_exp, which needs an expression engine this build does not ship. Ignored properties: `jsonata_exp`."
+    "notes": "Every comparison rule is supported, including a JSONata expression rule, which sees $I and $N for a message that is part of a sequence. The sequence rules head, tail and index are not implemented, and a rule using one fails every message with an unknown operator error. Ignored properties: `head`, `tail`, `index`."
   },
   {
     "id": "template",
@@ -175,60 +224,144 @@
     "notes": "Both messages, extend-on-retrigger, wait-to-be-reset, msg.reset, the msg.delay override, per-topic grouping and the second output are implemented. The divergence is the same as the Delay node's: the number of simultaneously armed timers is bounded, and a message past the limit is refused to a Catch node rather than silently arming another. Timers with a deadline that are still armed when the flow stops fire immediately rather than being discarded; a timer waiting to be reset is dropped, because firing it would invent an event that never happened."
   },
   {
+    "id": "ethernetip-read",
+    "type": "ethernetip read",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own EtherNet/IP tag read. Not the same configuration as the community node-red-contrib-cip-ethernet-ip, which does not run here."
+  },
+  {
+    "id": "ethernetip-write",
+    "type": "ethernetip write",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own EtherNet/IP tag write. Not the same configuration as the community node-red-contrib-cip-ethernet-ip, which does not run here."
+  },
+  {
     "id": "http-in",
     "type": "http in",
     "category": "Network",
     "level": "divergent",
-    "notes": "Serves a path, with Express-style :params and a trailing *, and builds the same msg.req / msg.res / msg.payload shape Node-RED does, including JSON, form-encoded and raw bodies. Three deliberate differences. A request that no HTTP Response node answers is closed with 504 after a timeout instead of being held open forever, because Node-RED's version leaks a connection per request until the process runs out of sockets and stops answering with nothing in the log. Two nodes claiming the same method and path is refused at deploy time rather than one of them silently never firing. And a path that would shadow the editor or the admin API is refused for the same reason. File uploads are not parsed into msg.files; a multipart body arrives as raw bytes. Ignored properties: `upload`, `swaggerDoc`."
+    "notes": "Serves a path, with Express-style :params and a trailing *, and builds the same msg.req / msg.res / msg.payload shape Node-RED does, including JSON, form-encoded and raw bodies. Three deliberate differences. A request that no HTTP Response node answers is closed with 504 after a timeout instead of being held open forever, because Node-RED's version leaks a connection per request until the process runs out of sockets and stops answering with nothing in the log. Two nodes claiming the same method and path is refused at deploy time rather than one of them silently never firing. And a path that would shadow the editor or the admin API is refused for the same reason. Uploads parse the way multer does in Node-RED: text fields into msg.payload, files into msg.req.files, a broken upload answered with 500. One bound multer lacks: an array index over 10,000 in a field name, a[99999999], is refused instead of building a sparse array that long. msg.req.cookies is cookie-parser's, j: values included. Ignored properties: `swaggerDoc`."
   },
   {
     "id": "http-request",
     "type": "http request",
     "category": "Network",
     "level": "partial",
-    "notes": "Method, URL, headers, basic authentication, redirects and the three return types, with msg.url, msg.method and msg.headers overriding the node. The response body is size-capped and the call is bounded by a timeout, neither of which Node-RED does. Cookie jars, proxy settings, per-node TLS configuration and connection persistence are not implemented in this build. There is no egress allowlist: this node can reach anything the pod can, exactly as Node-RED's can, and the place to bound that is a NetworkPolicy rather than an edit dialog nobody outside the cluster can trust. Ignored properties: `proxy`, `tls`, `persist`, `cookies`."
+    "notes": "Method, URL, headers, basic authentication, redirects and the three return types, with msg.url, msg.method and msg.headers overriding the node. The response body is size-capped and the call is bounded by a timeout, neither of which Node-RED does. TLS comes from a tls-config, or without one msg.rejectUnauthorized = false skips the certificate check for that one message, as in Node-RED. msg.cookies and a cookie header go out through a cookie jar, cookies a redirect sets follow the redirect, and msg.responseCookies and msg.redirectList come back, all as in Node-RED. A multipart/form-data content type with an object payload sends it as a form. Proxy settings and connection persistence are not implemented in this build. There is no egress allowlist: this node can reach anything the pod can, exactly as Node-RED's can, and the place to bound that is a NetworkPolicy rather than an edit dialog nobody outside the cluster can trust. Ignored properties: `proxy`, `persist`."
   },
   {
     "id": "http-response",
     "type": "http response",
     "category": "Network",
     "level": "partial",
-    "notes": "Status code and headers from the node or from msg.statusCode and msg.headers, with the payload as the body. Cookies set through msg.cookies are not implemented; set a Set-Cookie header instead. Ignored properties: `cookies`."
+    "notes": "Status code and headers from the node or from msg.statusCode and msg.headers, with the payload as the body. msg.cookies sets and clears cookies exactly as Express does for Node-RED, options and all; with more than one, they go out in name order rather than the order the object was built in."
+  },
+  {
+    "id": "modbus-read",
+    "type": "modbus read",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own Modbus TCP read. Not the same configuration as the community node-red-contrib-modbus, which does not run here."
+  },
+  {
+    "id": "modbus-write",
+    "type": "modbus write",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own Modbus TCP write. Not the same configuration as the community node-red-contrib-modbus, which does not run here."
   },
   {
     "id": "mqtt-in",
     "type": "mqtt in",
     "category": "Network",
     "level": "partial",
-    "notes": "Topic subscription with QoS and payload decoding are supported. Dynamic subscription via a control message is not implemented."
+    "notes": "Topic subscription with QoS and payload decoding, and on MQTT 5 the no local, retain as published and retain handling options, with the message's properties on msg.userProperties, msg.contentType, msg.responseTopic, msg.correlationData and msg.messageExpiryInterval, and its content type steering the auto-detect decoding the way Node-RED's does. Dynamic subscription via a control message is not implemented."
   },
   {
     "id": "mqtt-out",
     "type": "mqtt out",
     "category": "Network",
     "level": "partial",
-    "notes": "Publishing with topic, QoS and retain from the node or the message is supported. MQTT v5 user properties are not implemented."
+    "notes": "Publishing with topic, QoS and retain from the node or the message, and on MQTT 5 the content type, response topic, correlation data, message expiry and user properties, from the node or from msg.contentType, msg.responseTopic, msg.correlationData, msg.messageExpiryInterval and msg.userProperties, with msg.responseTopic as the topic when there is no other. Topic aliases are not used: the full topic always goes. The connect and disconnect control messages are not implemented. Ignored properties: `topicAlias`."
+  },
+  {
+    "id": "opcua-read",
+    "type": "opcua read",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own OPC UA read. Not the same configuration as the community node-red-contrib-opcua, which does not run here."
+  },
+  {
+    "id": "opcua-subscribe",
+    "type": "opcua subscribe",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own OPC UA subscription. Not the same configuration as the community node-red-contrib-opcua, which does not run here."
+  },
+  {
+    "id": "opcua-write",
+    "type": "opcua write",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own OPC UA write. Not the same configuration as the community node-red-contrib-opcua, which does not run here."
+  },
+  {
+    "id": "s7-read",
+    "type": "s7 read",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own Siemens S7 read. Not the same configuration as the community node-red-contrib-s7, which does not run here."
+  },
+  {
+    "id": "s7-write",
+    "type": "s7 write",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own Siemens S7 write. Not the same configuration as the community node-red-contrib-s7, which does not run here."
+  },
+  {
+    "id": "sparkplug-command",
+    "type": "sparkplug command",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own Sparkplug B command sender, as a host application."
+  },
+  {
+    "id": "sparkplug-in",
+    "type": "sparkplug in",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own Sparkplug B listener. On a host connection it follows every edge node it can see. On an edge connection it hands over the commands sent to it."
+  },
+  {
+    "id": "sparkplug-out",
+    "type": "sparkplug out",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own Sparkplug B publisher, for an edge node or one of its devices."
   },
   {
     "id": "tcp-in",
     "type": "tcp in",
     "category": "Network",
     "level": "divergent",
-    "notes": "Listens or connects out, in stream mode with a delimiter or single mode collecting until the peer closes, with buffer, string or base64 payloads. Every message carries msg._session so a TCP Out node can reply on the same connection. Three bounds Node-RED does not have: the number of accepted connections, the size of one delimited message, and the total of a single-mode read. A peer that opens connections and never closes them, or sends without ever sending the delimiter, grows the heap until the pod dies otherwise. TLS is not implemented. Ignored properties: `tls`."
+    "notes": "Listens or connects out, in stream mode with a delimiter or single mode collecting until the peer closes, with buffer, string or base64 payloads. Every message carries msg._session so a TCP Out node can reply on the same connection. Three bounds Node-RED does not have: the number of accepted connections, the size of one delimited message, and the total of a single-mode read. A peer that opens connections and never closes them, or sends without ever sending the delimiter, grows the heap until the pod dies otherwise. TLS through a tls-config works both ways: a listener presents the config's certificate, a client checks the server's."
   },
   {
     "id": "tcp-out",
     "type": "tcp out",
     "category": "Network",
     "level": "partial",
-    "notes": "Connects to a host and sends, or replies on the connection a TCP In node accepted, found through msg._session. Listening for inbound connections purely to write to them, which Node-RED's third mode does, is not implemented. Use a TCP In node for the listening half and this node in reply mode. TLS is not implemented. Ignored properties: `tls`."
+    "notes": "Connects to a host and sends, or replies on the connection a TCP In node accepted, found through msg._session. Listening for inbound connections purely to write to them, which Node-RED's third mode does, is not implemented. Use a TCP In node for the listening half and this node in reply mode. TLS through a tls-config applies to client mode; a reply goes back down whatever the TCP In node accepted, TLS or not."
   },
   {
     "id": "tcp-request",
     "type": "tcp request",
     "category": "Network",
     "level": "partial",
-    "notes": "Connects, sends the payload and waits for the reply, in any of Node-RED's four wait modes: a fixed time, a delimiter, a byte count, or until the peer closes. msg.host and msg.port override the node. Every request opens its own connection. Node-RED's connection-reuse mode is not implemented, and reusing one would change the semantics of the wait modes, which all end at a connection boundary. TLS is not implemented. Ignored properties: `tls`."
+    "notes": "Connects, sends the payload and waits for the reply, in any of Node-RED's four wait modes: a fixed time, a delimiter, a byte count, or until the peer closes. msg.host and msg.port override the node. Every request opens its own connection. Node-RED's connection-reuse mode is not implemented, and reusing one would change the semantics of the wait modes, which all end at a connection boundary. With a tls-config the server's certificate is checked unless the config says not to. Node-RED's TCP Request never checks it, whatever the config says, which makes its TLS a padlock painted on the door."
   },
   {
     "id": "udp-in",
@@ -297,29 +430,29 @@
     "id": "batch",
     "type": "batch",
     "category": "Sequence",
-    "level": "partial",
-    "notes": "Grouping by message count, with overlap, is supported. Time-interval and concatenate-sequences modes are not implemented. Ignored properties: `interval`, `concat`."
+    "level": "divergent",
+    "notes": "Group by count with overlap and with the end of an incoming sequence honored, group by time interval with or without empty sequences, and concatenate sequences by topic, with msg.reset, as Node-RED does. Two configurations Node-RED accepts are refused: a count below one, which it quietly reads as one, and an interval of zero, which holds every message forever."
   },
   {
     "id": "join",
     "type": "join",
     "category": "Sequence",
-    "level": "partial",
-    "notes": "Automatic mode rejoins sequences produced by Split, and manual mode joins by count. Timeout-based and reduce-sequence modes are not implemented. Ignored properties: `timeout`, `reduceRight`, `reduceExp`."
+    "level": "divergent",
+    "notes": "Automatic, manual and reduce modes as Node-RED has them: placement by msg.parts.index, the separator Split recorded, nested sequences, arrays, strings, buffers, objects keyed by a message property, merged objects, accumulate, msg.complete, msg.reset, msg.restartTimeout, the timeout, and a reduce expression with $A, $I and $N and an optional fixup. One deliberate difference: an automatic join given a message without msg.parts raises an error rather than logging a warning."
   },
   {
     "id": "sort",
     "type": "sort",
     "category": "Sequence",
-    "level": "partial",
-    "notes": "Sorts array payloads and message sequences by a property. JSONata key expressions are not supported. Ignored properties: `keyType:jsonata`."
+    "level": "full",
+    "notes": "Sorts an array property by its elements or by a JSONata key evaluated against each element, and a message sequence by a property or a JSONata key evaluated against each message."
   },
   {
     "id": "split",
     "type": "split",
     "category": "Sequence",
-    "level": "partial",
-    "notes": "Splits arrays, objects, strings and buffers. Streaming mode, which carries a partial remainder between messages, is not implemented. Ignored properties: `stream`."
+    "level": "divergent",
+    "notes": "Splits arrays, objects, strings and buffers, by delimiter, by a byte sequence or by length, including streaming mode, which carries an unfinished piece over to the next message. msg.parts matches Node-RED's, separator and nested sequences included. Three deliberate differences: an object is split in sorted key order, because Go maps have none; a string is split by length in characters rather than UTF-16 code units, so no character is cut in half; and a payload that cannot be split raises an error instead of vanishing."
   },
   {
     "id": "file",
