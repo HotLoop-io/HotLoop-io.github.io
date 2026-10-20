@@ -12,11 +12,11 @@ export async function GET(context: APIContext) {
       b.data.date.getTime() - a.data.date.getTime() ||
       b.data.version.localeCompare(a.data.version, undefined, { numeric: true }),
   );
-  const NAME = { gateway: 'HotLoop Gateway', flow: 'HotLoop Flow' } as const;
+  const NAME = { gateway: 'HotLoop Gateway', flow: 'HotLoop Flow', cascade: 'HotLoop Cascade' } as const;
 
   return rss({
     title: 'HotLoop release notes',
-    description: 'What changed in HotLoop Gateway and HotLoop Flow, including which versions are actually published.',
+    description: 'What changed in HotLoop Gateway, HotLoop Flow and HotLoop Cascade, including which versions are actually published.',
     site: context.site!,
     items: releases.map((r) => ({
       title: `${NAME[r.data.product]} ${r.data.version}${r.data.published ? '' : ' (merged, never published on its own)'}`,

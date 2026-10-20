@@ -148,7 +148,7 @@ export const GATEWAY_FEATURES: Feature[] = [
 ];
 
 // Cascade is its own product and is not one of the four from the shared codebase,
-// so it lives beside PRODUCTS. It has no 0.1.0 yet: 0.1.0-rc.8 is a published
-// pre-release, and the repository and image stay private until 0.1.0 is verified
-// on a real Podman host and a real k3s cluster.
-export const CASCADE_RC = '0.1.0-rc.8';
+// so it lives beside PRODUCTS. 0.1.1 is its first release. A 0.1.0 tag exists and
+// never published anything. The repository and the registry are private.
+// Change it here when the next release ships.
+export const CASCADE = '0.1.1';
