@@ -148,7 +148,7 @@ export const GATEWAY_FEATURES: Feature[] = [
 ];
 
 // Cascade is its own product and is not one of the four from the shared codebase,
-// so it lives beside PRODUCTS. 0.1.1 is its first release. A 0.1.0 tag exists and
-// never published anything. The repository and the registry are private.
+// so it lives beside PRODUCTS. 0.1.1 was its first release. A 0.1.0 tag exists and
+// never published anything. The repository is private, the image and chart are public.
 // Change it here when the next release ships.
-export const CASCADE = '0.1.1';
+export const CASCADE = '0.1.2';

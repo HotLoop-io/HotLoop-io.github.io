@@ -3,10 +3,8 @@ import Base from '../layouts/Base.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { CASCADE } from '../lib/products';
 
-const podmanCmd = `sudo podman login ghcr.io
-podman pull ghcr.io/hotloop-io/hotloop-cascade:${CASCADE}`;
-const helmCmd = `helm registry login ghcr.io
-helm install cascade oci://ghcr.io/hotloop-io/charts/hotloop-cascade --version ${CASCADE}`;
+const podmanCmd = `podman pull ghcr.io/hotloop-io/hotloop-cascade:${CASCADE}`;
+const helmCmd = `helm install cascade oci://ghcr.io/hotloop-io/charts/hotloop-cascade --version ${CASCADE}`;
 
 const wontDo: [string, string][] = [
   ['It won\'t write to your equipment.', 'Cascade reads and subscribes. Anything that moves a valve or changes a setpoint goes through HotLoop\'s write gate, so the gate\'s audit sees every write no matter which workflow started it. A workflow engine with a side door onto the PLC is how an audit trail stops being honest.'],
@@ -34,7 +32,7 @@ const planned: [string, string][] = [
 
 <Base
   title="HotLoop Cascade: workflows that survive a reboot"
-  description="HotLoop Cascade connects the plant to webhooks, MQTT, ERPNext and notifications, with every step checkpointed. Version 0.1.1 is out. Free for home and lab."
+  description="HotLoop Cascade connects the plant to webhooks, MQTT, ERPNext and notifications, with every step checkpointed. Version 0.1.2 is out. Free for home and lab."
   ogAlt="HotLoop Cascade, durable workflows for the plant."
 >
   <JsonLd
@@ -67,12 +65,12 @@ const planned: [string, string][] = [
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>Cascade {CASCADE} is out, and it is the first release.</strong>
+          <strong>Cascade {CASCADE} is out. 0.1.1 was the first release.</strong>
           <p>
-            There was a 0.1.0 tag and it never published anything. Its chart test failed on a hosted runner, I
-            cancelled the run, and nothing reached the registry. {CASCADE} is the same code with the test fixed. The
-            repository and the registry are private, so a pull needs a login first. Skip it and the pull
-            fails, and the box stays on what it has.
+            {CASCADE} is the same code as 0.1.1, built and tested on Podman only. There was a 0.1.0 tag before
+            that and it never published anything, because its chart test failed on a hosted runner. The repository is
+            private, but the image and the chart are public and pull with no login, so there is nothing to sign up for
+            before you try it.
           </p>
         </div>
       </div>
@@ -93,7 +91,7 @@ const planned: [string, string][] = [
         <p class="lede">
           The image is <code>ghcr.io/hotloop-io/hotloop-cascade</code>, for amd64 and arm64, with the tags
           <code>{CASCADE}</code>, <code>0.1</code>, <code>0</code>, <code>latest</code> and <code>stable</code>. The chart
-          is <code>hotloop-cascade</code> {CASCADE} in the same registry. Both are private.
+          is <code>hotloop-cascade</code> {CASCADE} in the same registry. Both are public, and the source repository is private.
         </p>
       </div>
       <div class="grid grid-2">
@@ -101,9 +99,9 @@ const planned: [string, string][] = [
           <h3>Podman</h3>
           <pre><code>{podmanCmd}</code></pre>
           <p class="muted">
-            The Quadlet units are in <code>deploy/quadlet</code>. They follow <code>:stable</code> and Podman's
-            auto-update timer moves them, and an update that doesn't come up healthy is rolled back to the image that
-            was running. Log in as root once, because the units run as root.
+            The <a href="https://docs.hotloop.io/cascade/quadlet/">Quadlet units</a> follow <code>:stable</code> and
+            Podman's auto-update timer moves them, and an update that doesn't come up healthy is rolled back to the
+            image that was running.
           </p>
         </article>
         <article class="card reveal">
