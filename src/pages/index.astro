@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import LoopInstrument from '../components/LoopInstrument.astro';
 import { TIERS, TIER_ORDER } from '../lib/tiers';
-import { PRODUCTS } from '../lib/products';
+import { PRODUCTS, CASCADE } from '../lib/products';
 
 const protocols = await getCollection('protocols');
 const nodes = await getCollection('nodes');
@@ -161,7 +161,7 @@ const fmt = (d: Date) =>
         </article>
 
         <article class="card product reveal">
-          <div class="cluster head"><h3>HotLoop Cascade</h3><span class="chip warn">Release candidate</span></div>
+          <div class="cluster head"><h3>HotLoop Cascade</h3><span class="chip ok">Released, {CASCADE}</span></div>
           <p class="what">
             The plant talking to everything else. An alarm, a webhook, a schedule or an MQTT burst becomes a batch of
             items that run through checkpointed steps against real systems, so a dead API or a rebooted box doesn't
