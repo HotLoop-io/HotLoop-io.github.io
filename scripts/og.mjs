@@ -128,7 +128,7 @@ const certified = protocols.filter((p) => p.verification === 'certified').length
 const pages = [
   ['home', 'Automation loops for the real world.', 'IoT, Edge, Gateway and Edge Relay from one codebase, with Flow and Cascade beside them.', 'HotLoop'],
   ['products', 'One codebase. Four products.', 'HotLoop IoT, Edge, Gateway and Edge Relay, released together from one tag.', 'Products'],
-  ['iot', 'HotLoop IoT', 'The automation base for the plant floor, built in Go. Ships in the next release.', 'Product'],
+  ['iot', 'HotLoop IoT', 'The automation base for the plant floor, built in Go. 4.18.10 is out.', 'Product'],
   ['edge', 'HotLoop Edge', 'IoT plus the machine layer: HMI, PLCs, store-and-forward, an OPC UA server.', 'Product'],
   ['gateway', 'HotLoop Gateway', 'An industrial gateway that tells you what it has not proven. Seven native protocols, one write gate.', 'Product'],
   ['edge-relay', 'HotLoop Edge Relay', 'Poll, forward over Sparkplug B, survive the uplink dying. No database, no UI.', 'Product'],

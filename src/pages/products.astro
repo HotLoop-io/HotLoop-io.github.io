@@ -61,7 +61,7 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
     <h2 class="sub">Side by side</h2>
     <p class="muted intro">
       What each product has, not whether it's finished. For that, open the product's page: every piece on it says
-      whether it ships today, ships in the next release, or hasn't been built.
+      whether it ships today, is unverified, or hasn't been built.
     </p>
     <div class="table-wrap">
       <table class="data stack">
@@ -95,7 +95,7 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
           Every product runs the same schema. Going from IoT to Edge to the Gateway is designed to be an image swap
           on the same database, with your devices, entities, rules, alarms, history and users already there. Going
           back down deletes nothing: what the smaller product doesn't have just sits there until you come back. The
-          point: once the split ships, outgrowing the Pi is supposed to cost you an image pull, not a migration
+          point: outgrowing the Pi is supposed to cost you an image pull, not a migration
           project. The Quadlet move has been run, IoT to Edge to the Gateway on one database volume. The same move as a
           Helm upgrade on a real cluster, and going back down a product, has not, so don't take a box you care about down.
         </p>
