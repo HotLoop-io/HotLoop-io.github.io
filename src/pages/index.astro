@@ -23,8 +23,8 @@ const newest = (product: string) =>
   releases
     .filter((r) => r.data.product === product)
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
-const gw = newest('gateway');
-const gwOut = releases.filter((r) => r.data.product === 'gateway' && r.data.published).sort((a, b) => b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
+const gw = newest('core');
+const gwOut = releases.filter((r) => r.data.product === 'core' && r.data.published).sort((a, b) => b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
 const fl = newest('flow');
 const ca = newest('cascade');
 const nativeCount = protocols.filter((p) => p.data.verification !== 'gateway-mode').length;
@@ -182,7 +182,7 @@ const fmt = (d: Date) =>
           </div>
           <p class="date">{fmt(fl.data.date)}</p>
         </a>
-        <a class="card release reveal" href="/releases/gateway/">
+        <a class="card release reveal" href="/releases/core/">
           <div class="cluster head">
             <h3>HotLoop core {gw.data.version}</h3><span class={`chip ${gw.data.published ? 'ok' : 'warn'}`}>{gw.data.published ? 'Published' : 'Merged, not published'}</span>
           </div>

@@ -7,6 +7,9 @@ export default defineConfig({
   trailingSlash: 'always',
   build: { format: 'directory' },
   compressHTML: true,
+  // The release notes for IoT, Edge, Gateway and Edge Relay are one line, HotLoop
+  // core, so the old Gateway URL goes there and no link breaks.
+  redirects: { '/releases/gateway/': '/releases/core/' },
   // Prefetch on viewport entry. With view transitions this is what makes a
   // click feel instant instead of merely fast.
   prefetch: { prefetchAll: true, defaultStrategy: 'viewport' },
