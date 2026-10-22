@@ -2,26 +2,34 @@
 import Base from '../layouts/Base.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
+import CardDetail from '../components/CardDetail.astro';
 import { CASCADE } from '../lib/products';
 
 const podmanCmd = `podman pull ghcr.io/hotloop-io/hotloop-cascade:${CASCADE}`;
 const helmCmd = `helm install cascade oci://ghcr.io/hotloop-io/charts/hotloop-cascade --version ${CASCADE}`;
 
-const wontDo: [string, string][] = [
-  ['It won\'t write to your equipment.', 'Cascade reads and subscribes. Anything that moves a valve or changes a setpoint goes through HotLoop\'s write gate, so the gate\'s audit sees every write no matter which workflow started it. A workflow engine with a side door onto the PLC is how an audit trail stops being honest.'],
-  ['It won\'t run JavaScript in your fields.', 'Field expressions use the same small language HotLoop\'s automations use. It can\'t touch the OS, the network or the filesystem, and it always terminates. JavaScript lives in one place, the Code step, which runs in a separate jailed process with no secrets, no network and no filesystem.'],
-  ['It won\'t gate anything.', 'SSO, enforced MFA, roles, audit, version history, scoped API keys and HA workers are for everyone. There is no license check anywhere in the code, so there is nothing to pull out from under you later.'],
+const wontDo: [string, string, string?][] = [
+  ['It won\'t write to your equipment.', 'Cascade reads and subscribes. Anything that moves a valve or changes a setpoint goes through HotLoop\'s write gate, so every write is audited.',
+    'Cascade reads and subscribes. Anything that moves a valve or changes a setpoint goes through HotLoop\'s write gate, so the gate\'s audit sees every write no matter which workflow started it. A workflow engine with a side door onto the PLC is how an audit trail stops being honest.'],
+  ['It won\'t run JavaScript in your fields.', 'Field expressions use HotLoop\'s small automation language. JavaScript lives only in the Code step, a separate jailed process.',
+    'Field expressions use the same small language HotLoop\'s automations use. It can\'t touch the OS, the network or the filesystem, and it always terminates. JavaScript lives in one place, the Code step, which runs in a separate jailed process with no secrets, no network and no filesystem.'],
+  ['It won\'t gate anything.', 'SSO, enforced MFA, roles, audit, version history, scoped API keys and HA workers are for everyone. There is no license check in the code.',
+    'SSO, enforced MFA, roles, audit, version history, scoped API keys and HA workers are for everyone. There is no license check anywhere in the code, so there is nothing to pull out from under you later.'],
   ['It won\'t phone home.', 'No license server and no cloud dependency. Telemetry is opt-in, off by default, and documented down to the field when it lands.'],
 ];
 
-const built: [string, string][] = [
-  ['Durable executions', 'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database and not a goroutine praying nobody pulls the plug.'],
+const built: [string, string, string?][] = [
+  ['Durable executions', 'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database.',
+    'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database and not a goroutine praying nobody pulls the plug.'],
   ['Triggers', 'A HotLoop alarm or tag reading, a webhook, a schedule, an MQTT burst, a file that shows up, a new email in an IMAP mailbox, or a new row in ERPNext becomes a batch of items.'],
-  ['Steps that call real systems', 'HTTP, PostgreSQL, email, files (CSV, Excel and a PDF\'s text), ERPNext, and the notifiers: ntfy, Discord and Gotify. A credential vault with OAuth2 holds the secrets, sealed with a key that lives outside the database.'],
-  ['Steps that talk to HotLoop', 'Read tags and alarms, acknowledge an alarm, call a service, run a script, apply a recipe and trigger an automation on a HotLoop gateway. Every command goes through the gateway\'s write gate, with a reason in its audit trail, so Cascade has no side door to a device.'],
+  ['Steps that call real systems', 'HTTP, PostgreSQL, email, files, ERPNext, ntfy, Discord and Gotify, with an OAuth2 credential vault sealed by a key outside the database.',
+    'HTTP, PostgreSQL, email, files (CSV, Excel and a PDF\'s text), ERPNext, and the notifiers: ntfy, Discord and Gotify. A credential vault with OAuth2 holds the secrets, sealed with a key that lives outside the database.'],
+  ['Steps that talk to HotLoop', 'Read tags and alarms, acknowledge, call a service, run a script, apply a recipe. Every command goes through the gateway\'s write gate.',
+    'Read tags and alarms, acknowledge an alarm, call a service, run a script, apply a recipe and trigger an automation on a HotLoop gateway. Every command goes through the gateway\'s write gate, with a reason in its audit trail, so Cascade has no side door to a device.'],
   ['People and governance', 'Users with enforced MFA, OIDC sign-in, projects and roles, an audit log and version history on every workflow.'],
   ['Watching it', 'Prometheus metrics, and every execution is one OpenTelemetry trace with a span per step. With no endpoint named, nothing is sent.'],
-  ['Bringing a workflow in', 'It converts a workflow exported as JSON from another tool. What it can be sure of comes across, and everything else comes across switched off with its original settings in the notes. It never guesses what a JavaScript expression meant, and it never brings credentials.'],
+  ['Bringing a workflow in', 'It converts a workflow exported as JSON from another tool. What it is sure of comes across, and the rest comes across switched off.',
+    'It converts a workflow exported as JSON from another tool. What it can be sure of comes across, and everything else comes across switched off with its original settings in the notes. It never guesses what a JavaScript expression meant, and it never brings credentials.'],
 ];
 
 const planned: [string, string][] = [
@@ -158,6 +166,9 @@ const planned: [string, string][] = [
       <div class="grid grid-2">
         {wontDo.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
       </div>
+      <CardDetail>
+        {wontDo.filter((r) => r[2]).map(([h, , l]) => <div><h4>{h}</h4><p>{l}</p></div>)}
+      </CardDetail>
     </div>
   </section>
 
@@ -175,6 +186,9 @@ const planned: [string, string][] = [
       <div class="grid grid-3">
         {built.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
       </div>
+      <CardDetail>
+        {built.filter((r) => r[2]).map(([h, , l]) => <div><h4>{h}</h4><p>{l}</p></div>)}
+      </CardDetail>
     </div>
   </section>
 

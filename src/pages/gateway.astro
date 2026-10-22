@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import CardDetail from '../components/CardDetail.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import FeatureList from '../components/FeatureList.astro';
@@ -328,16 +329,23 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
         <article class="card reveal"><h3>Historian</h3><p>TimescaleDB when the extension's there, native partitioning when it isn't. Per-tag deadband, so a sensor twitching in its last bit doesn't write a row every scan until the disk fills.</p></article>
         <article class="card reveal"><h3>Alarms</h3><p>ISA-18.2, <code>rtn-unack</code> included. Acknowledged and cleared are separate, so the trip at 03:00 that fixed itself is still on the list when the morning shift walks in.</p></article>
         <article class="card reveal"><h3>Automations</h3><p>Eleven trigger types, entity state and the sun included, and conditions compiled on save. A broken rule gets caught in the editor, not at 3am halfway through a batch.</p></article>
-        <article class="card reveal"><h3>The Board and dashboards</h3><p>The Board is the screen that lives on a wall: gauges with the alarm limits drawn where they fall, and a layout stored with the plant, so the panel PC and your laptop always show the same thing. It is one dashboard among the ones you can build, for a role or for a physical screen.</p></article>
-        <article class="card reveal"><h3>Entities</h3><p>The infeed pump, not register 40001. Every tag gets an entity for free, and a motor, valve or PID loop is one entity built from the tags it really is. Rules, screens and agents read like the plant, not like a register map.</p></article>
+        <article class="card reveal"><h3>The Board and dashboards</h3><p>The Board is the screen that lives on a wall, with gauges that show the alarm limits where they fall. Build other dashboards for a role or a physical screen.</p></article>
+        <article class="card reveal"><h3>Entities</h3><p>The infeed pump, not register 40001. Every tag gets an entity, and a motor, valve or PID loop is one entity built from the tags it really is.</p></article>
         <article class="card reveal"><h3>Plant tree</h3><p>One ISA-95 tree, enterprise down to equipment, plus labels. Filter a whole area in one click, and the site, area and line your devices already carry stay in step with it.</p></article>
-        <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook and email. Press Acknowledge on an ntfy push or in the Discord bot and the alarm is acknowledged in the Gateway, signed and single use. Discord has only met a stand-in, not the real thing.</p></article>
+        <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook and email. Acknowledge from an ntfy push or the Discord bot and the Gateway records it. Discord has only met a stand-in.</p></article>
         <article class="card reveal"><h3>Reports</h3><p>Historian numbers on a schedule, as CSV or HTML, stored and emailed. Only good readings count, every row says how many it threw out, and an empty period says no data, never zero.</p></article>
         <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, secured, and Ignition 8.3.9 reads it end to end. The SCADA you already paid for can see every tag, and there is no write handler in there to worry about.</p></article>
-        <article class="card reveal"><h3>Edge Relay</h3><p>Its own product with its own image and chart: about 15 MB against the Gateway's 35 on arm64, no database, no UI. The Gateway's fleet API tracks and commands every relay you register (no screen for it yet). <a href="/edge-relay/">More on the Edge Relay</a>.</p></article>
-        <article class="card reveal"><h3>Embedded broker</h3><p>An optional MQTT broker in the same process, so a single box can be its own Sparkplug hub. Logins made in HotLoop carry per-topic publish and subscribe rules, and logins from <code>HOTLOOP_BROKER_USERS</code> can do anything. At scale, run a real broker.</p></article>
+        <article class="card reveal"><h3>Edge Relay</h3><p>Its own product, image and chart: about 15 MB against the Gateway's 35 on arm64, no database, no UI. <a href="/edge-relay/">More on the Edge Relay</a>.</p></article>
+        <article class="card reveal"><h3>Embedded broker</h3><p>An optional MQTT broker in the same process, so a single box can be its own Sparkplug hub. At scale, run a real broker.</p></article>
         <article class="card reveal"><h3>Backups</h3><p>A snapshot in pure Go over the connection it already has. Restore loads an older backup by column name and flat refuses one from a newer version, so a restore can't half-work.</p></article>
       </div>
+      <CardDetail>
+        <div><h4>The Board and dashboards</h4><p>The Board is the screen that lives on a wall: gauges with the alarm limits drawn where they fall, and a layout stored with the plant, so the panel PC and your laptop always show the same thing. It is one dashboard among the ones you can build, for a role or for a physical screen.</p></div>
+        <div><h4>Entities</h4><p>The infeed pump, not register 40001. Every tag gets an entity for free, and a motor, valve or PID loop is one entity built from the tags it really is. Rules, screens and agents read like the plant, not like a register map.</p></div>
+        <div><h4>Paging</h4><p>ntfy, Gotify, Discord, webhook and email. Press Acknowledge on an ntfy push or in the Discord bot and the alarm is acknowledged in the Gateway, signed and single use. Discord has only met a stand-in, not the real thing.</p></div>
+        <div><h4>Edge Relay</h4><p>Its own product with its own image and chart: about 15 MB against the Gateway's 35 on arm64, no database, no UI. The Gateway's fleet API tracks and commands every relay you register (no screen for it yet). <a href="/edge-relay/">More on the Edge Relay</a>.</p></div>
+        <div><h4>Embedded broker</h4><p>An optional MQTT broker in the same process, so a single box can be its own Sparkplug hub. Logins made in HotLoop carry per-topic publish and subscribe rules, and logins from <code>HOTLOOP_BROKER_USERS</code> can do anything. At scale, run a real broker.</p></div>
+      </CardDetail>
     </div>
   </section>
 
@@ -353,13 +361,18 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
         </p>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>MQTT discovery</h3><p>Point ESPHome, Zigbee2MQTT, Tasmota or a Shelly (Gen2 and later) at the broker and it shows up, reading. Nothing is armed until a person accepts the device and arms each point. Proven against recordings of real devices, not a bench of them.</p></article>
+        <article class="card reveal"><h3>MQTT discovery</h3><p>Point ESPHome, Zigbee2MQTT, Tasmota or a Shelly (Gen2 and later) at the broker and it shows up. Nothing is armed until a person accepts it. Proven on recordings, not a bench.</p></article>
         <article class="card reveal"><h3>Network discovery</h3><p>mDNS and SSDP are overheard, and DHCP is heard if the deployment allows it. Nothing is probed until a network is named, and nothing is added by itself.</p></article>
         <article class="card reveal"><h3>Historian targets</h3><p>Every reading also goes to the plant's own PostgreSQL, TimescaleDB, SQL Server, InfluxDB 2 or 3, or MySQL and MariaDB, with the same deadband and the same quality. Polling never waits for a target.</p></article>
         <article class="card reveal"><h3>Dashboards</h3><p>A card builder with twelve card types, given to roles or bound to a physical screen, with the Board as one of them. A card commands nothing itself, so a button still meets the write gate.</p></article>
-        <article class="card reveal"><h3>A database you pick</h3><p>SQLite, PostgreSQL or TimescaleDB per product, from the same binary, so a Pi doesn't need a 300 MB database image. Moving between them is a backup and a restore.</p></article>
-        <article class="card reveal"><h3>Updates that roll back</h3><p>Quadlet boxes follow <code>:stable</code> and an update that can't pass its healthcheck is rolled back. It's safe because migrations only add, and an app refuses to start on a database two releases ahead of it.</p></article>
+        <article class="card reveal"><h3>A database you pick</h3><p>SQLite, PostgreSQL or TimescaleDB per product from one binary, so a Pi skips the 300 MB database image. Moving between them is a backup and restore.</p></article>
+        <article class="card reveal"><h3>Updates that roll back</h3><p>Quadlet boxes follow <code>:stable</code>, and an update that fails its healthcheck is rolled back. Safe because migrations only add.</p></article>
       </div>
+      <CardDetail>
+        <div><h4>MQTT discovery</h4><p>Point ESPHome, Zigbee2MQTT, Tasmota or a Shelly (Gen2 and later) at the broker and it shows up, reading. Nothing is armed until a person accepts the device and arms each point. Proven against recordings of real devices, not a bench of them.</p></div>
+        <div><h4>A database you pick</h4><p>SQLite, PostgreSQL or TimescaleDB per product, from the same binary, so a Pi doesn't need a 300 MB database image. Moving between them is a backup and a restore.</p></div>
+        <div><h4>Updates that roll back</h4><p>Quadlet boxes follow <code>:stable</code> and an update that can't pass its healthcheck is rolled back. It's safe because migrations only add, and an app refuses to start on a database two releases ahead of it.</p></div>
+      </CardDetail>
       <p class="prose muted after">
         Also in this release: Edge keeps the plant running with the WAN dead, UniFi gets screens, a zoomable map and
         events, the Edge Relay takes a pushed config live and discovers devices on a broker, logins made in Settings,
@@ -381,13 +394,18 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
         </p>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>Recipes</h3><p>Grade A's zone temps, line speed and die gap, off the laminated sheet and into the plant in one go. Checked whole and refused whole, written in order, read back from the device. Nobody fat-fingers the changeover at 2am again.</p></article>
-        <article class="card reveal"><h3>Scripts</h3><p>Write the CIP cycle once, name it, and run it the same way from a screen, a rule, MCP or its own entity. A dry run goes through the real gate, so you find out what it would refuse before anything moves.</p></article>
-        <article class="card reveal"><h3>Blueprints</h3><p>Write the rule once with blanks, fill it in per pump. A rule keeps the blueprint version it was made from, so editing the blueprint on Wednesday doesn't quietly change the rule that was right on Tuesday.</p></article>
+        <article class="card reveal"><h3>Recipes</h3><p>Grade A's zone temps, line speed and die gap, off the laminated sheet and into the plant in one go. Checked whole, refused whole, read back from the device.</p></article>
+        <article class="card reveal"><h3>Scripts</h3><p>Write the CIP cycle once, name it, and run it from a screen, a rule, MCP or its own entity. A dry run goes through the real gate.</p></article>
+        <article class="card reveal"><h3>Blueprints</h3><p>Write the rule once with blanks, fill it in per pump. A rule keeps the blueprint version it was made from, so edits don't change it quietly.</p></article>
         <article class="card reveal"><h3>Helpers</h3><p>Toggles, numbers, selects, text, counters, timers and schedules: the values the plant's people own, like today's batch target or which shift is on. Kept across restarts, never clamped.</p></article>
         <article class="card reveal"><h3>Logbook</h3><p>State changes, writes, alarms, rule runs and config changes on one timeline, for the plant, one place on the tree, or one entity. "What happened right before?" becomes one list instead of five screens.</p></article>
         <article class="card reveal"><h3>The automation language</h3><p>Condition, wait and stop steps inside a sequence, and <code>forSec</code> on a state trigger. "The pump has been on for five minutes" is one trigger now, not a timer hack.</p></article>
       </div>
+      <CardDetail>
+        <div><h4>Recipes</h4><p>Grade A's zone temps, line speed and die gap, off the laminated sheet and into the plant in one go. Checked whole and refused whole, written in order, read back from the device. Nobody fat-fingers the changeover at 2am again.</p></div>
+        <div><h4>Scripts</h4><p>Write the CIP cycle once, name it, and run it the same way from a screen, a rule, MCP or its own entity. A dry run goes through the real gate, so you find out what it would refuse before anything moves.</p></div>
+        <div><h4>Blueprints</h4><p>Write the rule once with blanks, fill it in per pump. A rule keeps the blueprint version it was made from, so editing the blueprint on Wednesday doesn't quietly change the rule that was right on Tuesday.</p></div>
+      </CardDetail>
       <p class="prose muted after">
         Also new in 4.17.0: the read-only half of a native <a href="/unifi/">UniFi integration</a>, and every stored device
         password encrypted with a key that lives outside the database. UniFi's first real read called a dead 5G

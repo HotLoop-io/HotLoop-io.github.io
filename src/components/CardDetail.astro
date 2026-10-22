@@ -1,0 +1,18 @@
+---
+// The long form of cards that were cut down to a title and a sentence or two.
+// Cards stay even; the full text lives here, on the same page, for the reader who wants it.
+interface Props { label?: string }
+const { label = 'The full detail behind these cards' } = Astro.props;
+---
+<details class="more">
+  <summary>{label}</summary>
+  <div class="more-body stack"><slot /></div>
+</details>
+
+<style>
+  .more { margin-top: var(--hl-s6); border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); background: var(--hl-card); padding: var(--hl-s4) var(--hl-s5); }
+  .more summary { cursor: pointer; font-weight: 600; color: var(--hl-ink); }
+  .more-body { margin-top: var(--hl-s4); max-width: 78ch; color: var(--hl-ink-soft); }
+  .more-body :global(h4) { font-size: var(--hl-fs-md); color: var(--hl-ink); margin: 0; }
+  .more-body :global(p) { margin: 0; }
+</style>

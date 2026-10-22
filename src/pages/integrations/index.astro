@@ -93,7 +93,7 @@ const lv = Object.fromEntries(LEVELS.map(([k, l, c]) => [k, { label: l, chip: c 
             {p.data.addressExamples[0] && <code class="addr">{p.data.addressExamples[0].expr}</code>}
             <p>{p.data.summary}</p>
             {p.data.verifiedAgainst.length > 0 && (
-              <p class="against"><strong>Verified against:</strong> {p.data.verifiedAgainst.join('; ')}</p>
+              <p class="against"><strong>Verified against:</strong> {p.data.verifiedAgainst.length > 1 ? `${p.data.verifiedAgainst.length} systems, listed on its page` : p.data.verifiedAgainst[0]}</p>
             )}
           </a>
         ))}
