@@ -67,7 +67,7 @@ const R = [
       'Every IIOT_ environment variable is now HOTLOOP_. An upgrade in place means renaming every IIOT_ value to its HOTLOOP_ equivalent before the pod comes back up.',
       'The image and chart names changed, so an upgrade in place also means new image references.',
     ],
-    body: 'The App Store labels and annotations under the embernet.ai namespace are unchanged on purpose. A namespaced key names the system that reads it, and those labels are how the EmberNET App Store finds a chart.',
+    body: 'The App Store labels and annotations under the embernet.ai namespace are unchanged on purpose. A namespaced key names the system that reads it, and those labels are how the EmberNet App Store finds a chart.',
   },
   {
     product: 'gateway', version: '4.8.0', date: '2026-09-18', published: false,
@@ -171,9 +171,9 @@ const R = [
   },
   {
     product: 'flow', version: '2.0.3', date: '2026-09-20', published: true,
-    summary: "The chart puts the EmberNET dashboard's tenant labels on everything it renders.",
+    summary: "The chart puts the EmberNet dashboard's tenant labels on everything it renders.",
     highlights: [
-      "When an app is deployed from the EmberNET App Store, the dashboard passes tenantLabels (the tenant, the app id, who deployed it, and the deployment id) and expects them on everything the chart creates. The chart did not read them, so none of the five were there. It puts them on every resource and on the pod now.",
+      "When an app is deployed from the EmberNet App Store, the dashboard passes tenantLabels (the tenant, the app id, who deployed it, and the deployment id) and expects them on everything the chart creates. The chart did not read them, so none of the five were there. It puts them on every resource and on the pod now.",
       "The value is empty by default. A plain helm install renders exactly as before, and the selectors are untouched.",
       "Found by deploying it to a tenant cluster through Fleet and looking at what arrived. It has now been deployed that way to a real cluster: the pod runs, login works, and all five labels are on every resource.",
       "CI checks both directions: a default render carries no tenant label, and a chosen one reaches all seven places it belongs.",

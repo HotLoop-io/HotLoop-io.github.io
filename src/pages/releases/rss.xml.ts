@@ -16,7 +16,7 @@ export async function GET(context: APIContext) {
 
   return rss({
     title: 'HotLoop release notes',
-    description: 'What changed in HotLoop core (IoT, Edge, Gateway and Edge Relay), HotLoop Flow and HotLoop Cascade, including which versions are actually published.',
+    description: 'What changed in HotLoop core (IoT, Edge, Gateway, and Edge Relay), HotLoop Flow, and HotLoop Cascade, including which versions are actually published.',
     site: context.site!,
     items: releases.map((r) => ({
       title: `${NAME[r.data.product]} ${r.data.version}${r.data.published ? '' : ' (merged, never published on its own)'}`,
