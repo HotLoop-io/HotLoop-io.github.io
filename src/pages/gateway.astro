@@ -19,7 +19,7 @@ const gw = product('gateway');
 
 <Base
   title="HotLoop Gateway: OPC UA, Modbus and MQTT gateway"
-  description="An industrial automation gateway with seven native protocols, ISA-18.2 alarms, a historian, and one write gate that nothing can route around."
+  description="An industrial automation gateway with eight native drivers, ISA-18.2 alarms, a historian, and one write gate that nothing can route around."
   ogAlt="HotLoop Gateway, an industrial automation gateway."
 >
   <JsonLd
@@ -30,7 +30,7 @@ const gw = product('gateway');
       name: 'HotLoop Gateway',
       url: 'https://hotloop.io/gateway/',
       description:
-        'An industrial automation gateway that polls equipment over OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, and HTTP, keeps the history, raises ISA-18.2 alarms, and exposes the plant to agents over MCP.',
+        'An industrial automation gateway that polls equipment over OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, and a UniFi network, keeps the history, raises ISA-18.2 alarms, and exposes the plant to agents over MCP.',
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Linux',
       license: 'https://hotloop.io/license/',
@@ -128,7 +128,7 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
             first day with HotLoop should end with a press doing something they didn't ask for.
           </p>
           <p class="muted">
-            The image is <code>{gw.image}:{latest.data.version}</code>, amd64 and arm64, about 34 MB, and it pulls
+            The image is <code>{gw.image}:{latest.data.version}</code>, amd64 and arm64, about 35 MB on arm64 and 37 MB on amd64, and it pulls
             anonymously. The database is a setting, not an image: TimescaleDB by default, with plain PostgreSQL and
             SQLite as <code>database.type</code> choices in the same image.
           </p>
@@ -256,7 +256,7 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
         <span class="label">Built for agents</span>
         <h2>MCP in both directions.</h2>
         <p class="muted">
-          25 tools and 4 resources, over streamable HTTP and stdio, up from 16 in 4.16.0. An
+          27 tools and 4 resources, over streamable HTTP and stdio, up from 16 in 4.16.0. An
           agent reads the plant in entities, the infeed pump rather than register 40001, and it can only act through
           the gate. So you can ask it why line 3 is slow and let it read everything, knowing it can only touch what
           you armed, and every write it makes comes with a reason in the log.
@@ -285,7 +285,7 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
     <div class="wrap">
       <div class="section-head">
         <span class="label">What it speaks</span>
-        <h2>Seven native protocols, and a table that admits how far each has been proven.</h2>
+        <h2>Eight native drivers, and a table that admits how far each has been proven.</h2>
       </div>
       <div class="grid grid-4">
         {native.map((p) => (
@@ -325,15 +325,15 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
       <div class="grid grid-3">
         <article class="card reveal"><h3>Historian</h3><p>TimescaleDB when the extension's there, native partitioning when it isn't. Per-tag deadband, so a sensor twitching in its last bit doesn't write a row every scan until the disk fills.</p></article>
         <article class="card reveal"><h3>Alarms</h3><p>ISA-18.2, <code>rtn-unack</code> included. Acknowledged and cleared are separate, so the trip at 03:00 that fixed itself is still on the list when the morning shift walks in.</p></article>
-        <article class="card reveal"><h3>Automations</h3><p>Ten trigger types, entity state included, and conditions compiled on save. A broken rule gets caught in the editor, not at 3am halfway through a batch.</p></article>
-        <article class="card reveal"><h3>The Board</h3><p>The screen that lives on a wall. Gauges with the alarm limits drawn where they fall, and a layout stored with the plant, so the panel PC and your laptop always show the same thing.</p></article>
+        <article class="card reveal"><h3>Automations</h3><p>Eleven trigger types, entity state and the sun included, and conditions compiled on save. A broken rule gets caught in the editor, not at 3am halfway through a batch.</p></article>
+        <article class="card reveal"><h3>The Board and dashboards</h3><p>The Board is the screen that lives on a wall: gauges with the alarm limits drawn where they fall, and a layout stored with the plant, so the panel PC and your laptop always show the same thing. It is one dashboard among the ones you can build, for a role or for a physical screen.</p></article>
         <article class="card reveal"><h3>Entities</h3><p>The infeed pump, not register 40001. Every tag gets an entity for free, and a motor, valve or PID loop is one entity built from the tags it really is. Rules, screens and agents read like the plant, not like a register map.</p></article>
         <article class="card reveal"><h3>Plant tree</h3><p>One ISA-95 tree, enterprise down to equipment, plus labels. Filter a whole area in one click, and the site, area and line your devices already carry stay in step with it.</p></article>
-        <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook and email. Press Acknowledge on your phone and the alarm is acknowledged in the Gateway, signed and single use. Discord has only met a stand-in, not the real thing.</p></article>
+        <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook and email. Press Acknowledge on an ntfy push or in the Discord bot and the alarm is acknowledged in the Gateway, signed and single use. Discord has only met a stand-in, not the real thing.</p></article>
         <article class="card reveal"><h3>Reports</h3><p>Historian numbers on a schedule, as CSV or HTML, stored and emailed. Only good readings count, every row says how many it threw out, and an empty period says no data, never zero.</p></article>
         <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, secured, and Ignition 8.3.9 reads it end to end. The SCADA you already paid for can see every tag, and there is no write handler in there to worry about.</p></article>
-        <article class="card reveal"><h3>Edge Relay</h3><p>Its own product with its own image and chart: about 15 MB against the Gateway's 34, no database, no UI. The Gateway's fleet API tracks and commands every relay (no screen for it yet). <a href="/edge-relay/">More on the Edge Relay</a>.</p></article>
-        <article class="card reveal"><h3>Embedded broker</h3><p>An optional MQTT broker in the same process, so a single box can be its own Sparkplug hub. No per-topic access control, by design. At scale, run a real broker.</p></article>
+        <article class="card reveal"><h3>Edge Relay</h3><p>Its own product with its own image and chart: about 15 MB against the Gateway's 35 on arm64, no database, no UI. The Gateway's fleet API tracks and commands every relay you register (no screen for it yet). <a href="/edge-relay/">More on the Edge Relay</a>.</p></article>
+        <article class="card reveal"><h3>Embedded broker</h3><p>An optional MQTT broker in the same process, so a single box can be its own Sparkplug hub. Logins made in HotLoop carry per-topic publish and subscribe rules, and logins from <code>HOTLOOP_BROKER_USERS</code> can do anything. At scale, run a real broker.</p></article>
         <article class="card reveal"><h3>Backups</h3><p>A snapshot in pure Go over the connection it already has. Restore loads an older backup by column name and flat refuses one from a newer version, so a restore can't half-work.</p></article>
       </div>
     </div>
@@ -343,10 +343,38 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
     <div class="wrap">
       <div class="section-head">
         <span class="label">New in {latest.data.version}</span>
+        <h2>One image becomes four products, and the plant finds its own devices.</h2>
+        <p class="lede">
+          This is the release where IoT and Edge ship beside the Gateway and the Edge Relay, all from one tag. On top
+          of that, devices announce themselves, history goes out to the plant's own database, and a box that updates
+          itself can roll a bad update back.
+        </p>
+      </div>
+      <div class="grid grid-3">
+        <article class="card reveal"><h3>MQTT discovery</h3><p>Point ESPHome, Zigbee2MQTT, Tasmota or a Shelly (Gen2 and later) at the broker and it shows up, reading. Nothing is armed until a person accepts the device and arms each point. Proven against recordings of real devices, not a bench of them.</p></article>
+        <article class="card reveal"><h3>Network discovery</h3><p>mDNS and SSDP are overheard, and DHCP is heard if the deployment allows it. Nothing is probed until a network is named, and nothing is added by itself.</p></article>
+        <article class="card reveal"><h3>Historian targets</h3><p>Every reading also goes to the plant's own PostgreSQL, TimescaleDB, SQL Server, InfluxDB 2 or 3, or MySQL and MariaDB, with the same deadband and the same quality. Polling never waits for a target.</p></article>
+        <article class="card reveal"><h3>Dashboards</h3><p>A card builder with twelve card types, given to roles or bound to a physical screen, with the Board as one of them. A card commands nothing itself, so a button still meets the write gate.</p></article>
+        <article class="card reveal"><h3>A database you pick</h3><p>SQLite, PostgreSQL or TimescaleDB per product, from the same binary, so a Pi doesn't need a 300 MB database image. Moving between them is a backup and a restore.</p></article>
+        <article class="card reveal"><h3>Updates that roll back</h3><p>Quadlet boxes follow <code>:stable</code> and an update that can't pass its healthcheck is rolled back. It's safe because migrations only add, and an app refuses to start on a database two releases ahead of it.</p></article>
+      </div>
+      <p class="prose muted after">
+        Also in this release: Edge keeps the plant running with the WAN dead, UniFi gets screens, a zoomable map and
+        events, the Edge Relay takes a pushed config live and discovers devices on a broker, logins made in Settings,
+        MQTT carry topic rules, and the sun is a trigger. IoT and Edge Quadlet units under systemd, discovery on a
+        bench of real devices, and a product move as a <code>helm upgrade</code> on a real cluster are not proven yet.
+      </p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">New in 4.17.0</span>
         <h2>The plant's own logic, finally somewhere it can live.</h2>
         <p class="lede">
-          Every plant runs on setpoint sheets, copy-pasted rules and whatever's on the whiteboard. This release gives
-          each of those a real home, behind the same write gate as everything else, so the plant stops depending on
+          Every plant runs on setpoint sheets, copy-pasted rules and whatever's on the whiteboard. 4.17.0 gave each of
+          those a real home, behind the same write gate as everything else, so the plant stops depending on
           somebody remembering the right numbers at 2am.
         </p>
       </div>
@@ -359,7 +387,7 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
         <article class="card reveal"><h3>The automation language</h3><p>Condition, wait and stop steps inside a sequence, and <code>forSec</code> on a state trigger. "The pump has been on for five minutes" is one trigger now, not a timer hack.</p></article>
       </div>
       <p class="prose muted after">
-        Also new: the read-only half of a native <a href="/unifi/">UniFi integration</a>, and every stored device
+        Also new in 4.17.0: the read-only half of a native <a href="/unifi/">UniFi integration</a>, and every stored device
         password encrypted with a key that lives outside the database. UniFi's first real read called a dead 5G
         backup link up, because it trusted the same stale field the console did. It reads the console's health
         checks now, so a backup that's been dead for two days reads dead.

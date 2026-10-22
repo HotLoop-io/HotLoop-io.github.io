@@ -15,8 +15,9 @@ const wontDo: [string, string][] = [
 
 const built: [string, string][] = [
   ['Durable executions', 'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database and not a goroutine praying nobody pulls the plug.'],
-  ['Triggers', 'An alarm, a webhook, a schedule, an MQTT burst, a file that shows up, or a new row in ERPNext becomes a batch of items.'],
+  ['Triggers', 'A HotLoop alarm or tag reading, a webhook, a schedule, an MQTT burst, a file that shows up, a new email in an IMAP mailbox, or a new row in ERPNext becomes a batch of items.'],
   ['Steps that call real systems', 'HTTP, PostgreSQL, email, files (CSV, Excel and a PDF\'s text), ERPNext, and the notifiers: ntfy, Discord and Gotify. A credential vault with OAuth2 holds the secrets, sealed with a key that lives outside the database.'],
+  ['Steps that talk to HotLoop', 'Read tags and alarms, acknowledge an alarm, call a service, run a script, apply a recipe and trigger an automation on a HotLoop gateway. Every command goes through the gateway\'s write gate, with a reason in its audit trail, so Cascade has no side door to a device.'],
   ['People and governance', 'Users with enforced MFA, OIDC sign-in, projects and roles, an audit log and version history on every workflow.'],
   ['Watching it', 'Prometheus metrics, and every execution is one OpenTelemetry trace with a span per step. With no endpoint named, nothing is sent.'],
   ['Bringing a workflow in', 'It converts a workflow exported as JSON from another tool. What it can be sure of comes across, and everything else comes across switched off with its original settings in the notes. It never guesses what a JavaScript expression meant, and it never brings credentials.'],
@@ -165,7 +166,8 @@ const planned: [string, string][] = [
         <h2>What {CASCADE} ships.</h2>
         <p class="lede">
           Every item here is built and was tried against real services, never mocks: Postgres, a headless browser,
-          Mosquitto, a HotLoop Gateway, ntfy, Gotify, a mail server and ERPNext.
+          Mosquitto, a HotLoop Gateway, ntfy, Gotify, a mail server and ERPNext. The one exception is Discord, which
+          has only been tried against a stand-in that answers as its documentation says, not the real thing.
         </p>
       </div>
       <div class="grid grid-3">
