@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import FeatureList from '../components/FeatureList.astro';
 import { CURRENT, EDGE_FEATURES, STATUS, product } from '../lib/products';
@@ -54,6 +55,7 @@ const p = product('edge');
         <a class="btn" href="/products/">Compare the lineup</a>
         <a class="btn" href="https://docs.hotloop.io/edge/overview/">Docs</a>
       </div>
+      <FamilyLine id="edge" />
     </div>
   </section>
 

@@ -1,4 +1,5 @@
 ---
+import { FAMILY_SENTENCE } from '../lib/family';
 const year = new Date().getFullYear();
 ---
 
@@ -9,7 +10,7 @@ const year = new Date().getFullYear();
         <img src="/brand/logo-mark.svg" alt="" width="28" height="28" />
         <span class="word">hot<span>loop</span></span>
       </a>
-      <p>Automation loops for the real world. One codebase shipped as four products, with Flow and Cascade beside them, all under one license.</p>
+      <p>Automation loops for the real world. {FAMILY_SENTENCE}</p>
     </div>
 
     <nav aria-label="Products">
@@ -29,6 +30,9 @@ const year = new Date().getFullYear();
     <nav aria-label="Resources">
       <h2>Resources</h2>
       <a href="https://docs.hotloop.io">Documentation (docs.hotloop.io)</a>
+      <a href="https://docs.hotloop.io/roadmap/">HotLoop roadmap</a>
+      <a href="https://docs.hotloop.io/flow/roadmap/">Flow roadmap</a>
+      <a href="https://docs.hotloop.io/cascade/roadmap/">Cascade roadmap</a>
       <a href="/license/">License</a>
       <a href="/terms/">Terms of Service</a>
       <a href="/releases/rss.xml">Release feed (RSS)</a>

@@ -1,6 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
 import { CURRENT, PRODUCTS } from '../lib/products';
+import { LINES, FAMILY_SENTENCE } from '../lib/family';
+import { getCollection } from 'astro:content';
+
+const flowVersion = (await getCollection('releases')).filter((r) => r.data.product === 'flow' && r.data.published).map((r) => r.data.version).sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))[0];
 
 // Yes means the product has it (whatever its status on that product's page);
 // the columns are IoT, Edge, Gateway, Edge Relay.
@@ -26,37 +30,35 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
 ---
 
 <Base
-  title="HotLoop products: IoT, Edge, Gateway and Edge Relay"
-  description="One codebase, four products, released together: HotLoop IoT, HotLoop Edge, HotLoop Gateway and HotLoop Edge Relay. What each one has, and which you can install."
-  ogAlt="The HotLoop lineup: IoT, Edge, Gateway and Edge Relay."
+  title="HotLoop products: six on three release lines"
+  description="HotLoop is six products for the plant floor: IoT, Edge, Gateway and Edge Relay, plus Flow and Cascade. What each one has, and which release line it ships on."
+  ogAlt="The HotLoop lineup: IoT, Edge, Gateway, Edge Relay, Flow and Cascade."
 >
   <section class="page-hero">
     <div class="wrap stack">
       <span class="label">Products</span>
-      <h1>One codebase. Four products. One version number.</h1>
+      <h1>Six products. Three release lines.</h1>
       <p class="lede">
-        HotLoop is built once and shipped four ways, each with its own image and chart, all from the same tag.
-        Every one of them speaks every protocol, MQTT included. Features split the products, protocols don't, so
-        nobody ever has to run the Gateway just to reach one PLC. What you're really picking is how much of the
-        plant the box has to run.
+        {FAMILY_SENTENCE} The four share one codebase and one version, and every one of them speaks every protocol,
+        MQTT included, so what you're really picking is how much of the plant the box has to run.
       </p>
     </div>
   </section>
 
   <section class="wrap body">
-    <div class="grid grid-2 cards">
-      {PRODUCTS.map((p) => (
-        <a class="card product reveal" href={p.href}>
-          <div class="cluster head">
-            <h2>{p.name}</h2>
-            <span class={`chip ${p.installable ? 'ok' : 'warn'}`}>{p.installable ? `${CURRENT} is out` : 'Upcoming release'}</span>
-          </div>
-          <p class="tag">{p.tagline}</p>
-          <p>{p.summary}</p>
-          <p class="db"><span class="label">Database</span> {p.databases}{p.databasesToday && <span class="today"> Today: {p.databasesToday}</span>}</p>
-        </a>
-      ))}
-    </div>
+    {LINES.map((l) => (
+      <div class="line">
+        <p class="line-head"><span class="chip ok">{l.label} line, {l.id === 'flow' ? flowVersion : l.version}</span> <span class="muted">{l.blurb}</span></p>
+        <div class="grid grid-2 cards">
+          {l.members.map((m) => (
+            <a class="card product reveal" href={m.href}>
+              <h2>{m.name}</h2>
+              <p class="tag">{m.tagline}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
 
     <h2 class="sub">Side by side</h2>
     <p class="muted intro">
@@ -112,9 +114,9 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
     </div>
 
     <p class="muted flow">
-      Want Node-RED's wires instead? That's <a href="/flow/">HotLoop Flow</a>, a separate product under the same
-      license. Want the plant talking to ERPNext, your phone and everything else? That's
-      {' '}<a href="/cascade/">HotLoop Cascade</a>. The docs for all of it are at
+      Where each one is headed: the <a href="https://docs.hotloop.io/roadmap/">HotLoop roadmap</a> for the four core
+      products, the <a href="https://docs.hotloop.io/flow/roadmap/">Flow roadmap</a> and the
+      {' '}<a href="https://docs.hotloop.io/cascade/roadmap/">Cascade roadmap</a>. The docs for all six are at
       {' '}<a href="https://docs.hotloop.io/products/">docs.hotloop.io</a>.
     </p>
   </section>
@@ -125,7 +127,9 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
   .page-hero h1 { max-width: 22ch; }
   .body { padding-bottom: var(--hl-s8); }
   /* Four products: two by two, never three and an orphan. */
-  .cards { margin-bottom: var(--hl-s8); grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+  .line { margin-bottom: var(--hl-s6); }
+  .line-head { margin: 0 0 var(--hl-s3); display: flex; flex-wrap: wrap; gap: var(--hl-s2) var(--hl-s3); align-items: center; }
+  .cards { margin-bottom: var(--hl-s4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
   a.product { display: grid; gap: var(--hl-s3); align-content: start; text-decoration: none; color: inherit; transition: transform var(--hl-transition-fast), border-color var(--hl-transition-fast); }
   a.product:hover { transform: translateY(-2px); border-color: var(--hl-orange); }
   .product .head { justify-content: space-between; }
