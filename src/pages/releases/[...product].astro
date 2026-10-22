@@ -2,11 +2,11 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 
-// One file serves /releases/, /releases/gateway/, /releases/flow/ and /releases/cascade/.
+// One file serves /releases/, /releases/core/, /releases/flow/ and /releases/cascade/.
 export function getStaticPaths() {
   return [
     { params: { product: undefined }, props: { filter: 'all' } },
-    { params: { product: 'gateway' }, props: { filter: 'gateway' } },
+    { params: { product: 'core' }, props: { filter: 'core' } },
     { params: { product: 'flow' }, props: { filter: 'flow' } },
     { params: { product: 'cascade' }, props: { filter: 'cascade' } },
   ];
@@ -16,11 +16,11 @@ const { filter } = Astro.props;
 const all = (await getCollection('releases')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
 const releases = filter === 'all' ? all : all.filter((r) => r.data.product === filter);
 
-const NAME = { gateway: 'Gateway', flow: 'Flow', cascade: 'Cascade' } as const;
+const NAME = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade' } as const;
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 
-const unpublished = all.filter((r) => r.data.product === 'gateway' && !r.data.published);
-const gwLatest = all.find((r) => r.data.product === 'gateway' && r.data.published);
+const unpublished = all.filter((r) => r.data.product === 'core' && !r.data.published);
+const coreLatest = all.find((r) => r.data.product === 'core' && r.data.published);
 
 // An unpublished version older than a published one was never a release of its
 // own, but its work is in that release, and the chip says which one.
@@ -34,21 +34,21 @@ const chipFor = (r: (typeof all)[number]) => {
 // The release that finally shipped the untagged run. Not simply the newest
 // release: once 4.17.0 came out, "until 4.17.0" would have been a lie about
 // what 4.16.0 did.
-const shippedIn = unpublished[0] && all.filter((p) => p.data.product === 'gateway' && p.data.published && older(unpublished[0].data.version, p.data.version)).at(-1);
-const title = filter === 'all' ? 'Release notes' : `${NAME[filter as 'gateway' | 'flow' | 'cascade']} release notes`;
+const shippedIn = unpublished[0] && all.filter((p) => p.data.product === 'core' && p.data.published && older(unpublished[0].data.version, p.data.version)).at(-1);
+const title = filter === 'all' ? 'Release notes' : `${NAME[filter as 'core' | 'flow' | 'cascade']} release notes`;
 
 // Three pages, three different titles and descriptions. Identical ones make search
 // engines pick one of them arbitrarily and ignore the rest.
-const gwFirst = all.filter((r) => r.data.product === 'gateway').at(-1)?.data.version;
+const coreFirst = all.filter((r) => r.data.product === 'core').at(-1)?.data.version;
 const seo = {
   all: {
-    title: 'HotLoop release notes: Gateway, Flow and Cascade',
+    title: 'HotLoop release notes: HotLoop core, Flow and Cascade',
     description:
-      'What changed in HotLoop Gateway, Flow and Cascade, version by version, including which versions have actually been published.',
+      'What changed in HotLoop core (IoT, Edge, Gateway and Edge Relay), Flow and Cascade, version by version, including which versions have actually been published.',
   },
-  gateway: {
-    title: 'HotLoop Gateway release notes and version history',
-    description: `Every HotLoop Gateway version from ${gwFirst} onward, with what changed in each and whether it has actually been tagged and published.`,
+  core: {
+    title: 'HotLoop core release notes and version history',
+    description: `Every HotLoop core version from ${coreFirst} onward, shared by IoT, Edge, Gateway and Edge Relay, with what changed and whether it was published.`,
   },
   flow: {
     title: 'HotLoop Flow release notes and version history',
@@ -60,7 +60,7 @@ const seo = {
     description:
       'HotLoop Cascade release notes, from 0.1.1, the first release, to 0.1.2, and why the 0.1.0 tag never published anything.',
   },
-}[filter as 'all' | 'gateway' | 'flow' | 'cascade'];
+}[filter as 'all' | 'core' | 'flow' | 'cascade'];
 ---
 
 <Base
@@ -74,17 +74,17 @@ const seo = {
       <h1>{title}</h1>
       <nav class="cluster tabs" aria-label="Filter by product">
         <a class="pill" href="/releases/" aria-current={filter === 'all' ? 'page' : undefined}>All</a>
-        <a class="pill" href="/releases/gateway/" aria-current={filter === 'gateway' ? 'page' : undefined}>Gateway</a>
+        <a class="pill" href="/releases/core/" aria-current={filter === 'core' ? 'page' : undefined}>HotLoop core</a>
         <a class="pill" href="/releases/flow/" aria-current={filter === 'flow' ? 'page' : undefined}>Flow</a>
         <a class="pill" href="/releases/cascade/" aria-current={filter === 'cascade' ? 'page' : undefined}>Cascade</a>
         <a class="pill rss" href="/releases/rss.xml">RSS</a>
       </nav>
 
-      {(filter === 'all' || filter === 'gateway') && unpublished.length > 0 && gwLatest && shippedIn && (
+      {(filter === 'all' || filter === 'core') && unpublished.length > 0 && coreLatest && shippedIn && (
         <div class="notice info">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
           <div>
-            <strong>Gateway {gwLatest.data.version} is out. Versions {unpublished[unpublished.length - 1].data.version} through {unpublished[0].data.version} were never published on their own.</strong>
+            <strong>HotLoop core {coreLatest.data.version} is out. Versions {unpublished[unpublished.length - 1].data.version} through {unpublished[0].data.version} were never published on their own.</strong>
             <p>
               They were merged one at a time and never tagged, so there was nothing to download until
               {' '}{shippedIn.data.version}, which shipped every one of them at once. Each entry is still marked the way

@@ -12,7 +12,7 @@ import { CURRENT, GATEWAY_FEATURES, product } from '../lib/products';
 const protocols = (await getCollection('protocols')).sort((a, b) => a.data.order - b.data.order);
 const native = protocols.filter((p) => p.data.verification !== 'gateway-mode');
 const releases = (await getCollection('releases'))
-  .filter((r) => r.data.product === 'gateway')
+  .filter((r) => r.data.product === 'core')
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
 const latest = releases.find((r) => r.data.published)!;
 const gw = product('gateway');
@@ -66,7 +66,7 @@ const gw = product('gateway');
       <div class="cluster">
         <a class="btn primary" href="#install">Install it</a>
         <a class="btn" href="#the-gate">Try to break the write gate</a>
-        <a class="btn" href="/releases/gateway/">Release notes</a>
+        <a class="btn" href="/releases/core/">Release notes</a>
         <a class="btn" href="https://docs.hotloop.io/gateway/overview/">Docs</a>
       </div>
       <FamilyLine id="gateway" />

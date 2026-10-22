@@ -23,7 +23,7 @@ const core = (id: string, name: string, href: string, tagline: string): Member =
   id, name, href, tagline,
   docs: `${DOCS}/${id}/overview/`,
   install: `${DOCS}/${id}/install/`,
-  releases: '/releases/gateway/',
+  releases: '/releases/core/',
   roadmap: `${DOCS}/roadmap/`,
 });
 

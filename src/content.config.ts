@@ -83,7 +83,7 @@ const nodes = defineCollection({
 const releases = defineCollection({
   loader: glob({ pattern: '**/*.md', base: 'src/content/releases' }),
   schema: z.object({
-    product: z.enum(['gateway', 'flow', 'cascade']),
+    product: z.enum(['core', 'flow', 'cascade']),
     version: z.string().regex(/^\d+\.\d+\.\d+$/),
     date: z.coerce.date(),
     // A merged version that has never been tagged or published must say so.
