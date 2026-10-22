@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import CardDetail from '../components/CardDetail.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import FeatureList from '../components/FeatureList.astro';
@@ -113,12 +114,17 @@ const p = product('edge');
       </div>
       <div class="grid grid-3">
         <article class="card reveal"><h3>A canvas that never reflows</h3><p>A fixed screen that scales and never shuffles things around, because an operator's thumb goes to where the pump was yesterday, and it better still be there.</p></article>
-        <article class="card reveal"><h3>ISA-101 by default</h3><p>Gray backgrounds, color only for abnormal, alarm priority by shape as well as color. When the whole screen is gray, the one red thing gets seen. No 3D gradients on the tank.</p></article>
+        <article class="card reveal"><h3>ISA-101 by default</h3><p>Gray backgrounds, color only for abnormal, alarm priority by shape as well as color. When the screen is gray, the one red thing gets seen.</p></article>
         <article class="card reveal"><h3>Faceplates</h3><p>Click a motor and get its popup: start, stop, reset, mode, speed, its interlocks and its alarms, built from the motor entity that already exists.</p></article>
-        <article class="card reveal"><h3>Panel mode</h3><p>Open the box at <code>/?screen=name</code> and the dashboard bound to that name fills the panel with no header, no tabs and big touch targets. It works against the box itself with the uplink down. Panel mode drops the header, so the alarm list on a panel is an alarms card on its dashboard.</p></article>
-        <article class="card reveal"><h3>A person behind every write</h3><p>On your own computer you're already signed in. A shared panel signs operators in with a PIN or a badge and signs them out when idle, so the audit names a human, not "panel 3".</p></article>
+        <article class="card reveal"><h3>Panel mode</h3><p>Open the box at <code>/?screen=name</code> and the dashboard bound to that name fills the panel: no header, big touch targets, and it works with the uplink down.</p></article>
+        <article class="card reveal"><h3>A person behind every write</h3><p>On your own computer you're already signed in. A shared panel signs operators in with a PIN or a badge, so the audit names a human, not "panel 3".</p></article>
         <article class="card reveal"><h3>What is not built</h3><p>The ISA-101 symbol library, the faceplates and the PIN sign-in for shared panels are design. Dashboards, which they build on, are in {CURRENT}, and this page will say when these move.</p></article>
       </div>
+      <CardDetail>
+        <div><h4>ISA-101 by default</h4><p>Gray backgrounds, color only for abnormal, alarm priority by shape as well as color. When the whole screen is gray, the one red thing gets seen. No 3D gradients on the tank.</p></div>
+        <div><h4>Panel mode</h4><p>Open the box at <code>/?screen=name</code> and the dashboard bound to that name fills the panel with no header, no tabs and big touch targets. It works against the box itself with the uplink down. Panel mode drops the header, so the alarm list on a panel is an alarms card on its dashboard.</p></div>
+        <div><h4>A person behind every write</h4><p>On your own computer you're already signed in. A shared panel signs operators in with a PIN or a badge and signs them out when idle, so the audit names a human, not "panel 3".</p></div>
+      </CardDetail>
     </div>
   </section>
 
@@ -169,10 +175,14 @@ helm install hotloop hotloop/hotloop-edge --version {CURRENT} \
         <h2>What we haven't run, so you don't find out at commissioning.</h2>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>The Quadlet units under systemd</h3><p>The Gateway's units were run rootless under systemd, including an update that can't start and gets rolled back. Edge's were generated from them and checked against them, and not started. A real Pi under systemd as root: not yet.</p></article>
+        <article class="card reveal"><h3>The Quadlet units under systemd</h3><p>The Gateway's units were run rootless under systemd. Edge's were generated from them and checked, not started. A real Pi under systemd as root: not yet.</p></article>
         <article class="card reveal"><h3>The 32-bit arm image</h3><p>The arm/v7 image is built and published. It hasn't met a Pi 3 under load yet.</p></article>
-        <article class="card reveal"><h3>Moving up a product on a cluster</h3><p>IoT to Edge to the Gateway on one database volume has been run on Quadlet. The same move as a <code>helm upgrade</code> on a real cluster, and going back down, has not.</p></article>
+        <article class="card reveal"><h3>Moving up a product on a cluster</h3><p>IoT to Edge to the Gateway on one database volume has been run on Quadlet. As a <code>helm upgrade</code> on a real cluster, and going back down, it has not.</p></article>
       </div>
+      <CardDetail>
+        <div><h4>The Quadlet units under systemd</h4><p>The Gateway's units were run rootless under systemd, including an update that can't start and gets rolled back. Edge's were generated from them and checked against them, and not started. A real Pi under systemd as root: not yet.</p></div>
+        <div><h4>Moving up a product on a cluster</h4><p>IoT to Edge to the Gateway on one database volume has been run on Quadlet. The same move as a <code>helm upgrade</code> on a real cluster, and going back down, has not.</p></div>
+      </CardDetail>
     </div>
   </section>
 

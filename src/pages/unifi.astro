@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import CardDetail from '../components/CardDetail.astro';
 import { CURRENT, STATUS, type Status } from '../lib/products';
 
 // The read-only driver shipped in 4.17.0. That is history, so it is not CURRENT.
@@ -97,13 +98,20 @@ const order: [string, Status, string][] = [
         </p>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>One login, not forty</h3><p>One session per console, reused for every read, with a budget on how often it logs in. Logging in on every check got our own Cloud Gateway to lock us out, twice. HotLoop waits a lockout out instead of making it longer.</p></article>
-        <article class="card reveal"><h3>A pinned certificate</h3><p>The first connect fails on purpose and shows you the console's key fingerprint. Check it, paste it in. From then on a console with a different key is refused during the handshake, before your password goes anywhere.</p></article>
+        <article class="card reveal"><h3>One login, not forty</h3><p>One session per console, reused for every read, with a login budget. Logging in on every check got our own Cloud Gateway to lock us out, twice.</p></article>
+        <article class="card reveal"><h3>A pinned certificate</h3><p>The first connect fails on purpose and shows the console's key fingerprint. Paste it in, and a console with a different key is refused before your password is sent.</p></article>
         <article class="card reveal"><h3>WAN failover</h3><p>Which WAN is carrying traffic, as a tag you can alarm on. Know the plant failed over to the backup link before the data bill tells you.</p></article>
-        <article class="card reveal"><h3>Protected ports, when writes land</h3><p>HotLoop won't cycle an uplink, or the port powering the backup WAN, no matter who asks. Worked out from the topology, not typed in by hand, so nobody forgets one.</p></article>
-        <article class="card reveal"><h3>A cooldown on power-cycles</h3><p>Fifteen minutes per port. A rule that cycles a PLC every two minutes is how you cook a power supply, and one that needs more than one cycle has a problem a cycle won't fix.</p></article>
-        <article class="card reveal"><h3>What it will never do</h3><p>No VLANs, firewall rules, DHCP, static IPs, SSIDs or firmware. We've watched a switch lose its controller over one static IP change. That's the UniFi app's job. HotLoop does the few things an operator needs at 2am.</p></article>
+        <article class="card reveal"><h3>Protected ports, when writes land</h3><p>HotLoop won't cycle an uplink, or the port powering the backup WAN, no matter who asks. Worked out from the topology, not typed in.</p></article>
+        <article class="card reveal"><h3>A cooldown on power-cycles</h3><p>Fifteen minutes per port. A rule that cycles a PLC every two minutes is how you cook a power supply.</p></article>
+        <article class="card reveal"><h3>What it will never do</h3><p>No VLANs, firewall rules, DHCP, static IPs, SSIDs or firmware. That's the UniFi app's job. HotLoop does the few things an operator needs at 2am.</p></article>
       </div>
+      <CardDetail>
+        <div><h4>One login, not forty</h4><p>One session per console, reused for every read, with a budget on how often it logs in. Logging in on every check got our own Cloud Gateway to lock us out, twice. HotLoop waits a lockout out instead of making it longer.</p></div>
+        <div><h4>A pinned certificate</h4><p>The first connect fails on purpose and shows you the console's key fingerprint. Check it, paste it in. From then on a console with a different key is refused during the handshake, before your password goes anywhere.</p></div>
+        <div><h4>Protected ports, when writes land</h4><p>HotLoop won't cycle an uplink, or the port powering the backup WAN, no matter who asks. Worked out from the topology, not typed in by hand, so nobody forgets one.</p></div>
+        <div><h4>A cooldown on power-cycles</h4><p>Fifteen minutes per port. A rule that cycles a PLC every two minutes is how you cook a power supply, and one that needs more than one cycle has a problem a cycle won't fix.</p></div>
+        <div><h4>What it will never do</h4><p>No VLANs, firewall rules, DHCP, static IPs, SSIDs or firmware. We've watched a switch lose its controller over one static IP change. That's the UniFi app's job. HotLoop does the few things an operator needs at 2am.</p></div>
+      </CardDetail>
       <p class="prose muted after">
         Console passwords are entered in HotLoop and stored encrypted, with the key kept outside the database, so a
         dump or a backup doesn't hand anybody the keys to your network.

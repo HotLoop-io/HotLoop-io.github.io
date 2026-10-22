@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import CardDetail from '../components/CardDetail.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import FeatureList from '../components/FeatureList.astro';
@@ -165,10 +166,13 @@ helm install hotloop hotloop/hotloop-iot --version {CURRENT} \
         <h2>What we haven't run, so you don't find out at 2am.</h2>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>The Quadlet units under systemd</h3><p>IoT's SQLite unit was run. The PostgreSQL one was generated from the Gateway's, whose units were run rootless under systemd, and checked against them, but it was not started. A real Pi under systemd as root: not yet.</p></article>
+        <article class="card reveal"><h3>The Quadlet units under systemd</h3><p>IoT's SQLite unit was run. The PostgreSQL one was generated from the Gateway's rootless-tested units and not started. A real Pi under systemd as root: not yet.</p></article>
         <article class="card reveal"><h3>Real devices on a bench</h3><p>MQTT discovery is proven against recordings of real installs, not against devices on a bench. ESPHome's <code>mqtt:</code> component doesn't build for a host, so there is no live ESPHome in the tests.</p></article>
         <article class="card reveal"><h3>The 32-bit arm image</h3><p>The arm/v7 image is built and published. It hasn't met a Pi 3 under load yet.</p></article>
       </div>
+      <CardDetail>
+        <div><h4>The Quadlet units under systemd</h4><p>IoT's SQLite unit was run. The PostgreSQL one was generated from the Gateway's, whose units were run rootless under systemd, and checked against them, but it was not started. A real Pi under systemd as root: not yet.</p></div>
+      </CardDetail>
     </div>
   </section>
 
