@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { product } from '../lib/products';
 
@@ -59,6 +60,7 @@ const v = latest.data.version;
         <a class="btn" href="/products/">Compare the lineup</a>
         <a class="btn" href="https://docs.hotloop.io/edge-relay/overview/">Docs</a>
       </div>
+      <FamilyLine id="edge-relay" />
     </div>
   </section>
 

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import Backpressure from '../components/Backpressure.astro';
 
@@ -100,6 +101,7 @@ const notDone = [
         <a class="btn" href="/releases/flow/">Release notes</a>
         <a class="btn" href="https://docs.hotloop.io/flow/overview/">Docs</a>
       </div>
+      <FamilyLine id="flow" />
     </div>
   </section>
 

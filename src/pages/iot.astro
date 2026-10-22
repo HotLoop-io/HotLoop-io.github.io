@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import FeatureList from '../components/FeatureList.astro';
 import { CURRENT, IOT_FEATURES, STATUS, product } from '../lib/products';
@@ -56,6 +57,7 @@ const p = product('iot');
         <a class="btn" href="/products/">Compare the lineup</a>
         <a class="btn" href="https://docs.hotloop.io/iot/overview/">Docs</a>
       </div>
+      <FamilyLine id="iot" />
     </div>
   </section>
 

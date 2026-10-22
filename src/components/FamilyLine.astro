@@ -1,0 +1,33 @@
+---
+// The same strip on all six product pages: the one family sentence, which release
+// line this product ships on, and its docs, install, release notes and roadmap.
+import { getCollection } from 'astro:content';
+import { FAMILY_SENTENCE, LINES, memberOf, lineOf } from '../lib/family';
+
+const { id } = Astro.props as { id: string };
+const m = memberOf(id);
+const line = lineOf(id);
+let version = line.version;
+if (line.id === 'flow') {
+  const rel = (await getCollection('releases')).filter((r) => r.data.product === 'flow' && r.data.published);
+  version = rel.sort((a, b) => b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0].data.version;
+}
+const shared = line.members.length > 1 ? `Ships with ${line.members.filter((x) => x.id !== id).map((x) => x.name.replace('HotLoop ', '')).join(', ')} on one version.` : '';
+---
+
+<aside class="family" aria-label="Where this product sits in the HotLoop family">
+  <p>{FAMILY_SENTENCE} <a href="/products/">See all six</a>.</p>
+  <p class="line"><span class="chip ok">{line.label} line, {version}</span> {shared}</p>
+  <p class="links">
+    <a href={m.docs}>Docs</a>
+    <a href={m.install}>Install</a>
+    <a href={m.releases}>Release notes</a>
+    <a href={m.roadmap}>Roadmap</a>
+  </p>
+</aside>
+
+<style>
+  .family { border-top: 1px solid var(--hl-border); padding-top: var(--hl-s4); display: grid; gap: var(--hl-s2); max-width: 70ch; }
+  .family p { margin: 0; font-size: var(--hl-fs-sm); color: var(--hl-ink-soft); }
+  .family .links { display: flex; flex-wrap: wrap; gap: var(--hl-s2) var(--hl-s5); font-weight: 600; }
+</style>

@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import LoopInstrument from '../components/LoopInstrument.astro';
 import { TIERS, TIER_ORDER } from '../lib/tiers';
-import { PRODUCTS, CASCADE } from '../lib/products';
+import { LINES, FAMILY_SENTENCE } from '../lib/family';
 
 const protocols = await getCollection('protocols');
 const nodes = await getCollection('nodes');
@@ -26,6 +26,7 @@ const newest = (product: string) =>
 const gw = newest('gateway');
 const gwOut = releases.filter((r) => r.data.product === 'gateway' && r.data.published).sort((a, b) => b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
 const fl = newest('flow');
+const ca = newest('cascade');
 const nativeCount = protocols.filter((p) => p.data.verification !== 'gateway-mode').length;
 
 const fmt = (d: Date) =>
@@ -34,13 +35,13 @@ const fmt = (d: Date) =>
 
 <Base
   title="HotLoop: automation loops for the real world"
-  description="HotLoop closes the loop between what a sensor says and what a machine does: IoT, Edge, Gateway, Edge Relay, Flow and Cascade. Free for home, lab and EmberNET."
+  description="HotLoop is six products for the plant floor: IoT, Edge, Gateway and Edge Relay, plus Flow and Cascade. Free for home, lab and EmberNET."
   ogAlt="HotLoop. Automation loops for the real world."
 >
   <section class="hero">
     <div class="wrap-wide grid-hero">
       <div class="copy stack">
-        <span class="chip ok">Version {gwOut.data.version} is out, all four products</span>
+        <span class="chip ok">Version {gwOut.data.version} is out, all four core products</span>
         <h1>Automation loops for the real world.</h1>
         <p class="lede">
           Home automation is a toy right up until the day it matters. Industrial automation works, costs a fortune,
@@ -121,73 +122,25 @@ const fmt = (d: Date) =>
     <div class="wrap">
       <div class="section-head">
         <span class="label">The products</span>
-        <h2>Four products from one codebase, with Flow and Cascade beside them.</h2>
-        <p class="lede">
-          Every one of the four speaks every protocol, so you pick the one that fits the box, not the one that
-          happens to have your driver. Flow is for people who think in wires, and Cascade is for the plant that has
-          to talk to everything that isn't a PLC. One license covers all six.
-        </p>
+        <h2>Six products, three release lines.</h2>
+        <p class="lede">{FAMILY_SENTENCE}</p>
       </div>
-      <div class="grid grid-3">
-        <article class="card product reveal">
-          <div class="cluster head"><h3>HotLoop Gateway</h3><span class="chip ok">Version {gwOut.data.version} is out</span></div>
-          <p class="what">
-            The site brain. It polls the equipment, keeps the history, raises the
-            alarms, runs the rules and lets agents read the plant over MCP. One static Go binary, non-root, every
-            capability dropped.
-          </p>
-          <ul>
-            <li>Eight native drivers, and a verification table that admits which ones have never touched a real PLC.</li>
-            <li>Entities on an ISA-95 tree, so the plant has names instead of register addresses.</li>
-            <li>One write gate for people, rules and agents, and a row in the audit for every refusal.</li>
-          </ul>
-          <p class="license">HotLoop Business Source License 1.1. Free for home and lab, and free for business through EmberNET.</p>
-          <a class="btn primary" href="/gateway/">About the Gateway</a>
-        </article>
-
-        <article class="card product reveal">
-          <div class="cluster head"><h3>HotLoop Flow</h3><span class="chip ok">Version {fl.data.version} is out</span></div>
-          <p class="what">
-            Node-RED's idea on a runtime that doesn't fall over. Your <code>flows.json</code> runs as it is (community nodes aside), every node
-            gets its own goroutine, and every inbox has a ceiling, so a chatty sensor can't balloon the pod until the
-            kubelet shoots it.
-          </p>
-          <ul>
-            <li>{nodes.length} node types, each labeled full, partial, divergent or Flow-only, with the difference written down.</li>
-            <li>Won't start without authentication, and ships <code>exec</code> disabled. Node-RED ships with the door open.</li>
-            <li>Bounded queues, and a race detector that comes back clean on every package.</li>
-          </ul>
-          <p class="license">HotLoop Business Source License 1.1. Free for home and lab, and free for business through EmberNET.</p>
-          <a class="btn primary" href="/flow/">About Flow</a>
-        </article>
-
-        <article class="card product reveal">
-          <div class="cluster head"><h3>HotLoop Cascade</h3><span class="chip ok">Released, {CASCADE}</span></div>
-          <p class="what">
-            The plant talking to everything else. An alarm, a webhook, a schedule or an MQTT burst becomes a batch of
-            items that run through checkpointed steps against real systems, so a dead API or a rebooted box doesn't
-            lose the job.
-          </p>
-          <ul>
-            <li>Every step is checkpointed and a retry is a row in the database, with no Redis to babysit.</li>
-            <li>ntfy, Discord, Gotify, webhooks, email and ERPNext, and equipment only gets written through HotLoop's write gate.</li>
-            <li>One static Go binary on SQLite for a Pi, or Postgres with as many workers as you want.</li>
-          </ul>
-          <p class="license">HotLoop Business Source License 1.1. Free for home and lab, and free for business through EmberNET.</p>
-          <a class="btn primary" href="/cascade/">About Cascade</a>
-        </article>
-      </div>
-      <div class="grid grid-4 lineup">
-        {PRODUCTS.map((p) => (
-          <a class="card mini reveal" href={p.href}>
-            <div class="cluster head">
-              <h3>{p.name.replace('HotLoop ', '')}</h3>
-              <span class={`chip ${p.installable ? 'ok' : 'warn'}`}>{p.installable ? 'Install today' : 'Upcoming'}</span>
+      <div class="lines">
+        {LINES.map((l) => (
+          <div class="line">
+            <p class="line-head"><span class="chip ok">{l.label} line, {l.id === 'flow' ? fl.data.version : l.version}</span></p>
+            <div class="grid grid-4 lineup">
+              {l.members.map((m) => (
+                <a class="card mini reveal" href={m.href}>
+                  <h3>{m.name.replace('HotLoop ', '')}</h3>
+                  <p>{m.tagline}</p>
+                </a>
+              ))}
             </div>
-            <p>{p.tagline}</p>
-          </a>
+          </div>
         ))}
       </div>
+      <p class="more"><a class="btn" href="/products/">Compare all six</a></p>
     </div>
   </section>
 
@@ -222,20 +175,24 @@ const fmt = (d: Date) =>
         <span class="label">Latest</span>
         <h2>What changed last, and whether you can download it.</h2>
       </div>
-      <div class="grid grid-2">
+      <div class="grid grid-3">
         <a class="card release reveal" href="/releases/flow/">
           <div class="cluster head">
             <h3>Flow {fl.data.version}</h3><span class="chip ok">Published</span>
           </div>
           <p class="date">{fmt(fl.data.date)}</p>
-          <p>{fl.data.summary}</p>
         </a>
         <a class="card release reveal" href="/releases/gateway/">
           <div class="cluster head">
-            <h3>Gateway {gw.data.version}</h3><span class={`chip ${gw.data.published ? 'ok' : 'warn'}`}>{gw.data.published ? 'Published' : 'Merged, not published'}</span>
+            <h3>HotLoop core {gw.data.version}</h3><span class={`chip ${gw.data.published ? 'ok' : 'warn'}`}>{gw.data.published ? 'Published' : 'Merged, not published'}</span>
           </div>
           <p class="date">{fmt(gw.data.date)}</p>
-          <p>{gw.data.summary}</p>
+        </a>
+        <a class="card release reveal" href="/releases/cascade/">
+          <div class="cluster head">
+            <h3>Cascade {ca.data.version}</h3><span class={`chip ${ca.data.published ? 'ok' : 'warn'}`}>{ca.data.published ? 'Published' : 'Merged, not published'}</span>
+          </div>
+          <p class="date">{fmt(ca.data.date)}</p>
         </a>
       </div>
     </div>
@@ -288,7 +245,9 @@ const fmt = (d: Date) =>
   .product .license { padding-top: var(--hl-s3); border-top: 1px solid var(--hl-border); font-size: var(--hl-fs-xs); }
   .product .btn { justify-self: start; }
 
-  .lineup { margin-top: var(--hl-s5); }
+  .lines { display: grid; gap: var(--hl-s6); }
+  .line-head { margin: 0 0 var(--hl-s3); }
+  .lineup { margin-top: 0; }
   a.mini { display: grid; gap: var(--hl-s2); align-content: start; text-decoration: none; color: inherit; padding: var(--hl-s5); transition: transform var(--hl-transition-fast), border-color var(--hl-transition-fast); }
   a.mini:hover { transform: translateY(-2px); border-color: var(--hl-orange); }
   .mini .head { justify-content: space-between; }
