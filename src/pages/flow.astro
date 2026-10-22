@@ -7,14 +7,18 @@ import Backpressure from '../components/Backpressure.astro';
 const nodes = await getCollection('nodes');
 const level = (l: string) => nodes.filter((n) => n.data.level === l).length;
 
-// Straight from the benchmark table in Flow's own README. Nothing here is
-// rounded in Flow's favor.
+// Straight from the numbers table in Flow's own README and docs/bench. Absolute
+// numbers only: Flow's repository dropped the side-by-side table on purpose,
+// because it moves every time the box changes.
 const bench = [
-  ['Image size', '39.1 MB', '717 MB', '18×'],
-  ['Throughput', '3,460 req/s', '1,290 req/s', '2.7×'],
-  ['Latency p50', '1.03 ms', '4.61 ms', '4.5×'],
-  ['Latency p99', '16.72 ms', '23.14 ms', '1.4×'],
-  ['Cold start', '2.1–2.3 s', '4.6–5.5 s', '~2.3×'],
+  ['Binary, linux/amd64, static', '22.0 MB'],
+  ['Image, 2.2.0 amd64, as Podman reports it', '39.1 MB'],
+  ['Start to answering its first request', '0.05 s'],
+  ['RSS, idle', '16.4 to 16.7 MiB'],
+  ['RSS, peak under the HTTP load', '26.4 to 28.5 MiB'],
+  ['HTTP, five-node flow, 8 connections', '13.0k to 15.3k req/s'],
+  ['HTTP latency p50 / p99', '0.39 to 0.41 ms / 1.78 to 4.03 ms'],
+  ['Engine, five-node chain, no I/O', '2.20 to 3.11 µs a message'],
 ];
 
 const different = [
@@ -22,19 +26,19 @@ const different = [
   ['Back-pressure', 'None, unbounded queue', 'Bounded inbox, four policies'],
   ['Message cloning', 'First recipient aliases the sender', 'Every recipient gets a copy'],
   ['Function sandbox', 'node:vm, explicitly not a boundary', 'goja with no host bindings. A WASM host with a hard memory ceiling is built and tested, but no node uses it yet'],
-  ['exec node', 'Any command, through a shell', 'Disabled until allowlisted, and no shell at all'],
+  ['exec node', 'Any command, through a shell by default', 'Disabled until allowlisted, and no shell at all'],
   ['File nodes', 'Any path the process can reach', 'Scoped to the volume, symlinks resolved'],
   ['Credentials', 'AES-256-CTR, SHA-256 as the key', 'AES-256-GCM, Argon2id'],
   ['Context API', 'get, set', 'get, set, CompareAndSwap, Increment, Update'],
-  ['Flow file writes', 'In place', 'Temp file, fsync, rename, fsync the directory, three backups deep'],
+  ['Flow file writes', 'Temp file, fsync, rename', 'Temp file, fsync, rename, fsync the directory, three backups deep'],
   ['Config', 'settings.js, executable JavaScript', 'Declarative YAML'],
   ['Auth', 'Off by default', 'Refuses to start without it'],
-  ['Metrics', 'None', 'Prometheus, per node'],
-  ['Node definition', 'A .js plus a hand-written .html twin', 'One Go descriptor'],
+  ['Metrics', 'Not compared', 'Prometheus at /metrics, per node'],
+    ['Node definition', 'A .js plus a hand-written .html twin', 'One Go descriptor'],
 ];
 
 const notDone = [
-  ['A physical PLC.', 'Modbus TCP, OPC UA, S7, EtherNet/IP and Sparkplug B nodes are built and were tried against simulators and a real broker. S7 and EtherNet/IP have only met simulators, and none of them has met a Siemens CPU or a Logix controller. Modbus RTU, Modbus over TLS and OPC UA events, history and browse are not done.'],
+  ['A physical PLC.', 'Modbus TCP, OPC UA, S7, EtherNet/IP and Sparkplug B nodes are built and were tried against simulators and a real broker. S7 and EtherNet/IP have only met simulators, and none of them has met a Siemens CPU or a Logix controller. Modbus RTU, Modbus over TLS, OPC UA events, history, method calls and browse, S7 timers and counters, and PCCC controllers are not done.'],
   ['HotLoop nodes.', 'Entity changes in, entity state, call a script, apply a recipe, with every command through HotLoop’s write gate. Not built. Until it is, a Flow node that writes to equipment goes straight to the device and not through the gate.'],
   ['Plugins without npm.', 'The WASM host with a hard memory ceiling exists and no node uses it. The plugin format, the capability grants and the signing are not built. Community nodes stay unsupported, because they are npm packages.'],
   ['Typed wires and MCP.', 'Schemas on ports, flows served as MCP tools and an MCP client node are all planned and none of them is built.'],
@@ -103,20 +107,20 @@ const notDone = [
     <div class="wrap">
       <div class="section-head">
         <span class="label">The numbers</span>
-        <h2>Smaller, leaner, and faster, with the limits stated up front.</h2>
+        <h2>Absolute numbers, with the limits stated up front.</h2>
         <p class="lede">
-          Both runtimes ran in rootless Podman on one box, with the same five-node flow file deployed to each
-          unchanged, driven by the same load generator in the same sitting. Linux, 12 CPUs, the latest Node-RED
-          image, 8 connections, 30 seconds. Short version: a lot smaller, faster where it counts, and the caveats
-          underneath say exactly where it doesn't count.
+          Linux under WSL2, 24 CPUs (a Ryzen 9 7900X), 2026-10-02, the native binary built from <code>main</code>, three
+          runs of each command, and the range is what's printed. The image row is the published 2.2.0 image, read on
+          2026-10-20. Flow's repository prints absolute numbers only, because a side-by-side table moves every time the
+          box changes and ends up describing the other thing more than this one.
         </p>
       </div>
       <div class="table-wrap">
         <table class="data">
-          <thead><tr><th>Measure</th><th>Flow</th><th>Node-RED</th><th>Ratio</th></tr></thead>
+          <thead><tr><th>Measure</th><th>Flow</th></tr></thead>
           <tbody>
-            {bench.map(([k, a, b, r]) => (
-              <tr><td>{k}</td><td class="num win">{a}</td><td class="num">{b}</td><td class="num">{r}</td></tr>
+            {bench.map(([k, a]) => (
+              <tr><td>{k}</td><td class="num win">{a}</td></tr>
             ))}
           </tbody>
         </table>
@@ -124,30 +128,32 @@ const notDone = [
 
       <div class="caveats">
         <h3>Now, walking our own numbers back.</h3>
-        <p class="muted">A benchmark table with no caveats under it is marketing wearing a lab coat. These figures are not allowed to say three things.</p>
+        <p class="muted">A benchmark table with no caveats under it is marketing wearing a lab coat. These figures are not allowed to say four things.</p>
         <ol>
           <li>
-            <strong>Cold start includes roughly two seconds of container start that both runtimes pay</strong>,
-            so the real gap between the two programs is smaller than that row implies.
+            <strong>The HTTP number includes the whole HTTP stack, on purpose</strong>, since that is what a client of
+            your flow sees. It is not a scheduler benchmark and should not be quoted as one. The engine row is the
+            scheduler, with no I/O in the path.
           </li>
           <li>
-            <strong>The throughput figure includes the whole HTTP stack, on purpose</strong>, since that is the only
-            surface both present identically. It is not a measurement of either scheduler in isolation, and it should
-            not be quoted as one.
+            <strong>The tail moves more than the median.</strong> Under saturation every runtime queues, and queueing
+            owns p99, so p99 wanders between runs while p50 barely does.
           </li>
           <li>
-            <strong>The p99 gap is far narrower than the p50 gap</strong>, for a reason that flatters nobody. Under
-            saturation both runtimes queue, queueing dominates the tail, and the median is the only column where
-            per-request cost actually shows up.
+            <strong>The engine's peak heap is a burst, not a resting state.</strong> That row fires 200,000 messages at
+            once and the bounded inboxes hold the rest back. Feed it at a sensor's pace and memory sits where the RSS
+            rows say.
+          </li>
+          <li>
+            <strong>WSL2 is not a Pi.</strong> A Pi 4 and a Zero 2 W have not run it yet, and the image grew from 32.1 MB
+            at 2.1.0 to 39.1 MB at 2.2.0 with the plant nodes, tracing and the SQLite state store, without anyone
+            splitting the growth between them.
           </li>
         </ol>
         <p class="muted">
-          Memory used to be in that table too, and it's gone on purpose. Those numbers came off
-          {' '}<code>podman stats</code>, which reports what the kernel charges the container, not what the process
-          holds, and nobody could reproduce them, the author included. Measured on the native binary, Flow holds
-          16.6 MiB idle and peaks at 26.6 MiB under the same load. There's no Node-RED column next to that, because
-          nobody has measured Node-RED the same way yet, and a ratio across two methods is exactly the mistake that
-          got the old numbers pulled.
+          Memory is the process's own resident memory, read from <code>/proc</code>. It is not what
+          {' '}<code>podman stats</code> reports, which is what the kernel charges the container, and which read 2.6 MB
+          for a process that held 14.7 MB. A figure that moves fivefold depending on the tool doesn't get printed.
         </p>
         <p class="muted">
           Produced by the benchmark command that ships in the repository, so you can disagree with it on your own
@@ -167,7 +173,7 @@ const notDone = [
         <article class="card reveal">
           <h3>There is no back-pressure.</h3>
           <p>
-            Node-RED puts a <code>setImmediate</code> between every wire hop, and that queue has no ceiling. A fast
+            Node-RED, by default, puts a <code>setImmediate</code> between every wire hop, and nothing puts a ceiling on that queue. A fast
             source outruns a slow sink, the queue grows, and the pod gets OOM-killed with nothing in the log to explain
             it. Every inbox in Flow is bounded, with a policy per node: block, drop the newest, drop the oldest, or
             raise it to a Catch node and let the flow decide.
@@ -184,13 +190,15 @@ const notDone = [
         <article class="card reveal">
           <h3>The Function node's sandbox is not a boundary.</h3>
           <p>
-            That is not our accusation, it is Node's own documentation: <a href="https://nodejs.org/api/vm.html">“The
+            Node-RED's Function node runs your code in <code>node:vm</code>. That is not our accusation, it is Node's own documentation: <a href="https://nodejs.org/api/vm.html">“The
             <code>node:vm</code> module is not a security mechanism. Do not use it to run untrusted code.”</a>
-            Node-RED's trust model is that anyone who can deploy a flow already owns the box, which is fine on a Pi in a
-            workshop and not fine on a customer's plant floor. It is not hypothetical either:
-            <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-41656">CVE-2025-41656</a> records unauthenticated remote
-            command execution, rated critical, because authentication for the Node-RED server is not configured by
-            default.
+            Node-RED's own guide says an unsecured editor is only suitable on a trusted network, and anyone who can
+            deploy a flow can run commands on the box, which is fine on a Pi in a workshop and not fine on a customer's
+            plant floor. It is not hypothetical either:
+            <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-41656">CVE-2025-41656</a> is unauthenticated remote
+            command execution, rated critical, in Pilz's IndustrialPI 4 firmware, because authentication for the
+            Node-RED server on it was not configured by default. That is a CVE in Pilz's product, not in Node-RED, and
+            Node-RED's own guide says the editor is not secured by default.
           </p>
         </article>
         <article class="card reveal">
@@ -280,6 +288,45 @@ const notDone = [
         <article class="card reveal">
           <div class="cluster head"><h3>The plant floor</h3><span class="chip ok">In 2.2.0</span></div>
           <p>Modbus TCP read and write, OPC UA read, subscribe and write, S7 and EtherNet/IP read and write, and Sparkplug B as an edge node and as a host. Modbus was tried against pymodbus, OPC UA against Microsoft's OPC PLC, S7 and EtherNet/IP against simulators, and Sparkplug B against a real Mosquitto. None has met a physical PLC.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="since-2-1">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Already in, from 2.1.0</span>
+        <h2>Every deploy is a record, and a flow can be tested before it ships.</h2>
+        <p class="lede">
+          These shipped in 2.1.0 and are in 2.2.0. The consequence: "who changed the flow on line 3, and put it back"
+          is a command, not an archaeology project.
+        </p>
+      </div>
+      <div class="grid grid-3">
+        <article class="card reveal">
+          <div class="cluster head"><h3>Deploy records, diff and rollback</h3><span class="chip ok">Since 2.1.0</span></div>
+          <p>Every deploy keeps who, from where, when, the note, the revision it replaced and the flow file byte for byte, with the credentials encrypted as they stood. A diff reads node by node and keeps layout apart from logic, and rollback puts an old record back as a new deploy, flows and credentials together. An optional git mirror commits every deployment under whoever deployed it.</p>
+        </article>
+        <article class="card reveal">
+          <div class="cluster head"><h3>Flows as code</h3><span class="chip ok">Since 2.1.0</span></div>
+          <p><code>hotloop-flow deploy</code> prints the diff against what is running and deploys against the revision it came from, so a race is a red pipeline. A pipeline holds an API token that can read and deploy and nothing else, never an admin password.</p>
+        </article>
+        <article class="card reveal">
+          <div class="cluster head"><h3>Flow tests and a deploy gate</h3><span class="chip ok">Since 2.1.0</span></div>
+          <p>A <code>flows.test.yaml</code> next to <code>flows.json</code> runs on the real runtime and nodes, with Delay, Trigger and Inject on a clock the test moves and the outside world stood in for. Turn on <code>tests.gate</code> and a deploy that fails the suite is refused with the whole report. Rollbacks are not gated.</p>
+        </article>
+        <article class="card reveal">
+          <div class="cluster head"><h3>Partial deploy</h3><span class="chip ok">Since 2.1.0</span></div>
+          <p>A save restarts the nodes that changed. MQTT sessions, listeners and Delay queues on everything else keep running.</p>
+        </article>
+        <article class="card reveal">
+          <div class="cluster head"><h3>Sign-in that holds up</h3><span class="chip ok">Since 2.1.0</span></div>
+          <p>Two-factor sign-in (TOTP) is free, lockouts are on by default, sessions survive a restart, and an audit log records who did what from where.</p>
+        </article>
+        <article class="card reveal">
+          <div class="cluster head"><h3>MQTT 5, TLS and Node-RED's schedules</h3><span class="chip ok">Since 2.1.0</span></div>
+          <p>MQTT 5 with properties and the last will, TLS on TCP, HTTP request and MQTT, and Inject on a crontab that fires on the same minute Node-RED would, checked across clock changes in six zones.</p>
         </article>
       </div>
     </div>

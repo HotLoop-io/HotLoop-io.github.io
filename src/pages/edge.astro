@@ -8,8 +8,8 @@ const p = product('edge');
 ---
 
 <Base
-  title="HotLoop Edge: HMI, PLCs and store-and-forward"
-  description="HotLoop Edge is IoT plus the machine layer: panel screens, PLCs, store-and-forward that survives a dead WAN, and an OPC UA server. 4.18.10 is out."
+  title="HotLoop Edge: store-and-forward and an OPC UA server"
+  description="HotLoop Edge is IoT plus the machine layer: store-and-forward that survives a dead WAN, and an OPC UA server for your SCADA. 4.18.10 is out."
   ogAlt="HotLoop Edge, IoT plus the machine layer."
 >
   <JsonLd
@@ -20,7 +20,7 @@ const p = product('edge');
       name: p.name,
       url: 'https://hotloop.io/edge/',
       description:
-        'HotLoop IoT plus the machine layer: HMI screens, PLC connectivity, store-and-forward over Sparkplug B, and an OPC UA server, for a box that sits next to a machine.',
+        'HotLoop IoT plus the machine layer: store-and-forward over Sparkplug B that survives a dead uplink, and an OPC UA server, for a box that sits next to a machine.',
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Linux',
       license: 'https://hotloop.io/license/',
@@ -34,10 +34,9 @@ const p = product('edge');
       <div class="cluster"><span class="label">HotLoop Edge</span><span class="chip ok">{CURRENT} is out</span></div>
       <h1>IoT, plus everything that lives next to a machine.</h1>
       <p class="lede">
-        Ignition Edge had the right idea, and this is ours. Everything in <a href="/iot/">HotLoop IoT</a>, plus HMI
-        screens for the touch panel on the machine, PLCs, CODESYS and Pi PLCs, store-and-forward to whatever sits
-        upstream, and an OPC UA server. The upshot: the machine keeps running its screens and its logic when the
-        network doesn't, and the SCADA you already paid for can still read it.
+        Ignition Edge had the right idea, and this is ours. Everything in <a href="/iot/">HotLoop IoT</a>, plus
+        store-and-forward to whatever sits upstream and an OPC UA server. The upshot: the machine keeps running its
+        screens and its logic when the network doesn't, and the SCADA you already paid for can still read it.
       </p>
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
@@ -87,7 +86,7 @@ const p = product('edge');
     <div class="wrap">
       <div class="section-head">
         <span class="label">What Edge adds to IoT</span>
-        <h2>The machine layer, and where each piece stands.</h2>
+        <h2>What Edge adds, and where each piece stands.</h2>
         <p class="lede">
           "{STATUS.released.label}" means it ships in the published release. "{STATUS.unverified.label}" means the
           path exists and nobody has pointed it at the real thing yet, so your first one is a test, not an install.
@@ -101,11 +100,11 @@ const p = product('edge');
   <section class="block">
     <div class="wrap">
       <div class="section-head">
-        <span class="label">HMI, the plan</span>
+        <span class="label">HMI, what is built and what is the plan</span>
         <h2>One UI, not two.</h2>
         <p class="lede">
           HMI screens aren't a second front end bolted on the side. They're the dashboards IoT gets, bound to a
-          physical screen, and that part is out. The symbol library and faceplates below are the plan. Same
+          physical screen, and that part is out, in every product with a UI. The symbol library and faceplates below are the plan, and the Edge HMI work that is still ahead. Same
           bindings, same write gate. Two UIs means two sets of bugs and two places to
           forget a permission check, and we're not signing up for that.
         </p>
@@ -114,7 +113,7 @@ const p = product('edge');
         <article class="card reveal"><h3>A canvas that never reflows</h3><p>A fixed screen that scales and never shuffles things around, because an operator's thumb goes to where the pump was yesterday, and it better still be there.</p></article>
         <article class="card reveal"><h3>ISA-101 by default</h3><p>Gray backgrounds, color only for abnormal, alarm priority by shape as well as color. When the whole screen is gray, the one red thing gets seen. No 3D gradients on the tank.</p></article>
         <article class="card reveal"><h3>Faceplates</h3><p>Click a motor and get its popup: start, stop, reset, mode, speed, its interlocks and its alarms, built from the motor entity that already exists.</p></article>
-        <article class="card reveal"><h3>Panel mode</h3><p>Open the box at <code>/?screen=name</code> and the dashboard bound to that name fills the panel with no header, no tabs and big touch targets. It works against the box itself with the uplink down. A persistent alarm banner is still to come.</p></article>
+        <article class="card reveal"><h3>Panel mode</h3><p>Open the box at <code>/?screen=name</code> and the dashboard bound to that name fills the panel with no header, no tabs and big touch targets. It works against the box itself with the uplink down. Panel mode drops the header, so the alarm list on a panel is an alarms card on its dashboard.</p></article>
         <article class="card reveal"><h3>A person behind every write</h3><p>On your own computer you're already signed in. A shared panel signs operators in with a PIN or a badge and signs them out when idle, so the audit names a human, not "panel 3".</p></article>
         <article class="card reveal"><h3>What is not built</h3><p>The ISA-101 symbol library, the faceplates and the PIN sign-in for shared panels are design. Dashboards, which they build on, are in {CURRENT}, and this page will say when these move.</p></article>
       </div>

@@ -26,6 +26,7 @@ const newest = (product: string) =>
 const gw = newest('gateway');
 const gwOut = releases.filter((r) => r.data.product === 'gateway' && r.data.published).sort((a, b) => b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
 const fl = newest('flow');
+const nativeCount = protocols.filter((p) => p.data.verification !== 'gateway-mode').length;
 
 const fmt = (d: Date) =>
   d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
@@ -62,16 +63,16 @@ const fmt = (d: Date) =>
 
     <div class="wrap-wide stats">
       <div class="stat">
-        <div class="n mono">7</div>
-        <p>Protocols the Gateway speaks natively. No placeholder drivers, and a table that admits which ones have never met a real PLC.</p>
+        <div class="n mono">{nativeCount}</div>
+        <p>Native drivers in the Gateway. No placeholder drivers, and a table that admits which ones have never met a real PLC.</p>
       </div>
       <div class="stat">
         <div class="n mono">{nodes.length}</div>
         <p>Node types in Flow. Each one says how close it is to Node-RED, and the build fails if one lies about it.</p>
       </div>
       <div class="stat">
-        <div class="n mono">32.1<small>MB</small></div>
-        <p>The whole Flow image. Node-RED's is 717. The caveats are on <a href="/flow/#numbers">the Flow page</a>, because a benchmark without caveats is marketing in a lab coat.</p>
+        <div class="n mono">39.1<small>MB</small></div>
+        <p>The whole Flow 2.2.0 image, amd64, as Podman reports it. The method and the caveats are on <a href="/flow/#numbers">the Flow page</a>, because a benchmark without caveats is marketing in a lab coat.</p>
       </div>
     </div>
   </section>
@@ -136,7 +137,7 @@ const fmt = (d: Date) =>
             capability dropped.
           </p>
           <ul>
-            <li>Seven native protocols, and a verification table that admits which ones have never touched a real PLC.</li>
+            <li>Eight native drivers, and a verification table that admits which ones have never touched a real PLC.</li>
             <li>Entities on an ISA-95 tree, so the plant has names instead of register addresses.</li>
             <li>One write gate for people, rules and agents, and a row in the audit for every refusal.</li>
           </ul>
@@ -147,7 +148,7 @@ const fmt = (d: Date) =>
         <article class="card product reveal">
           <div class="cluster head"><h3>HotLoop Flow</h3><span class="chip ok">Version {fl.data.version} is out</span></div>
           <p class="what">
-            Node-RED's idea on a runtime that doesn't fall over. Your <code>flows.json</code> runs as it is, every node
+            Node-RED's idea on a runtime that doesn't fall over. Your <code>flows.json</code> runs as it is (community nodes aside), every node
             gets its own goroutine, and every inbox has a ceiling, so a chatty sensor can't balloon the pod until the
             kubelet shoots it.
           </p>
@@ -169,7 +170,7 @@ const fmt = (d: Date) =>
           </p>
           <ul>
             <li>Every step is checkpointed and a retry is a row in the database, with no Redis to babysit.</li>
-            <li>ntfy, Discord, Gotify, webhooks, email and ERPNext, and it never writes to your equipment.</li>
+            <li>ntfy, Discord, Gotify, webhooks, email and ERPNext, and equipment only gets written through HotLoop's write gate.</li>
             <li>One static Go binary on SQLite for a Pi, or Postgres with as many workers as you want.</li>
           </ul>
           <p class="license">HotLoop Business Source License 1.1. Free for home and lab, and free for business through EmberNET.</p>

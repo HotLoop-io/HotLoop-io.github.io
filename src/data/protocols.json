@@ -162,10 +162,53 @@
     ]
   },
   {
+    "id": "unifi",
+    "name": "UniFi Network",
+    "aka": [
+      "UniFi",
+      "Ubiquiti UniFi"
+    ],
+    "order": 8,
+    "verification": "live",
+    "verifiedAgainst": [
+      "A real UniFi Network Application 10.6 with emulated switches and a gateway, logged in as a View Only account",
+      "A real UniFi OS Server 5.1, for the UniFi OS login",
+      "Read-only on a house Cloud Gateway Ultra and an Express 7 with real USW-Lite-8-PoE switches and a U5G Backup"
+    ],
+    "summary": "The plant network as a device: switches, ports, PoE, WAN failover and clients as read-only tags. Nothing writes to a console.",
+    "vendors": [],
+    "addressExamples": [
+      {
+        "expr": "https://console.plant.lan",
+        "means": "A console running UniFi OS. The self-hosted Network Application is https://host:8443."
+      },
+      {
+        "expr": "p.<mac>.<nn>.up",
+        "means": "A switch port's link, one of the tags that create themselves."
+      }
+    ],
+    "trap": "A WAN block can say up with a stale signal while the backup link has been unplugged for days. The driver reads the console's own health checks instead, so a dead backup reads down.",
+    "configKeys": [
+      "site",
+      "username",
+      "password",
+      "certFingerprint",
+      "caFile",
+      "insecureSkipVerify",
+      "clientTimeoutSec"
+    ],
+    "body": [
+      "One login per console, reused for every read, and never more than one read every ten seconds whatever the poll interval says. Make a local View Only account on the console, because a Ubiquiti cloud account can't log in from a script.",
+      "The console's certificate is pinned. The first connect fails on purpose and shows you the key fingerprint, and you paste it in. A console with a different key is refused during the handshake, before the password goes anywhere.",
+      "Switches, ports, PoE draw, WAN links, clients and the site's health come in as tags that create themselves as gear is adopted, and go bad quality instead of vanishing. It also listens to the console's events websocket, so a switch dropping off is in the logbook when it happens, with polling still the truth underneath.",
+      "It is read-only. Writes through the write gate, starting with the locate LED, are planned and not built, and a PoE draw above zero has not been seen on real gear yet. The screens, the topology map and the events are on the UniFi page."
+    ]
+  },
+  {
     "id": "gateway-mode",
     "name": "Everything else",
     "aka": ["PROFINET", "EtherCAT", "HART", "BACnet/IP", "DNP3", "FINS", "MELSEC/SLMP", "CANopen", "FANUC FOCAS"],
-    "order": 8,
+    "order": 9,
     "verification": "gateway-mode",
     "verifiedAgainst": [],
     "summary": "Nine protocols with no driver, by choice, reached through the gateway a site already has.",
