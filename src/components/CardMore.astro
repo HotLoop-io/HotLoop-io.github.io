@@ -1,0 +1,19 @@
+---
+// The rest of one card's text, folded inside the card. A card shows its title and a
+// short lead; this holds everything past that on the same card.
+interface Props { label?: string }
+const { label = 'More' } = Astro.props;
+---
+<details class="card-more">
+  <summary>{label}</summary>
+  <div class="card-more-body"><slot /></div>
+</details>
+
+<style>
+  .card-more { margin-top: var(--hl-s3); }
+  .card-more summary { cursor: pointer; font-weight: 600; font-size: var(--hl-fs-sm); color: var(--hl-ink); }
+  .card-more-body { margin-top: var(--hl-s3); display: grid; gap: var(--hl-s3); color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); }
+  .card-more-body :global(p) { margin: 0; }
+  .card-more-body :global(pre) { margin: 0; }
+  .card-more-body :global(ol) { margin: 0; }
+</style>

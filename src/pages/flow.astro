@@ -23,6 +23,33 @@ const bench = [
   ['Engine, five-node chain, no I/O', '2.20 to 3.11 µs a message'],
 ];
 
+// The head-to-head from 2026-08-08, as it stood on this page before the rewrite
+// dropped it. Throughput, latency and cold start are that day's run: both runtimes
+// in rootless Podman on one 12 CPU Linux box, the same five-node flow file, the same
+// load generator, 8 connections, 30 seconds, nodered/node-red:latest. The image row
+// is the published 2.2.0 image against the Node-RED image from that run.
+const versus = [
+  ['Image size', '39.1 MB', '717 MB', '18×'],
+  ['Throughput', '3,460 req/s', '1,290 req/s', '2.7×'],
+  ['Latency p50', '1.03 ms', '4.61 ms', '4.5×'],
+  ['Latency p99', '16.72 ms', '23.14 ms', '1.4×'],
+  ['Cold start', '2.1 to 2.3 s', '4.6 to 5.5 s', '~2.3×'],
+];
+
+// docs/bench/README.md and the README in HotLoop-io/hotloop-flow, measured 2026-10-22.
+// The published 2.2.0 arm64 image as a pod on one Raspberry Pi 5, clock capped at
+// 2.0 GHz, three runs of 30 seconds each, the range printed. The last row is one
+// 600 second run, during which the board throttled.
+const pi5 = [
+  ['Start to answering its first request', '0.10 to 0.46 s'],
+  ['RSS, idle', '88.0 to 88.3 MiB'],
+  ['RSS, peak under the HTTP load', '40.3 to 40.5 MiB'],
+  ['HTTP, five-node flow, 8 connections', '13.2k to 13.4k req/s'],
+  ['HTTP latency p50 / p99', '0.48 ms / 2.72 to 2.78 ms'],
+  ['Engine, five-node chain, no I/O', '7.74 to 8.15 µs a message'],
+  ['HTTP, the same command held for 600 s', '11.4k req/s, p50 0.58 ms, p99 3.00 ms'],
+];
+
 const different = [
   ['Runtime', 'Node.js, one event loop', 'Go, goroutine per node'],
   ['Back-pressure', 'None, unbounded queue', 'Bounded inbox, four policies'],
@@ -40,10 +67,10 @@ const different = [
 ];
 
 const notDone = [
-  ['A physical PLC.', 'Modbus TCP, OPC UA, S7, EtherNet/IP and Sparkplug B nodes are built and were tried against simulators and a real broker. S7 and EtherNet/IP have only met simulators, and none of them has met a Siemens CPU or a Logix controller. Modbus RTU, Modbus over TLS, OPC UA events, history, method calls and browse, S7 timers and counters, and PCCC controllers are not done.'],
+  ['A physical PLC.', 'Modbus TCP, OPC UA, S7, EtherNet/IP, and Sparkplug B nodes are built and were tried against simulators and a real broker. S7 and EtherNet/IP have only met simulators, and none of them has met a Siemens CPU or a Logix controller. Modbus RTU, Modbus over TLS, OPC UA events, history, method calls and browse, S7 timers and counters, and PCCC controllers are not done.'],
   ['HotLoop nodes.', 'Entity changes in, entity state, call a script, apply a recipe, with every command through HotLoop’s write gate. Merged to main on 2026-10-22 and in no release yet. In 2.2.0 and earlier, a Flow node that writes to equipment goes straight to the device and not through the gate.'],
   ['Plugins without npm.', 'The WASM host with a hard memory ceiling exists and no node uses it. The plugin format, the capability grants and the signing are not built. Community nodes stay unsupported, because they are npm packages.'],
-  ['Typed wires and MCP.', 'Schemas on ports, flows served as MCP tools and an MCP client node are all planned and none of them is built.'],
+  ['Typed wires and MCP.', 'Schemas on ports, flows served as MCP tools, and an MCP client node are all planned and none of them is built.'],
   ['A real Pi.', 'The durable store’s writes per hour are measured on x86 under WSL. A Pi 4 and a Zero 2 W have not run it yet, and an SD card is the first place a context store would show a bug.'],
   ['The editor.', 'It is hand-built TypeScript and it does not look like the rest of HotLoop yet. A rewrite comes last, after a design pass, and the browser tests are the bar it has to clear.'],
 ];
@@ -56,7 +83,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
   {
     id: 'ship', label: 'Ship changes safely', h: 'Every deploy is a record, and a flow can be tested before it ships.', cols: 4,
     cards: [
-      { h: 'Deploy records, diff and rollback', chip: 'Since 2.1.0', b: 'Who, when, why and the flow file byte for byte, with credentials encrypted as they stood. A diff reads node by node, and rollback redeploys an old record.' },
+      { h: 'Deploy records, diff and rollback', chip: 'Since 2.1.0', b: 'Who, when, why, and the flow file byte for byte, with credentials encrypted as they stood. A diff reads node by node, and rollback redeploys an old record.' },
       { h: 'Flows as code', chip: 'Since 2.1.0', b: '<code>hotloop-flow deploy</code> prints the diff and deploys against the revision it came from. A pipeline holds a token that can read and deploy, nothing else.' },
       { h: 'Tests and a deploy gate', chip: 'Since 2.1.0', b: 'A <code>flows.test.yaml</code> runs on the real runtime. Turn on <code>tests.gate</code> and a deploy that fails the suite is refused with the whole report.' },
       { h: 'Partial deploy', chip: 'Since 2.1.0', b: 'A save restarts the nodes that changed. MQTT sessions, listeners and Delay queues on everything else keep running.' },
@@ -67,7 +94,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
     cards: [
       { h: 'Tracing and replay', chip: 'In 2.2.0', b: 'The canvas lights up the path a message took, with timing and payload at every hop. Replay it into a draft of the flow, or turn the trace into a test.' },
       { h: 'OpenTelemetry export', chip: 'In 2.2.0', b: 'Every hop can go to your collector as a span. It is proven against the real collector image, and the trace buffer is bounded.' },
-      { h: 'Metrics and an audit log', b: 'Prometheus at <code>/metrics</code>, per node. Logins, deploys, refusals and rollbacks go to an audit log, each saying who, from where and what.' },
+      { h: 'Metrics and an audit log', b: 'Prometheus at <code>/metrics</code>, per node. Logins, deploys, refusals and rollbacks go to an audit log, each saying who, from where, and what.' },
     ],
   },
   {
@@ -82,7 +109,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
   {
     id: 'plant', label: 'Talk to the plant floor', h: 'Native nodes for the protocols a plant already runs.', cols: 4,
     cards: [
-      { h: 'Modbus TCP and OPC UA', chip: 'In 2.2.0', b: 'Modbus read and write, and OPC UA read, subscribe and write. Tried against pymodbus and Microsoft\'s OPC PLC.' },
+      { h: 'Modbus TCP and OPC UA', chip: 'In 2.2.0', b: 'Modbus read and write, and OPC UA read, subscribe, and write. Tried against pymodbus and Microsoft\'s OPC PLC.' },
       { h: 'S7 and EtherNet/IP', chip: 'In 2.2.0', b: 'Read and write, tried against simulators only. Neither has met a Siemens CPU or a Logix controller yet.' },
       { h: 'Sparkplug B', chip: 'In 2.2.0', b: 'As an edge node and as a host, checked against pysparkplug in both directions and against a real Mosquitto.' },
       { h: 'MQTT 5, TLS and Node-RED\'s schedules', chip: 'Since 2.1.0', b: 'MQTT 5 with properties and the last will, TLS on TCP, HTTP request and MQTT, and Inject on a crontab that fires when Node-RED\'s would.' },
@@ -95,7 +122,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
       { h: 'Two-factor and lockouts', chip: 'Since 2.1.0', b: 'TOTP sign-in is free. Five wrong passwords lock an account from that address for fifteen minutes, and sessions survive a restart.' },
       { h: 'Credentials under GCM', b: 'Credentials are AES-256-GCM under an Argon2id key, and deploy records never hand them out, encrypted or not.' },
       { h: 'exec off, files fenced', b: 'The exec node ships disabled until an operator allowlists commands, with no shell. File nodes are scoped to the volume, symlinks resolved.' },
-      { h: 'A sandbox with nothing to reach', b: 'The Function node runs on goja with no require, no process, no filesystem and no network. A WASM host with a memory ceiling is built, but no node uses it.' },
+      { h: 'A sandbox with nothing to reach', b: 'The Function node runs on goja with no require, no process, no filesystem, and no network. A WASM host with a memory ceiling is built, but no node uses it.' },
       { h: 'One static binary', b: 'A 22.0 MB static binary that idles at about 16 MiB and answers its first request in 0.05 s. A Pi 4 and a Zero 2 W have not run it yet.' },
     ],
   },
@@ -104,7 +131,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
 
 <Base
   title="HotLoop Flow: a Node-RED alternative in Go"
-  description="A Node-RED-compatible flow engine in one static Go binary, with bounded queues and a goroutine per node. Free for home and lab and for business via EmberNET."
+  description="A Node-RED-compatible flow engine in one static Go binary, with bounded queues and a goroutine per node. Free for home and lab and for business via EmberNet."
   ogAlt="HotLoop Flow, a flow engine in one static Go binary."
 >
   <JsonLd
@@ -142,7 +169,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
             the image is <code>ghcr.io/hotloop-io/hotloop-flow</code>. The image has the tags <code>2.2.0</code>, <code>2.2</code> and <code>2</code>, and the chart is at
             <code>https://hotloop.io/hotloop-flow/</code>. 2.1.0 and everything before it stay under the license they
             shipped with. From 2.2.0 on Flow is under the same HotLoop Business Source License 1.1 as the rest of the
-            lineup: free for home and lab, and free for business through <a href="https://embernet.ai">EmberNET</a>.
+            lineup: free for home and lab, and free for business through <a href="https://embernet.ai">EmberNet</a>.
             Version 0.1.0 was published as Emberwire, and 2.0.0 does not read what the old names wrote. Read the
             <a href="/releases/flow/">release notes</a> before you upgrade.
           </p>
@@ -187,7 +214,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         <div>
           <strong>Next release, not shipped: HotLoop nodes.</strong>
           <p>
-            Entity changes in, an entity's state, run a script and apply a recipe, plus an option on the Modbus, OPC UA,
+            Entity changes in, an entity's state, run a script, and apply a recipe, plus an option on the Modbus, OPC UA,
             S7 and EtherNet/IP write nodes to send the write through HotLoop's write gate. It is merged to
             <code>main</code> in <a href="https://github.com/HotLoop-io/hotloop-flow/pull/76">pull request 76</a> and is
             in no release yet, so 2.2.0 does not have it.
@@ -198,15 +225,15 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
       <CardDetail label="The full detail, from the release notes">
         <div id="whats-new" class="stack">
           <p class="muted"><strong>New in 2.2.0.</strong> All of it is in <code>ghcr.io/hotloop-io/hotloop-flow:2.2.0</code>. The consequence: a flow that has to talk to a PLC, survive a restart or explain itself no longer needs a workaround.</p>
-          <div><h4>Tracing and replay</h4><p>Click a debug message and the canvas lights up the path it took, with timing and the payload at every hop, through splits, joins and subflows. Replay a captured message into a draft of the flow and compare the output, or turn a trace into a test. The trace buffer is bounded, and OpenTelemetry export is proven against a real collector.</p></div>
+          <div><h4>Tracing and replay</h4><p>Click a debug message and the canvas lights up the path it took, with timing and the payload at every hop, through splits, joins, and subflows. Replay a captured message into a draft of the flow and compare the output, or turn a trace into a test. The trace buffer is bounded, and OpenTelemetry export is proven against a real collector.</p></div>
           <div><h4>Durable state</h4><p>Context survives a restart, in SQLite with no cgo. Mark a wire durable and its queue touches the disk only when the node behind it stops answering. A real InfluxDB was killed for ten minutes under steady input and brought back, and the rows came out none missing and none doubled. The consequence: a historian going down for an hour no longer costs you an hour of readings.</p></div>
           <div><h4>The plant floor</h4><p>Modbus TCP read and write, OPC UA read, subscribe and write, S7 and EtherNet/IP read and write, and Sparkplug B as an edge node and as a host. Modbus was tried against pymodbus, OPC UA against Microsoft's OPC PLC, S7 and EtherNet/IP against simulators, and Sparkplug B against a real Mosquitto. None has met a physical PLC.</p></div>
         </div>
         <div id="since-2-1" class="stack">
           <p class="muted"><strong>Already in, from 2.1.0.</strong> These shipped in 2.1.0 and are in 2.2.0. The consequence: "who changed the flow on line 3, and put it back" is a command, not an archaeology project.</p>
-          <div><h4>Deploy records, diff and rollback</h4><p>Every deploy keeps who, from where, when, the note, the revision it replaced and the flow file byte for byte, with the credentials encrypted as they stood. A diff reads node by node and keeps layout apart from logic, and rollback puts an old record back as a new deploy, flows and credentials together. An optional git mirror commits every deployment under whoever deployed it.</p></div>
+          <div><h4>Deploy records, diff and rollback</h4><p>Every deploy keeps who, from where, when, the note, the revision it replaced, and the flow file byte for byte, with the credentials encrypted as they stood. A diff reads node by node and keeps layout apart from logic, and rollback puts an old record back as a new deploy, flows and credentials together. An optional git mirror commits every deployment under whoever deployed it.</p></div>
           <div><h4>Flows as code</h4><p><code>hotloop-flow deploy</code> prints the diff against what is running and deploys against the revision it came from, so a race is a red pipeline. A pipeline holds an API token that can read and deploy and nothing else, never an admin password.</p></div>
-          <div><h4>Flow tests and a deploy gate</h4><p>A <code>flows.test.yaml</code> next to <code>flows.json</code> runs on the real runtime and nodes, with Delay, Trigger and Inject on a clock the test moves and the outside world stood in for. Turn on <code>tests.gate</code> and a deploy that fails the suite is refused with the whole report. Rollbacks are not gated.</p></div>
+          <div><h4>Flow tests and a deploy gate</h4><p>A <code>flows.test.yaml</code> next to <code>flows.json</code> runs on the real runtime and nodes, with Delay, Trigger, and Inject on a clock the test moves and the outside world stood in for. Turn on <code>tests.gate</code> and a deploy that fails the suite is refused with the whole report. Rollbacks are not gated.</p></div>
           <div><h4>Partial deploy</h4><p>A save restarts the nodes that changed. MQTT sessions, listeners and Delay queues on everything else keep running.</p></div>
           <div><h4>Sign-in that holds up</h4><p>Two-factor sign-in (TOTP) is free, lockouts are on by default, sessions survive a restart, and an audit log records who did what from where.</p></div>
           <div><h4>MQTT 5, TLS and Node-RED's schedules</h4><p>MQTT 5 with properties and the last will, TLS on TCP, HTTP request and MQTT, and Inject on a crontab that fires on the same minute Node-RED would, checked across clock changes in six zones.</p></div>
@@ -238,6 +265,32 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         </table>
       </div>
 
+      <div class="pi5" id="pi5">
+        <h3>On a Raspberry Pi 5</h3>
+        <p class="muted">
+          The same flow and the same commands on 2026-10-22, running the published 2.2.0 arm64 image as a pod on one Pi 5
+          with 8 GB and four Cortex-A76 cores, its clock capped at 2.0 GHz. Three runs of 30 seconds, and the range is
+          what's printed.
+        </p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Measure</th><th>Flow on a Pi 5</th></tr></thead>
+            <tbody>
+              {pi5.map(([k, a]) => (
+                <tr><td>{k}</td><td class="num win">{a}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="muted">
+          The 600 second row is the honest one for a box that stays loaded. The board hit its soft temperature limit
+          inside a minute and throttled from about two minutes in, so the clock sat at 1.5 to 1.7 GHz for the rest. Idle
+          memory is about five times the x86 figure above, and I haven't found out why, so I'm not offering a cause. It
+          is one board on one afternoon with a capped clock. The method and what I didn't establish are in the repo's
+          <a href="https://github.com/HotLoop-io/hotloop-flow/blob/main/docs/bench/README.md#results-on-a-raspberry-pi-5">bench docs</a>.
+        </p>
+      </div>
+
       <div class="caveats">
         <h3>Now, walking our own numbers back.</h3>
         <p class="muted">A benchmark table with no caveats under it is marketing wearing a lab coat. These figures are not allowed to say four things.</p>
@@ -257,7 +310,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
             rows say.
           </li>
           <li>
-            <strong>WSL2 is not a Pi.</strong> A Pi 4 and a Zero 2 W have not run it yet, and the image grew from 32.1 MB
+            <strong>WSL2 is not a Pi.</strong> The Pi 5 is measured below. A Pi 4 and a Zero 2 W have not run it yet, and the image grew from 32.1 MB
             at 2.1.0 to 39.1 MB at 2.2.0 with the plant nodes, tracing and the SQLite state store, without anyone
             splitting the growth between them.
           </li>
@@ -275,22 +328,82 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
     </div>
   </section>
 
+  <section class="block" id="head-to-head">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Flow against Node-RED</span>
+        <h2>Same flow file, both runtimes, and Node-RED loses where it counts.</h2>
+        <p class="lede">
+          I deployed the same five-node flow file to both, unchanged, in rootless Podman on one 12 CPU Linux box, and hit
+          both with the same load generator in the same sitting: 8 connections, 30 seconds, the latest Node-RED image.
+          Flow came out smaller, faster, and a lot quicker off the line, and Node-RED needed a 717 MB image to say hello.
+          Then I walked my own numbers back underneath, because a benchmark with no caveats is marketing in a lab coat.
+          The upshot: if a plant depends on it, you want the one that is still standing at 3am.
+        </p>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Measure</th><th>Flow</th><th>Node-RED</th><th>Ratio</th></tr></thead>
+          <tbody>
+            {versus.map(([k, a, b, r]) => (
+              <tr><td>{k}</td><td class="num win">{a}</td><td class="num">{b}</td><td class="num">{r}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="caveats">
+        <h3>Three things that table does not say.</h3>
+        <ol>
+          <li>
+            <strong>Cold start includes roughly two seconds of container start that both runtimes pay</strong>, so the
+            real gap between the two programs is smaller than that row implies.
+          </li>
+          <li>
+            <strong>The throughput figure includes the whole HTTP stack, on purpose</strong>, since that is the only
+            surface both present identically. It is not a measurement of either scheduler in isolation, and it should
+            not be quoted as one.
+          </li>
+          <li>
+            <strong>The p99 gap is far narrower than the p50 gap</strong>, for a reason that flatters nobody. Under
+            saturation both runtimes queue, queueing dominates the tail, and the median is the only column where
+            per-request cost actually shows up.
+          </li>
+        </ol>
+        <p class="muted">
+          Two more, so nobody has to find them. The throughput, latency and cold start rows are from the run on
+          2026-08-08, on an earlier build of Flow, so don't divide them by the newer absolute numbers above. The image
+          row is today's published 2.2.0 image against the Node-RED image from that run. When I ran it, Flow was 25.1 MB
+          and the gap was 29×, and Flow has grown since, with the plant nodes, tracing, and the SQLite state store.
+        </p>
+        <p class="muted">
+          Memory isn't in this table, on purpose. Those numbers came off <code>podman stats</code>, which reports what
+          the kernel charges the container, not what the process holds, and nobody could reproduce them, me included.
+          Flow's own memory is in the absolute numbers above, and there is no Node-RED column next to it, because
+          nobody has measured Node-RED the same way yet. A ratio across two methods is exactly the mistake that got the
+          old numbers pulled.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <section class="block" id="from-node-red">
     <div class="wrap">
       <div class="section-head">
-        <span class="label">If you're coming from Node-RED</span>
-        <h2>Four reasons people move, and where the detail is.</h2>
+        <span class="label">Why not just keep running Node-RED</span>
+        <h2>Four things, and none of them are fixable with configuration.</h2>
         <p class="lede">
-          Flow reads your <code>flows.json</code> and runs it, and the
-          <a href="https://docs.hotloop.io/flow/migrating-from-node-red/">migration guide</a> walks a flow across. Each
-          card is one sentence, and the sources are in the block under them.
+          Node-RED is fine on a Pi in a workshop and it sucks on a plant floor, for four specific reasons. Flow reads
+          your <code>flows.json</code> and runs it, and the
+          <a href="https://docs.hotloop.io/flow/migrating-from-node-red/">migration guide</a> walks a flow across. The
+          one thing that doesn't come along is community nodes, because they are npm packages. Each card is one sentence, and the
+          receipts are under them.
         </p>
       </div>
       <div class="grid grid-2">
-        <article class="card reveal"><h3 class="t-md">There is no back-pressure.</h3><p>Nothing puts a ceiling on Node-RED's wire queues, so a fast source can outrun a slow sink until the pod is OOM-killed. Every Flow inbox is bounded.</p></article>
-        <article class="card reveal"><h3 class="t-md">It is single-threaded.</h3><p>One event loop carries the runtime, the editor and every node's I/O, so one CPU-heavy Function node stalls all of it. Flow gives every node a goroutine.</p></article>
-        <article class="card reveal"><h3 class="t-md">The Function node's sandbox is not a boundary.</h3><p>Node-RED runs Function code in <code>node:vm</code>, which Node's own documentation says is not a security mechanism. Flow runs it on goja with no host bindings.</p></article>
-        <article class="card reveal"><h3 class="t-md">Credentials are weakly protected.</h3><p>Node-RED encrypts them with AES-256-CTR keyed by a raw SHA-256 of your secret. CTR has no MAC, and SHA-256 is not a key derivation function. Flow uses AES-256-GCM under Argon2id.</p></article>
+        <article class="card reveal"><h3 class="t-md">There is no back-pressure.</h3><p>Nothing puts a ceiling on Node-RED's wire queues, so one chatty sensor outruns a slow sink until the pod gets OOM-killed and the log says nothing. Every Flow inbox is bounded.</p></article>
+        <article class="card reveal"><h3 class="t-md">It is single-threaded.</h3><p>One event loop runs the runtime, the editor and every node's I/O, so one CPU-heavy Function node freezes all of it. Flow gives every node a goroutine.</p></article>
+        <article class="card reveal"><h3 class="t-md">The Function node's sandbox is not a boundary.</h3><p>Node-RED runs Function code in <code>node:vm</code>, and Node's own documentation says that is not a security mechanism. Flow runs it on goja with no host bindings.</p></article>
+        <article class="card reveal"><h3 class="t-md">Credentials are weakly protected.</h3><p>Node-RED encrypts them with AES-256-CTR keyed by a raw SHA-256 of your secret, with no MAC and no key derivation. Flow uses AES-256-GCM under Argon2id.</p></article>
       </div>
       <CardDetail label="The detail, with the sources">
         <div id="node-red-detail" class="stack">
@@ -399,7 +512,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           <h2>One license, like the rest of HotLoop.</h2>
           <p class="muted">
             Flow is under the HotLoop Business Source License 1.1. Home and lab use is free, and business use is free
-            through <a href="https://embernet.ai">EmberNET</a>. Each version converts to GPL-3.0 or later four years after
+            through <a href="https://embernet.ai">EmberNet</a>. Each version converts to GPL-3.0 or later four years after
             its release. The Flow repository is public, so you can read all of it.
           </p>
         </div>
@@ -419,6 +532,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
   .group-sub { color: var(--hl-ink-soft); margin: var(--hl-s2) 0 var(--hl-s5); max-width: 62ch; }
 
 
+  .pi5 { margin-top: var(--hl-s7); display: grid; gap: var(--hl-s4); }
   .caveats { margin-top: var(--hl-s7); padding: var(--hl-s6); border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); background: var(--hl-card); display: grid; gap: var(--hl-s3); }
   .caveats ol { padding-left: 1.3em; display: grid; gap: var(--hl-s3); color: var(--hl-ink-soft); }
   .caveats li strong { color: var(--hl-ink); }

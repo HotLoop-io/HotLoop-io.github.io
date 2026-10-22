@@ -1,6 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import CardDetail from '../components/CardDetail.astro';
+import CardMore from '../components/CardMore.astro';
+import { lead } from '../lib/lead';
 import { CURRENT, STATUS, type Status } from '../lib/products';
 
 // The read-only driver shipped in 4.17.0. That is history, so it is not CURRENT.
@@ -9,7 +11,7 @@ const DRIVER = '4.17.0';
 // In the order it lands, and where each piece stands. The statuses come from
 // the Gateway's ROADMAP, "UniFi", and nowhere else.
 const order: [string, Status, string][] = [
-  ['Network, read-only', 'released', 'Every adopted device, switch port, PoE draw and WAN link, and which WAN is carrying traffic, as tags that sync themselves. A switch adopted tomorrow shows up by itself, and one that disappears goes bad quality instead of vanishing out from under its alarms. Read on two real consoles. A PoE draw above zero has not been seen on real gear yet, because nothing on those consoles was drawing PoE.'],
+  ['Network, read-only', 'released', 'Every adopted device, switch port, PoE draw, and WAN link, and which WAN is carrying traffic, as tags that sync themselves. A switch adopted tomorrow shows up by itself, and one that disappears goes bad quality instead of vanishing out from under its alarms. Read on two real consoles. A PoE draw above zero has not been seen on real gear yet, because nothing on those consoles was drawing PoE.'],
   ['Clients and OT watch', 'released', 'Clients keyed by MAC, never IP, because the controller shows addresses a machine left hours ago. Mark a network as OT, accept what is on it, and anything new raises an alarm. Link a PLC to its switch port once, and when it goes quiet it tells you which port and whether the link is up. Proven against a lab controller and read on two real consoles. A real cable pull and a phone joining SCADA on purpose still have to happen on real gear, and until they do, those two alarms are proven in the lab and nowhere else.'],
   ['Screens and the topology map', 'released', 'An overview with a WAN strip that goes amber when the site is running on the backup link, and a topology map laid out the same way every time, so nothing jiggles on a wall board, that zooms to eight times and pinches on a touch screen. Click a switch, see which lines on the Plant tree it feeds. Switch faceplates show a port\'s traffic as a trace, WAN latency gets one too, and one button makes the usual alarms: device offline, uplink down, gateway on its backup, and PoE over a limit you give. Proven against a lab controller, with touch emulated. Not yet looked at on real gear, and a PoE alarm firing and a WAN throughput trace are not proven or built.'],
   ['Events', 'released', "The controller's events websocket, so a switch dropping off shows up in seconds and lands in the logbook. Polling stays the truth: a dead websocket costs speed, never correctness. Events are filed under the switch or access point they are about, and an agent can ask over MCP for the topology and the console's latest events. Proven on the lab controller: a client joining reached the logbook six seconds after the cable went in."],
@@ -20,7 +22,7 @@ const order: [string, Status, string][] = [
 
 <Base
   title="UniFi in HotLoop: read-only today, Network first"
-  description="A native UniFi integration for HotLoop, written in Go. Read-only Network driver, screens and events are out. Writes, Protect, Access and PDUs come next."
+  description="A native UniFi integration for HotLoop, written in Go. Read-only Network driver, screens and events are out. Writes, Protect, Access, and PDUs come next."
   ogAlt="UniFi in HotLoop, read-only, with screens and events."
 >
   <section class="page-hero">
@@ -38,7 +40,7 @@ const order: [string, Status, string][] = [
         <div>
           <strong>The read-only driver shipped in {DRIVER}, and the screens and events in {CURRENT}. Nothing writes to a console yet.</strong>
           <p>
-            The Network driver, the clients work, the screens and the events are out, and the Edge Relay can poll a console
+            The Network driver, the clients work, the screens, and the events are out, and the Edge Relay can poll a console
             too. Writes come only after the write path has been proven on a lab controller and one empty port, so
             nothing in this release can cycle a port or change a setting on your network. It lives in the base of the
             lineup, so <a href="/products/">every HotLoop product</a> gets it. The setup, down to pinning the
@@ -76,12 +78,16 @@ const order: [string, Status, string][] = [
         <h2>Network first, then everything that hangs off it.</h2>
       </div>
       <ol class="order">
-        {order.map(([name, status, what]) => (
+        {order.map(([name, status, what]) => {
+          const [short, rest] = lead(what);
+          return (
           <li class="card reveal">
             <div class="cluster head"><h3>{name}</h3><span class={`chip ${STATUS[status].chip}`}>{STATUS[status].label}</span></div>
-            <p>{what}</p>
+            <p>{short}</p>
+            {rest && <CardMore>{rest}</CardMore>}
           </li>
-        ))}
+          );
+        })}
       </ol>
     </div>
   </section>
@@ -92,8 +98,8 @@ const order: [string, Status, string][] = [
         <span class="label">How it works</span>
         <h2>A protocol driver, not a side system.</h2>
         <p class="lede">
-          A UniFi console is a device in HotLoop, same as a PLC, and its switches, ports and WAN links are tags. That
-          one decision means alarms, trends, entities, rules, the audit, OPC UA and MCP all work on your network the
+          A UniFi console is a device in HotLoop, same as a PLC, and its switches, ports, and WAN links are tags. That
+          one decision means alarms, trends, entities, rules, the audit, OPC UA, and MCP all work on your network the
           day the driver does, without building half of each again for one vendor.
         </p>
       </div>
@@ -103,14 +109,14 @@ const order: [string, Status, string][] = [
         <article class="card reveal"><h3>WAN failover</h3><p>Which WAN is carrying traffic, as a tag you can alarm on. Know the plant failed over to the backup link before the data bill tells you.</p></article>
         <article class="card reveal"><h3>Protected ports, when writes land</h3><p>HotLoop won't cycle an uplink, or the port powering the backup WAN, no matter who asks. Worked out from the topology, not typed in.</p></article>
         <article class="card reveal"><h3>A cooldown on power-cycles</h3><p>Fifteen minutes per port. A rule that cycles a PLC every two minutes is how you cook a power supply.</p></article>
-        <article class="card reveal"><h3>What it will never do</h3><p>No VLANs, firewall rules, DHCP, static IPs, SSIDs or firmware. That's the UniFi app's job. HotLoop does the few things an operator needs at 2am.</p></article>
+        <article class="card reveal"><h3>What it will never do</h3><p>No VLANs, firewall rules, DHCP, static IPs, SSIDs, or firmware. That's the UniFi app's job. HotLoop does the few things an operator needs at 2am.</p></article>
       </div>
       <CardDetail>
         <div><h4>One login, not forty</h4><p>One session per console, reused for every read, with a budget on how often it logs in. Logging in on every check got our own Cloud Gateway to lock us out, twice. HotLoop waits a lockout out instead of making it longer.</p></div>
         <div><h4>A pinned certificate</h4><p>The first connect fails on purpose and shows you the console's key fingerprint. Check it, paste it in. From then on a console with a different key is refused during the handshake, before your password goes anywhere.</p></div>
         <div><h4>Protected ports, when writes land</h4><p>HotLoop won't cycle an uplink, or the port powering the backup WAN, no matter who asks. Worked out from the topology, not typed in by hand, so nobody forgets one.</p></div>
         <div><h4>A cooldown on power-cycles</h4><p>Fifteen minutes per port. A rule that cycles a PLC every two minutes is how you cook a power supply, and one that needs more than one cycle has a problem a cycle won't fix.</p></div>
-        <div><h4>What it will never do</h4><p>No VLANs, firewall rules, DHCP, static IPs, SSIDs or firmware. We've watched a switch lose its controller over one static IP change. That's the UniFi app's job. HotLoop does the few things an operator needs at 2am.</p></div>
+        <div><h4>What it will never do</h4><p>No VLANs, firewall rules, DHCP, static IPs, SSIDs, or firmware. We've watched a switch lose its controller over one static IP change. That's the UniFi app's job. HotLoop does the few things an operator needs at 2am.</p></div>
       </CardDetail>
       <p class="prose muted after">
         Console passwords are entered in HotLoop and stored encrypted, with the key kept outside the database, so a

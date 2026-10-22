@@ -12,9 +12,9 @@ const wontDo: [string, string, string?][] = [
   ['It won\'t write to your equipment.', 'Cascade reads and subscribes. Anything that moves a valve or changes a setpoint goes through HotLoop\'s write gate, so every write is audited.',
     'Cascade reads and subscribes. Anything that moves a valve or changes a setpoint goes through HotLoop\'s write gate, so the gate\'s audit sees every write no matter which workflow started it. A workflow engine with a side door onto the PLC is how an audit trail stops being honest.'],
   ['It won\'t run JavaScript in your fields.', 'Field expressions use HotLoop\'s small automation language. JavaScript lives only in the Code step, a separate jailed process.',
-    'Field expressions use the same small language HotLoop\'s automations use. It can\'t touch the OS, the network or the filesystem, and it always terminates. JavaScript lives in one place, the Code step, which runs in a separate jailed process with no secrets, no network and no filesystem.'],
-  ['It won\'t gate anything.', 'SSO, enforced MFA, roles, audit, version history, scoped API keys and HA workers are for everyone. There is no license check in the code.',
-    'SSO, enforced MFA, roles, audit, version history, scoped API keys and HA workers are for everyone. There is no license check anywhere in the code, so there is nothing to pull out from under you later.'],
+    'Field expressions use the same small language HotLoop\'s automations use. It can\'t touch the OS, the network or the filesystem, and it always terminates. JavaScript lives in one place, the Code step, which runs in a separate jailed process with no secrets, no network, and no filesystem.'],
+  ['It won\'t gate anything.', 'SSO, enforced MFA, roles, audit, version history, scoped API keys, and HA workers are for everyone. There is no license check in the code.',
+    'SSO, enforced MFA, roles, audit, version history, scoped API keys, and HA workers are for everyone. There is no license check anywhere in the code, so there is nothing to pull out from under you later.'],
   ['It won\'t phone home.', 'No license server and no cloud dependency. Telemetry is opt-in, off by default, and documented down to the field when it lands.'],
 ];
 
@@ -22,19 +22,19 @@ const built: [string, string, string?][] = [
   ['Durable executions', 'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database.',
     'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database and not a goroutine praying nobody pulls the plug.'],
   ['Triggers', 'A HotLoop alarm or tag reading, a webhook, a schedule, an MQTT burst, a file that shows up, a new email in an IMAP mailbox, or a new row in ERPNext becomes a batch of items.'],
-  ['Steps that call real systems', 'HTTP, PostgreSQL, email, files, ERPNext, ntfy, Discord and Gotify, with an OAuth2 credential vault sealed by a key outside the database.',
-    'HTTP, PostgreSQL, email, files (CSV, Excel and a PDF\'s text), ERPNext, and the notifiers: ntfy, Discord and Gotify. A credential vault with OAuth2 holds the secrets, sealed with a key that lives outside the database.'],
+  ['Steps that call real systems', 'HTTP, PostgreSQL, email, files, ERPNext, ntfy, Discord, and Gotify, with an OAuth2 credential vault sealed by a key outside the database.',
+    'HTTP, PostgreSQL, email, files (CSV, Excel, and a PDF\'s text), ERPNext, and the notifiers: ntfy, Discord and Gotify. A credential vault with OAuth2 holds the secrets, sealed with a key that lives outside the database.'],
   ['Steps that talk to HotLoop', 'Read tags and alarms, acknowledge, call a service, run a script, apply a recipe. Every command goes through the gateway\'s write gate.',
-    'Read tags and alarms, acknowledge an alarm, call a service, run a script, apply a recipe and trigger an automation on a HotLoop gateway. Every command goes through the gateway\'s write gate, with a reason in its audit trail, so Cascade has no side door to a device.'],
-  ['People and governance', 'Users with enforced MFA, OIDC sign-in, projects and roles, an audit log and version history on every workflow.'],
+    'Read tags and alarms, acknowledge an alarm, call a service, run a script, apply a recipe, and trigger an automation on a HotLoop gateway. Every command goes through the gateway\'s write gate, with a reason in its audit trail, so Cascade has no side door to a device.'],
+  ['People and governance', 'Users with enforced MFA, OIDC sign-in, projects and roles, an audit log, and version history on every workflow.'],
   ['Watching it', 'Prometheus metrics, and every execution is one OpenTelemetry trace with a span per step. With no endpoint named, nothing is sent.'],
   ['Bringing a workflow in', 'It converts a workflow exported as JSON from another tool. What it is sure of comes across, and the rest comes across switched off.',
     'It converts a workflow exported as JSON from another tool. What it can be sure of comes across, and everything else comes across switched off with its original settings in the notes. It never guesses what a JavaScript expression meant, and it never brings credentials.'],
 ];
 
 const planned: [string, string][] = [
-  ['0.2.0', 'SAML, LDAP and AD, SCIM, custom roles, external secrets, log streaming, variables, folders, insights and redaction policies.'],
-  ['0.3.0', 'Git source control and environments, the multi-main HA scheduler with trigger leases, retention, backup and restore.'],
+  ['0.2.0', 'SAML, LDAP and AD, SCIM, custom roles, external secrets, log streaming, variables, folders, insights, and redaction policies.'],
+  ['0.3.0', 'Git source control and environments, the multi-main HA scheduler with trigger leases, retention, backup, and restore.'],
   ['0.4.0', 'The rest of the connector list, a published connector spec, a plugin SDK, and forms with human approval steps that work from a phone.'],
   ['0.5.0', 'LLM and agent steps, an MCP client and server, and a builder that uses your own model. Bring your own key or run it local.'],
 ];
@@ -42,7 +42,7 @@ const planned: [string, string][] = [
 
 <Base
   title="HotLoop Cascade: workflows that survive a reboot"
-  description="HotLoop Cascade connects the plant to webhooks, MQTT, ERPNext and notifications, with every step checkpointed. Version 0.1.2 is out. Free for home and lab."
+  description="HotLoop Cascade connects the plant to webhooks, MQTT, ERPNext, and notifications, with every step checkpointed. Version 0.1.2 is out. Free for home and lab."
   ogAlt="HotLoop Cascade, durable workflows for the plant."
 >
   <JsonLd
@@ -53,7 +53,7 @@ const planned: [string, string][] = [
       name: 'HotLoop Cascade',
       url: 'https://hotloop.io/cascade/',
       description:
-        'A workflow engine in one static Go binary where every step is checkpointed, on SQLite for a Raspberry Pi or Postgres for a cluster, with ntfy, Discord, Gotify, webhook, email and ERPNext steps.',
+        'A workflow engine in one static Go binary where every step is checkpointed, on SQLite for a Raspberry Pi or Postgres for a cluster, with ntfy, Discord, Gotify, webhook, email, and ERPNext steps.',
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Linux',
       license: 'https://hotloop.io/license/',
@@ -67,7 +67,7 @@ const planned: [string, string][] = [
       <div class="cluster"><span class="label">HotLoop Cascade</span><span class="chip ok">Released, {CASCADE}</span></div>
       <h1>The plant talking to everything else, without losing the job.</h1>
       <p class="lede">
-        An alarm, a webhook, a schedule, a new row or an MQTT burst becomes a batch of items, and the items run
+        An alarm, a webhook, a schedule, a new row, or an MQTT burst becomes a batch of items, and the items run
         through steps that call real systems with real credentials. If an API is down or the box reboots halfway
         through, the job still finishes, because every step is checkpointed. The consequence: the maintenance
         ticket still gets created after the network comes back.
@@ -101,7 +101,7 @@ const planned: [string, string][] = [
         <h2>Pull {CASCADE} with Podman, or install the chart with Helm.</h2>
         <p class="lede">
           The image is <code>ghcr.io/hotloop-io/hotloop-cascade</code>, for amd64 and arm64, with the tags
-          <code>{CASCADE}</code>, <code>0.1</code>, <code>0</code>, <code>latest</code> and <code>stable</code>. The chart
+          <code>{CASCADE}</code>, <code>0.1</code>, <code>0</code>, <code>latest</code>, and <code>stable</code>. The chart
           is <code>hotloop-cascade</code> {CASCADE} in the same registry. Both are public, and the source repository is private.
         </p>
       </div>
@@ -179,7 +179,7 @@ const planned: [string, string][] = [
         <h2>What {CASCADE} ships.</h2>
         <p class="lede">
           Every item here is built and was tried against real services, never mocks: Postgres, a headless browser,
-          Mosquitto, a HotLoop Gateway, ntfy, Gotify, a mail server and ERPNext. The one exception is Discord, which
+          Mosquitto, a HotLoop Gateway, ntfy, Gotify, a mail server, and ERPNext. The one exception is Discord, which
           has only been tried against a stand-in that answers as its documentation says, not the real thing.
         </p>
       </div>
@@ -218,7 +218,7 @@ const planned: [string, string][] = [
           <h2>Free, with no license key.</h2>
           <p class="muted">
             Cascade is under the HotLoop Business Source License 1.1, like the rest of HotLoop. Home and lab use is
-            free. Business use is free through <a href="https://embernet.ai">EmberNET</a>. Support, SLAs and
+            free. Business use is free through <a href="https://embernet.ai">EmberNet</a>. Support, SLAs and
             rollouts come from our Official Systems Integrator, <a href="https://fireballz.ai">Fireball Industries</a>.
           </p>
         </div>

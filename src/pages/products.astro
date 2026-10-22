@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { CURRENT, PRODUCTS } from '../lib/products';
+import { CURRENT, PRODUCTS, product, type ProductId } from '../lib/products';
 import { LINES, FAMILY_SENTENCE } from '../lib/family';
 import { getCollection } from 'astro:content';
 
@@ -31,8 +31,8 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
 
 <Base
   title="HotLoop products: six on three release lines"
-  description="HotLoop is six products for the plant floor: IoT, Edge, Gateway and Edge Relay, plus Flow and Cascade. What each one has, and which release line it ships on."
-  ogAlt="The HotLoop lineup: IoT, Edge, Gateway, Edge Relay, Flow and Cascade."
+  description="HotLoop is six products for the plant floor: IoT, Edge, Gateway, and Edge Relay, plus Flow and Cascade. What each one has, and which release line it ships on."
+  ogAlt="The HotLoop lineup: IoT, Edge, Gateway, Edge Relay, Flow, and Cascade."
 >
   <section class="page-hero">
     <div class="wrap stack">
@@ -54,6 +54,7 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
             <a class="card product reveal" href={m.href}>
               <h2>{m.name}</h2>
               <p class="tag">{m.tagline}</p>
+              {l.id === 'core' && <p class="db"><span class="label">Database</span> {product(m.id as ProductId).databases}</p>}
             </a>
           ))}
         </div>
@@ -95,7 +96,7 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
         <h2 class="sub">Moving up keeps your data</h2>
         <p class="muted">
           Every product runs the same schema. Going from IoT to Edge to the Gateway is designed to be an image swap
-          on the same database, with your devices, entities, rules, alarms, history and users already there. Going
+          on the same database, with your devices, entities, rules, alarms, history, and users already there. Going
           back down deletes nothing: what the smaller product doesn't have just sits there until you come back. The
           point: outgrowing the Pi is supposed to cost you an image pull, not a migration
           project. The Quadlet move has been run, IoT to Edge to the Gateway on one database volume. The same move as a
@@ -108,7 +109,7 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
           No license keys, and nothing unlocks at runtime. The product is what got compiled, so a feature that isn't
           in your image can't be flipped on by accident, and nobody can flip one off to squeeze you later. All of
           HotLoop is under one license, the HotLoop Business Source License 1.1: free for home and lab, free for
-          business through {' '}<a href="https://embernet.ai">EmberNET</a>. <a href="/license/">What that means for you</a>.
+          business through {' '}<a href="https://embernet.ai">EmberNet</a>. <a href="/license/">What that means for you</a>.
         </p>
       </div>
     </div>

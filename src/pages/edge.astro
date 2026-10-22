@@ -43,7 +43,7 @@ const p = product('edge');
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>HotLoop Edge {CURRENT} is out. It's the first release of Edge, and it ships beside IoT, the Gateway and the Edge Relay from the same tag.</strong>
+          <strong>HotLoop Edge {CURRENT} is out. It's the first release of Edge, and it ships beside IoT, the Gateway, and the Edge Relay from the same tag.</strong>
           <p>
             The image is <code>{p.image}:{CURRENT}</code> for amd64, arm64 and arm/v7, about 34 MB on arm, and it pulls with no
             login. The chart is <code>{p.chart}</code> from <code>https://hotloop.io/hotloop</code>. If the box only has
@@ -115,7 +115,7 @@ const p = product('edge');
       <div class="grid grid-3">
         <article class="card reveal"><h3>A canvas that never reflows</h3><p>A fixed screen that scales and never shuffles things around, because an operator's thumb goes to where the pump was yesterday, and it better still be there.</p></article>
         <article class="card reveal"><h3>ISA-101 by default</h3><p>Gray backgrounds, color only for abnormal, alarm priority by shape as well as color. When the screen is gray, the one red thing gets seen.</p></article>
-        <article class="card reveal"><h3>Faceplates</h3><p>Click a motor and get its popup: start, stop, reset, mode, speed, its interlocks and its alarms, built from the motor entity that already exists.</p></article>
+        <article class="card reveal"><h3>Faceplates</h3><p>Click a motor and get its popup: start, stop, reset, mode, speed, its interlocks, and its alarms, built from the motor entity that already exists.</p></article>
         <article class="card reveal"><h3>Panel mode</h3><p>Open the box at <code>/?screen=name</code> and the dashboard bound to that name fills the panel: no header, big touch targets, and it works with the uplink down.</p></article>
         <article class="card reveal"><h3>A person behind every write</h3><p>On your own computer you're already signed in. A shared panel signs operators in with a PIN or a badge, so the audit names a human, not "panel 3".</p></article>
         <article class="card reveal"><h3>What is not built</h3><p>The ISA-101 symbol library, the faceplates and the PIN sign-in for shared panels are design. Dashboards, which they build on, are in {CURRENT}, and this page will say when these move.</p></article>
@@ -179,6 +179,16 @@ helm install hotloop hotloop/hotloop-edge --version {CURRENT} \
         <article class="card reveal"><h3>The 32-bit arm image</h3><p>The arm/v7 image is built and published. It hasn't met a Pi 3 under load yet.</p></article>
         <article class="card reveal"><h3>Moving up a product on a cluster</h3><p>IoT to Edge to the Gateway on one database volume has been run on Quadlet. As a <code>helm upgrade</code> on a real cluster, and going back down, it has not.</p></article>
       </div>
+      <div class="notice after">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+        <div>
+          <strong>S7comm and EtherNet/IP are decode tested and have never touched a physical PLC.</strong>
+          <p>
+            The first real controller you point either one at is commissioning, not a formality. Check a value you
+            already know before you trust a screen. <a href="/integrations/">The integrations page</a> says the same.
+          </p>
+        </div>
+      </div>
       <CardDetail>
         <div><h4>The Quadlet units under systemd</h4><p>The Gateway's units were run rootless under systemd, including an update that can't start and gets rolled back. Edge's were generated from them and checked against them, and not started. A real Pi under systemd as root: not yet.</p></div>
         <div><h4>Moving up a product on a cluster</h4><p>IoT to Edge to the Gateway on one database volume has been run on Quadlet. The same move as a <code>helm upgrade</code> on a real cluster, and going back down, has not.</p></div>
@@ -194,7 +204,7 @@ helm install hotloop hotloop/hotloop-edge --version {CURRENT} \
           <h2>Free, with no license key.</h2>
           <p class="muted">
             Edge is under the HotLoop Business Source License 1.1, like the rest of the lineup. Home and lab use is
-            free. Business use is free through <a href="https://embernet.ai">EmberNET</a>. Edge isn't a paid tier of
+            free. Business use is free through <a href="https://embernet.ai">EmberNet</a>. Edge isn't a paid tier of
             anything, because there is no paid tier to be one of.
           </p>
         </div>
@@ -208,6 +218,7 @@ helm install hotloop hotloop/hotloop-edge --version {CURRENT} \
   .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
   .page-hero h1 { max-width: 20ch; }
   .page-hero .notice { max-width: 68ch; }
+  .after { margin-top: var(--hl-s6); }
   .split { align-items: start; gap: var(--hl-s8); }
   .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
   .cta .stack { max-width: 62ch; }

@@ -74,7 +74,7 @@
     "type": "hotloop-flow-ethernetip",
     "category": "Config",
     "level": "flow-only",
-    "notes": "Flow's own EtherNet/IP connection, for tag access on ControlLogix, CompactLogix and Micro800 controllers. It connects on the first request, drops the connection on any failure that makes it untrustworthy, and reconnects on the next one."
+    "notes": "Flow's own EtherNet/IP connection, for tag access on ControlLogix, CompactLogix, and Micro800 controllers. It connects on the first request, drops the connection on any failure that makes it untrustworthy, and reconnects on the next one."
   },
   {
     "id": "hotloop-flow-influxdb",
@@ -116,7 +116,7 @@
     "type": "hotloop-flow-sparkplug",
     "category": "Config",
     "level": "flow-only",
-    "notes": "Flow's own Sparkplug B connection, either as an edge node or as a host application, on MQTT 3.1.1. An edge node can wait for a primary host application's STATE before it is born and can move through a list of brokers. A host application connects to one broker. Metrics carry arrays, DataSet, Template and PropertySet values. A metric's MetaData (files and multi-part bytes) is not carried."
+    "notes": "Flow's own Sparkplug B connection, either as an edge node or as a host application, on MQTT 3.1.1. An edge node can wait for a primary host application's STATE before it is born and can move through a list of brokers. A host application connects to one broker. Metrics carry arrays, DataSet, Template, and PropertySet values. A metric's MetaData (files and multi-part bytes) is not carried."
   },
   {
     "id": "mqtt-broker",
@@ -165,21 +165,21 @@
     "type": "change",
     "category": "Function",
     "level": "partial",
-    "notes": "set, change, delete and move are supported for msg, flow and global targets, including JSONata-typed values. The deep copy option is ignored: a value set from another property is shared with it, as it is in Node-RED with the option off. Ignored properties: `dc`."
+    "notes": "set, change, delete and move are supported for msg, flow, and global targets, including JSONata-typed values. The deep copy option is ignored: a value set from another property is shared with it, as it is in Node-RED with the option off. Ignored properties: `dc`."
   },
   {
     "id": "delay",
     "type": "delay",
     "category": "Function",
     "level": "divergent",
-    "notes": "All six modes are implemented: fixed, variable, random, rate limit, per-topic queue and timed release, along with msg.reset, msg.flush and the second output for dropped messages. Two deliberate differences: the queue is bounded, and past the limit a message is refused to a Catch node rather than held, because Node-RED's unbounded queue turns a source faster than the drain into an OOM-kill with no explanation; and messages still held when the flow stops are released rather than discarded."
+    "notes": "All six modes are implemented: fixed, variable, random, rate limit, per-topic queue, and timed release, along with msg.reset, msg.flush and the second output for dropped messages. Two deliberate differences: the queue is bounded, and past the limit a message is refused to a Catch node rather than held, because Node-RED's unbounded queue turns a source faster than the drain into an OOM-kill with no explanation; and messages still held when the flow stops are released rather than discarded."
   },
   {
     "id": "exec",
     "type": "exec",
     "category": "Function",
     "level": "divergent",
-    "notes": "The three outputs, both buffered and streaming modes, the timeout and the appended message property all behave as Node-RED's do. Two things do not, and neither is negotiable. There is no shell: the command line is split on quoting rules only, and an unquoted shell metacharacter is refused rather than run, so one allowed command cannot become an arbitrary one. And the node is disabled until an operator names the commands a flow may run. Node-RED's exec node runs anything, and Node-RED starts with no authentication by default; a vendor shipping that default became CVE-2025-41656 (Pilz IndustrialPI 4, VDE-2025-045), unauthenticated command execution on the device. Output is capped per stream; a command that exceeds it is killed and reported rather than being allowed to fill the heap. A command that forks children of its own may leave them behind when it is killed."
+    "notes": "The three outputs, both buffered and streaming modes, the timeout, and the appended message property all behave as Node-RED's do. Two things do not, and neither is negotiable. There is no shell: the command line is split on quoting rules only, and an unquoted shell metacharacter is refused rather than run, so one allowed command cannot become an arbitrary one. And the node is disabled until an operator names the commands a flow may run. Node-RED's exec node runs anything, and Node-RED starts with no authentication by default; a vendor shipping that default became CVE-2025-41656 (Pilz IndustrialPI 4, VDE-2025-045), unauthenticated command execution on the device. Output is capped per stream; a command that exceeds it is killed and reported rather than being allowed to fill the heap. A command that forks children of its own may leave them behind when it is killed."
   },
   {
     "id": "function",
@@ -242,14 +242,14 @@
     "type": "http in",
     "category": "Network",
     "level": "divergent",
-    "notes": "Serves a path, with Express-style :params and a trailing *, and builds the same msg.req / msg.res / msg.payload shape Node-RED does, including JSON, form-encoded and raw bodies. Three deliberate differences. A request that no HTTP Response node answers is closed with 504 after a timeout instead of being held open forever, because Node-RED's version leaks a connection per request until the process runs out of sockets and stops answering with nothing in the log. Two nodes claiming the same method and path is refused at deploy time rather than one of them silently never firing. And a path that would shadow the editor or the admin API is refused for the same reason. Uploads parse the way multer does in Node-RED: text fields into msg.payload, files into msg.req.files, a broken upload answered with 500. One bound multer lacks: an array index over 10,000 in a field name, a[99999999], is refused instead of building a sparse array that long. msg.req.cookies is cookie-parser's, j: values included. Ignored properties: `swaggerDoc`."
+    "notes": "Serves a path, with Express-style :params and a trailing *, and builds the same msg.req / msg.res / msg.payload shape Node-RED does, including JSON, form-encoded, and raw bodies. Three deliberate differences. A request that no HTTP Response node answers is closed with 504 after a timeout instead of being held open forever, because Node-RED's version leaks a connection per request until the process runs out of sockets and stops answering with nothing in the log. Two nodes claiming the same method and path is refused at deploy time rather than one of them silently never firing. And a path that would shadow the editor or the admin API is refused for the same reason. Uploads parse the way multer does in Node-RED: text fields into msg.payload, files into msg.req.files, a broken upload answered with 500. One bound multer lacks: an array index over 10,000 in a field name, a[99999999], is refused instead of building a sparse array that long. msg.req.cookies is cookie-parser's, j: values included. Ignored properties: `swaggerDoc`."
   },
   {
     "id": "http-request",
     "type": "http request",
     "category": "Network",
     "level": "partial",
-    "notes": "Method, URL, headers, basic authentication, redirects and the three return types, with msg.url, msg.method and msg.headers overriding the node. The response body is size-capped and the call is bounded by a timeout, neither of which Node-RED does. TLS comes from a tls-config, or without one msg.rejectUnauthorized = false skips the certificate check for that one message, as in Node-RED. msg.cookies and a cookie header go out through a cookie jar, cookies a redirect sets follow the redirect, and msg.responseCookies and msg.redirectList come back, all as in Node-RED. A multipart/form-data content type with an object payload sends it as a form. Proxy settings and connection persistence are not implemented in this build. There is no egress allowlist: this node can reach anything the pod can, exactly as Node-RED's can, and the place to bound that is a NetworkPolicy rather than an edit dialog nobody outside the cluster can trust. Ignored properties: `proxy`, `persist`."
+    "notes": "Method, URL, headers, basic authentication, redirects, and the three return types, with msg.url, msg.method and msg.headers overriding the node. The response body is size-capped and the call is bounded by a timeout, neither of which Node-RED does. TLS comes from a tls-config, or without one msg.rejectUnauthorized = false skips the certificate check for that one message, as in Node-RED. msg.cookies and a cookie header go out through a cookie jar, cookies a redirect sets follow the redirect, and msg.responseCookies and msg.redirectList come back, all as in Node-RED. A multipart/form-data content type with an object payload sends it as a form. Proxy settings and connection persistence are not implemented in this build. There is no egress allowlist: this node can reach anything the pod can, exactly as Node-RED's can, and the place to bound that is a NetworkPolicy rather than an edit dialog nobody outside the cluster can trust. Ignored properties: `proxy`, `persist`."
   },
   {
     "id": "http-response",
@@ -347,7 +347,7 @@
     "type": "tcp in",
     "category": "Network",
     "level": "divergent",
-    "notes": "Listens or connects out, in stream mode with a delimiter or single mode collecting until the peer closes, with buffer, string or base64 payloads. Every message carries msg._session so a TCP Out node can reply on the same connection. Three bounds Node-RED does not have: the number of accepted connections, the size of one delimited message, and the total of a single-mode read. A peer that opens connections and never closes them, or sends without ever sending the delimiter, grows the heap until the pod dies otherwise. TLS through a tls-config works both ways: a listener presents the config's certificate, a client checks the server's."
+    "notes": "Listens or connects out, in stream mode with a delimiter or single mode collecting until the peer closes, with buffer, string, or base64 payloads. Every message carries msg._session so a TCP Out node can reply on the same connection. Three bounds Node-RED does not have: the number of accepted connections, the size of one delimited message, and the total of a single-mode read. A peer that opens connections and never closes them, or sends without ever sending the delimiter, grows the heap until the pod dies otherwise. TLS through a tls-config works both ways: a listener presents the config's certificate, a client checks the server's."
   },
   {
     "id": "tcp-out",
@@ -368,7 +368,7 @@
     "type": "udp in",
     "category": "Network",
     "level": "partial",
-    "notes": "Receives datagrams, optionally joining a multicast group, with buffer, string or base64 payloads and the sender's address on msg.ip and msg.port. IPv6 and per-node interface selection are not implemented in this build. Ignored properties: `ipv6`."
+    "notes": "Receives datagrams, optionally joining a multicast group, with buffer, string, or base64 payloads and the sender's address on msg.ip and msg.port. IPv6 and per-node interface selection are not implemented in this build. Ignored properties: `ipv6`."
   },
   {
     "id": "udp-out",
@@ -403,7 +403,7 @@
     "type": "html",
     "category": "Parser",
     "level": "partial",
-    "notes": "Extracts elements by CSS selector, returning inner HTML, text or attributes, as one message per match or one message holding an array. The selector engine covers type, id, class, attribute, descendant, child and comma groups. Pseudo-classes, pseudo-elements, sibling combinators and the ~= and \\|= attribute operators are refused at deploy time rather than ignored, because a selector that quietly drops its :nth-child matches the wrong elements and keeps working. Returned HTML is re-rendered from the parse tree, so it is normalised markup rather than the original bytes."
+    "notes": "Extracts elements by CSS selector, returning inner HTML, text or attributes, as one message per match or one message holding an array. The selector engine covers type, id, class, attribute, descendant, child, and comma groups. Pseudo-classes, pseudo-elements, sibling combinators, and the ~= and \\|= attribute operators are refused at deploy time rather than ignored, because a selector that quietly drops its :nth-child matches the wrong elements and keeps working. Returned HTML is re-rendered from the parse tree, so it is normalized markup rather than the original bytes."
   },
   {
     "id": "json",
@@ -438,7 +438,7 @@
     "type": "join",
     "category": "Sequence",
     "level": "divergent",
-    "notes": "Automatic, manual and reduce modes as Node-RED has them: placement by msg.parts.index, the separator Split recorded, nested sequences, arrays, strings, buffers, objects keyed by a message property, merged objects, accumulate, msg.complete, msg.reset, msg.restartTimeout, the timeout, and a reduce expression with $A, $I and $N and an optional fixup. One deliberate difference: an automatic join given a message without msg.parts raises an error rather than logging a warning."
+    "notes": "Automatic, manual and reduce modes as Node-RED has them: placement by msg.parts.index, the separator Split recorded, nested sequences, arrays, strings, buffers, objects keyed by a message property, merged objects, accumulate, msg.complete, msg.reset, msg.restartTimeout, the timeout, and a reduce expression with $A, $I, and $N and an optional fixup. One deliberate difference: an automatic join given a message without msg.parts raises an error rather than logging a warning."
   },
   {
     "id": "sort",
@@ -452,21 +452,21 @@
     "type": "split",
     "category": "Sequence",
     "level": "divergent",
-    "notes": "Splits arrays, objects, strings and buffers, by delimiter, by a byte sequence or by length, including streaming mode, which carries an unfinished piece over to the next message. msg.parts matches Node-RED's, separator and nested sequences included. Three deliberate differences: an object is split in sorted key order, because Go maps have none; a string is split by length in characters rather than UTF-16 code units, so no character is cut in half; and a payload that cannot be split raises an error instead of vanishing."
+    "notes": "Splits arrays, objects, strings and buffers, by delimiter, by a byte sequence, or by length, including streaming mode, which carries an unfinished piece over to the next message. msg.parts matches Node-RED's, separator and nested sequences included. Three deliberate differences: an object is split in sorted key order, because Go maps have none; a string is split by length in characters rather than UTF-16 code units, so no character is cut in half; and a payload that cannot be split raises an error instead of vanishing."
   },
   {
     "id": "file",
     "type": "file",
     "category": "Storage",
     "level": "divergent",
-    "notes": "Append, overwrite and delete, with the filename from a literal, a message property, context or the environment, and utf8, base64, hex or raw encodings. The divergence is the path scope: the file nodes may only reach the data directory and whatever else the operator listed, resolved through symlinks so a link planted on the PVC cannot point out of it. Node-RED's file nodes take any path, which makes editing a flow equivalent to reading any file the process can. Writes are fsynced by default, which Node-RED's are not."
+    "notes": "Append, overwrite and delete, with the filename from a literal, a message property, context or the environment, and utf8, base64, hex, or raw encodings. The divergence is the path scope: the file nodes may only reach the data directory and whatever else the operator listed, resolved through symlinks so a link planted on the PVC cannot point out of it. Node-RED's file nodes take any path, which makes editing a flow equivalent to reading any file the process can. Writes are fsynced by default, which Node-RED's are not."
   },
   {
     "id": "file-in",
     "type": "file in",
     "category": "Storage",
     "level": "divergent",
-    "notes": "Whole-file, per-line and chunked reads, with utf8, base64, hex or raw output. Same path scope as the File node, and for the same reason. A read is also size-capped: Node-RED reads a whole file into memory with no limit, so pointing the node at the wrong path is an OOM-kill rather than an error. Past the cap the node says which limit was hit and that per-line or chunked mode would work."
+    "notes": "Whole-file, per-line and chunked reads, with utf8, base64, hex, or raw output. Same path scope as the File node, and for the same reason. A read is also size-capped: Node-RED reads a whole file into memory with no limit, so pointing the node at the wrong path is an OOM-kill rather than an error. Past the cap the node says which limit was hit and that per-line or chunked mode would work."
   },
   {
     "id": "influxdb-out",

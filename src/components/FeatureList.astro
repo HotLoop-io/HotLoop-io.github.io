@@ -3,21 +3,27 @@
 // release, merged and waiting, being built, or not started. The chip comes from
 // src/lib/products.ts and nowhere else.
 import { STATUS, type Feature } from '../lib/products';
+import { lead } from '../lib/lead';
+import CardMore from './CardMore.astro';
 
 interface Props { features: Feature[] }
 const { features } = Astro.props;
 ---
 
 <ul class="features">
-  {features.map((f) => (
+  {features.map((f) => {
+    const [short, rest] = lead(f.note);
+    return (
     <li class="card">
       <div class="cluster head">
         <h3>{f.name}</h3>
         <span class={`chip ${STATUS[f.status].chip}`}>{STATUS[f.status].label}</span>
       </div>
-      <p>{f.note}</p>
+      <p>{short}</p>
+      {rest && <CardMore>{rest}</CardMore>}
     </li>
-  ))}
+    );
+  })}
 </ul>
 
 <style>
