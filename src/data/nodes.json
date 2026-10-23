@@ -77,11 +77,25 @@
     "notes": "Flow's own EtherNet/IP connection, for tag access on ControlLogix, CompactLogix, and Micro800 controllers. It connects on the first request, drops the connection on any failure that makes it untrustworthy, and reconnects on the next one."
   },
   {
+    "id": "hotloop-flow-hotloop",
+    "type": "hotloop-flow-hotloop",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own connection to a HotLoop. Logs in with an account and sends the bearer token HotLoop hands back, and logs in again when it expires."
+  },
+  {
     "id": "hotloop-flow-influxdb",
     "type": "hotloop-flow-influxdb",
     "category": "Config",
     "level": "flow-only",
     "notes": "Flow's own InfluxDB connection, targeting the App Store's influxdb-app."
+  },
+  {
+    "id": "hotloop-flow-mcp-server",
+    "type": "hotloop-flow-mcp-server",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own connection to a Model Context Protocol server over Streamable HTTP. It sends a bearer token if it has one, connects on the first call and reconnects on the call after a failure."
   },
   {
     "id": "hotloop-flow-modbus",
@@ -238,6 +252,34 @@
     "notes": "Flow's own EtherNet/IP tag write. Not the same configuration as the community node-red-contrib-cip-ethernet-ip, which does not run here."
   },
   {
+    "id": "hotloop-in",
+    "type": "hotloop in",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node. It follows HotLoop's live feed (GET /api/stream), which has no Node-RED counterpart."
+  },
+  {
+    "id": "hotloop-recipe",
+    "type": "hotloop recipe",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node. It applies a HotLoop recipe (POST /api/recipes/{id}/apply)."
+  },
+  {
+    "id": "hotloop-script",
+    "type": "hotloop script",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node. It runs a HotLoop script (POST /api/scripts/{id}/run)."
+  },
+  {
+    "id": "hotloop-state",
+    "type": "hotloop state",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node. It reads one entity's state from HotLoop (GET /api/states/{entity_id})."
+  },
+  {
     "id": "http-in",
     "type": "http in",
     "category": "Network",
@@ -257,6 +299,27 @@
     "category": "Network",
     "level": "partial",
     "notes": "Status code and headers from the node or from msg.statusCode and msg.headers, with the payload as the body. msg.cookies sets and clears cookies exactly as Express does for Node-RED, options and all; with more than one, they go out in name order rather than the order the object was built in."
+  },
+  {
+    "id": "mcp-client",
+    "type": "mcp client",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node. It calls a tool on a Model Context Protocol server, or lists the tools it has."
+  },
+  {
+    "id": "mcp-result",
+    "type": "mcp result",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node. It answers the call an mcp tool node started."
+  },
+  {
+    "id": "mcp-tool",
+    "type": "mcp tool",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node. It serves a flow as a Model Context Protocol tool at /mcp, for a caller authenticated like the admin API's, and it has no Node-RED counterpart."
   },
   {
     "id": "modbus-read",
@@ -410,7 +473,7 @@
     "type": "json",
     "category": "Parser",
     "level": "partial",
-    "notes": "Conversion in both directions is supported. Schema validation against msg.schema is not implemented in this build. Ignored properties: `schema`."
+    "notes": "Conversion in both directions is supported. Schema validation is supported, against msg.schema as in Node-RED and against a schema in the node's settings. The validator is not Ajv: it reads draft 2020-12 unless the schema names another draft, it refuses a $ref to anything outside the schema, and format keywords it does not know are ignored."
   },
   {
     "id": "xml",
