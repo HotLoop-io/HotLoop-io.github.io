@@ -19,17 +19,17 @@ export const TIERS: Record<Tier, { label: string; chip: 'ok' | 'warn' | 'info' |
   live: {
     label: 'Verified live',
     chip: 'ok',
-    blurb: 'Ran against a real target, and the row names exactly which one. Real is not the same as certified, so it doesn\'t get to say certified.',
+    blurb: 'Ran against a real target, and the row names exactly which one. A real target is not the same as plant equipment, so this tier stops short of certified.',
   },
   decode: {
     label: 'Decode tested',
     chip: 'warn',
-    blurb: 'Tested hard at the frame level and never run against a physical PLC. The first real one is commissioning, not a formality.',
+    blurb: 'Tested hard at the frame level and never run against a physical PLC. Expect the first connection to a real one to be part of commissioning, not a formality.',
   },
   'gateway-mode': {
     label: 'Gateway mode',
     chip: 'info',
-    blurb: 'No driver, on purpose. These come in through the gateway your site already has, instead of a half-built one of ours.',
+    blurb: 'No driver, on purpose. These come in through the gateway your site already has, instead of through a half-built driver of ours.',
   },
 };
 

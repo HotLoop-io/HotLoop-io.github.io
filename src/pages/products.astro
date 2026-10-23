@@ -98,9 +98,9 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
           Every product runs the same schema. Going from IoT to Edge to the Gateway is designed to be an image swap
           on the same database, with your devices, entities, rules, alarms, history, and users already there. Going
           back down deletes nothing: what the smaller product doesn't have just sits there until you come back. The
-          point: outgrowing the Pi is supposed to cost you an image pull, not a migration
+          point is that outgrowing the Pi should cost you an image pull, not a migration
           project. The Quadlet move has been run, IoT to Edge to the Gateway on one database volume. The same move as a
-          Helm upgrade on a real cluster, and going back down a product, has not, so don't take a box you care about down.
+          Helm upgrade on a real cluster has not been run, and neither has going back down a product, so don't try either on a box you care about.
         </p>
       </div>
       <div class="stack">

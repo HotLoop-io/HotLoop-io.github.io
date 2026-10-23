@@ -12,7 +12,7 @@ const steps: [string, string, string][] = [
   ['armed', 'The tag is armed.', 'Every tag is read-only until somebody marks it writable, one at a time, on purpose. A browse import of 4,000 tags arms none of them.'],
   ['range', 'The value is in range.', 'Out of range is refused, never clamped. Somebody who typed 500 on a 0 to 250 setpoint made a mistake, and quietly sending 250 means they never find out.'],
   ['check', 'The entity agrees.', "A call through an entity adds the entity's own rules: a number's step, a text's pattern, an entity somebody disabled. They're checked here, inside the gate, so that refusal is audited like any other. A write straight to a tag has none."],
-  ['device', 'The device is running.', "No running device, no write, and the refusal is audited. One that's up but mid-reconnect gets past this, the audit row opens, and the write fails there with a 503, on the record as a failed attempt. The dry run checks the live session itself, so a recipe or a script finds out before anything moves."],
+  ['device', 'The device is running.', "No running device, no write, and the refusal is audited. One that's up but mid-reconnect gets past this check. The audit row opens, and the write then fails with a 503, recorded as a failed attempt. The dry run checks the live session itself, so a recipe or a script finds out before anything moves."],
   ['audit', 'The audit row is written, then the value goes out.', 'In that order. A refusal is recorded as a refusal, and a write that hangs or crashes the process still left evidence that it was attempted.'],
 ];
 ---
@@ -52,8 +52,8 @@ const steps: [string, string, string][] = [
     </div>
 
     <p class="foot">
-      A simulation in your browser. The checks, their order and what they refuse are the Gateway's: the first from
-      its API, the rest straight out of <code>internal/runtime/gate.go</code>.
+      A simulation in your browser. The checks, their order and what they refuse are the Gateway's. The first check comes from
+      its API, and the rest come straight from <code>internal/runtime/gate.go</code>.
     </p>
   </section>
 

@@ -202,7 +202,7 @@ const POLICIES: [string, string][] = [
 
       if (rate <= SINK) verdict.textContent = 'At this rate nobody is in trouble. Push the sensor past 100 a second.';
       else if (restarts === 0) verdict.textContent = 'Node-RED is buffering the difference in memory. Give it a few seconds.';
-      else verdict.textContent = `Node-RED never dropped a message. It dropped ${fmt(lost)} of them at once, with the pod. Flow made you choose what gets lost, ahead of time, and it is still running.`;
+      else verdict.textContent = `Node-RED never chose to drop a message, then lost ${fmt(lost)} of them at once when the pod died. Flow made you choose what gets lost, ahead of time, and it is still running.`;
     }
 
     render();
