@@ -79,6 +79,19 @@ const fmt = (d: Date) =>
     </div>
   </section>
 
+  <section class="block running" aria-labelledby="running-at">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label" id="running-at">Running at</span>
+        <p class="lede">HotLoop runs at the plants of Shepherd Boy Farms and DayGlo, both through EmberNet.</p>
+      </div>
+      <ul class="logos">
+        <li><a class="plate" href="https://shepherdboyfarms.com" rel="noopener" aria-label="Shepherd Boy Farms"><img src="/customers/shepherd-boy-farms-logo.png" alt="Shepherd Boy Farms" width="2472" height="1238" loading="lazy" decoding="async" /></a></li>
+        <li><a class="plate" href="https://www.dayglo.com" rel="noopener" aria-label="DayGlo"><img src="/customers/dayglo-logo.svg" alt="DayGlo" width="648" height="180" loading="lazy" decoding="async" /></a></li>
+      </ul>
+    </div>
+  </section>
+
   <section class="block">
     <div class="wrap">
       <div class="section-head">
@@ -216,6 +229,13 @@ const fmt = (d: Date) =>
 </Base>
 
 <style>
+  /* Customer logos are the companies' own files, never recolored. Both sit on the same
+     dark plate in either theme, because DayGlo's mark has a white wordmark. Sized by height only. */
+  .running .section-head { margin-bottom: var(--hl-s5); }
+  .logos { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--hl-s4); align-items: stretch; }
+  .plate { display: flex; align-items: center; justify-content: center; padding: var(--hl-s4) var(--hl-s6); background: #14120F; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); transition: border-color var(--hl-transition-fast); }
+  .plate:hover { border-color: var(--hl-orange); }
+  .plate img { height: 72px; width: auto; display: block; }
   .hero { padding-top: clamp(var(--hl-s7), 6vw, var(--hl-s8)); }
   .grid-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 620px); gap: clamp(var(--hl-s6), 5vw, var(--hl-s8)); align-items: center; }
   /* Side by side, the copy column gets about 250px at 1024 and the h1 broke
