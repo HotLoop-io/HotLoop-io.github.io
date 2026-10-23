@@ -14,7 +14,7 @@ const level = (l: string) => nodes.filter((n) => n.data.level === l).length;
 // because it moves every time the box changes.
 const bench = [
   ['Binary, linux/amd64, static', '22.0 MB'],
-  ['Image, 2.2.0 amd64, as Podman reports it', '39.1 MB'],
+  ['Image, 2.3.0 amd64, as Podman reports it', '44.8 MB'],
   ['Start to answering its first request', '0.05 s'],
   ['RSS, idle', '16.4 to 16.7 MiB'],
   ['RSS, peak under the HTTP load', '26.4 to 28.5 MiB'],
@@ -27,9 +27,9 @@ const bench = [
 // dropped it. Throughput, latency and cold start are that day's run: both runtimes
 // in rootless Podman on one 12 CPU Linux box, the same five-node flow file, the same
 // load generator, 8 connections, 30 seconds, nodered/node-red:latest. The image row
-// is the published 2.2.0 image against the Node-RED image from that run.
+// is the 2.3.0 image, built from the release tree, against the Node-RED image from that run.
 const versus = [
-  ['Image size', '39.1 MB', '717 MB', '18×'],
+  ['Image size', '44.8 MB', '717 MB', '16×'],
   ['Throughput', '3,460 req/s', '1,290 req/s', '2.7×'],
   ['Latency p50', '1.03 ms', '4.61 ms', '4.5×'],
   ['Latency p99', '16.72 ms', '23.14 ms', '1.4×'],
@@ -54,7 +54,8 @@ const different = [
   ['Runtime', 'Node.js, one event loop', 'Go, goroutine per node'],
   ['Back-pressure', 'None, unbounded queue', 'Bounded inbox, four policies'],
   ['Message cloning', 'First recipient aliases the sender', 'Every recipient gets a copy'],
-  ['Function sandbox', 'node:vm, explicitly not a boundary', 'goja with no host bindings. A WASM host with a hard memory ceiling is built and tested, but no node uses it yet'],
+  ['Function sandbox', 'node:vm, explicitly not a boundary', 'goja with no host bindings. Plugins are signed WebAssembly with a memory ceiling and a timeout'],
+  ['Plugins', 'npm packages, in the same process', 'Signed WebAssembly, refused unless the key is trusted, and no host access unless granted'],
   ['exec node', 'Any command, through a shell by default', 'Disabled until allowlisted, and no shell at all'],
   ['File nodes', 'Any path the process can reach', 'Scoped to the volume, symlinks resolved'],
   ['Credentials', 'AES-256-CTR, SHA-256 as the key', 'AES-256-GCM, Argon2id'],
@@ -68,9 +69,9 @@ const different = [
 
 const notDone = [
   ['A physical PLC.', 'Modbus TCP, OPC UA, S7, EtherNet/IP, and Sparkplug B nodes are built and were tried against simulators and a real broker. S7 and EtherNet/IP have only met simulators, and none of them has met a Siemens CPU or a Logix controller. Modbus RTU, Modbus over TLS, OPC UA events, history, method calls and browse, S7 timers and counters, and PCCC controllers are not done.'],
-  ['HotLoop nodes.', 'Entity changes in, entity state, call a script, apply a recipe, with every command through HotLoop’s write gate. Merged to main on 2026-10-22 and in no release yet. In 2.2.0 and earlier, a Flow node that writes to equipment goes straight to the device and not through the gate.'],
-  ['Plugins without npm.', 'The WASM host with a hard memory ceiling exists and no node uses it. The plugin format, the capability grants and the signing are not built. Community nodes stay unsupported, because they are npm packages.'],
-  ['Typed wires and MCP.', 'Schemas on ports, flows served as MCP tools, and an MCP client node are all planned and none of them is built.'],
+  ['HotLoop nodes.', 'Out in 2.3.0. Only the Modbus write was run through HotLoop’s real write gate. The OPC UA, S7 and EtherNet/IP write nodes send through the same code and a test checks each one, but none has been through a real gate. The live-feed reconnect is tested against a stand-in, and an https HotLoop with a private CA is not covered.'],
+  ['MCP.', 'Out in 2.3.0, tested against the Go SDK’s client, the MCP Inspector and a real HotLoop 4.18.10. Not done: OAuth, stdio servers, resources, prompts, sampling, and a tool’s output schema.'],
+  ['Plugins on a Pi.', 'Signed WebAssembly plugins are out in 2.3.0 and have never run on a Pi. The traps and refusals are tested against guests built from Rust, TinyGo and Go, and the per-call numbers are from an x86 box.'],
   ['A real Pi.', 'The durable store’s writes per hour are measured on x86 under WSL. A Pi 4 and a Zero 2 W have not run it yet, and an SD card is the first place a context store would show a bug.'],
   ['The editor.', 'It is hand-built TypeScript and it does not look like the rest of HotLoop yet. A rewrite comes last, after a design pass, and the browser tests are the bar it has to clear.'],
 ];
@@ -116,13 +117,22 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
     ],
   },
   {
+    id: 'reach', label: 'Reach the rest of the plant', h: 'Talk to HotLoop, let an agent call a flow, and catch a wrong-shaped message early.', cols: 4,
+    cards: [
+      { h: 'HotLoop nodes and gated writes', chip: 'In 2.3.0', b: 'Follow HotLoop\'s live feed, read state, run scripts, and apply recipes. The write nodes can send through HotLoop\'s write gate, and a refused write never reaches the equipment.' },
+      { h: 'Flows as MCP tools', chip: 'In 2.3.0', b: 'An MCP tool node serves a flow to an agent at <code>/mcp</code>, and an MCP client node calls any MCP server. A token is required, and every call is audited under the caller.' },
+      { h: 'Signed WebAssembly plugins', chip: 'In 2.3.0', b: 'A plugin is a signed WebAssembly file, not an npm package. Unsigned ones refuse to load, and with no trusted keys nothing loads at all.' },
+      { h: 'Typed wires and the Inject check', chip: 'In 2.3.0', b: 'Give the json node a JSON Schema and a wrong-shaped value goes to Catch with every bad field named. A deploy is refused when two ends of a wire can never agree.' },
+    ],
+  },
+  {
     id: 'locked', label: 'Locked down by default', h: 'It refuses to start without a login in front of it.', cols: 3,
     cards: [
       { h: 'No login is a startup error', b: 'Turning authentication off takes an environment variable, on purpose, and the editor wears a no-login badge while it is off.' },
       { h: 'Two-factor and lockouts', chip: 'Since 2.1.0', b: 'TOTP sign-in is free. Five wrong passwords lock an account from that address for fifteen minutes, and sessions survive a restart.' },
       { h: 'Credentials under GCM', b: 'Credentials are AES-256-GCM under an Argon2id key, and deploy records never hand them out, encrypted or not.' },
       { h: 'exec off, files fenced', b: 'The exec node ships disabled until an operator allowlists commands, with no shell. File nodes are scoped to the volume, symlinks resolved.' },
-      { h: 'A sandbox with nothing to reach', b: 'The Function node runs on goja with no require, no process, no filesystem, and no network. A WASM host with a memory ceiling is built, but no node uses it.' },
+      { h: 'A sandbox with nothing to reach', b: 'The Function node runs on goja with no require, no process, no filesystem, and no network. Plugins run as signed WebAssembly with a memory ceiling and a timeout.' },
       { h: 'One static binary', b: 'A 22.0 MB static binary that idles at about 16 MiB and answers its first request in 0.05 s. A Pi 4 and a Zero 2 W have not run it yet.' },
     ],
   },
@@ -147,7 +157,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
       operatingSystem: 'Linux',
       license: 'https://hotloop.io/license/',
       isAccessibleForFree: true,
-      softwareVersion: '2.2.0',
+      softwareVersion: '2.3.0',
       publisher: { '@id': 'https://hotloop.io/#organization' },
     }}
   />
@@ -163,15 +173,15 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>HotLoop Flow 2.2.0 is out, and it is the first release under the Business Source License.</strong>
+          <strong>HotLoop Flow 2.3.0 is out. Flow now talks to HotLoop, an agent can call a flow as an MCP tool, and a plugin is signed WebAssembly.</strong>
           <p>
             The code is at <a href="https://github.com/HotLoop-io/hotloop-flow">github.com/HotLoop-io/hotloop-flow</a>, and
-            the image is <code>ghcr.io/hotloop-io/hotloop-flow</code>. The image has the tags <code>2.2.0</code>, <code>2.2</code> and <code>2</code>, and the chart is at
-            <code>https://hotloop.io/hotloop-flow/</code>. 2.1.0 and everything before it stay under the license they
-            shipped with. From 2.2.0 on Flow is under the same HotLoop Business Source License 1.1 as the rest of the
-            lineup: free for home and lab, and free for business through <a href="https://embernet.ai">EmberNet</a>.
+            the image is <code>ghcr.io/hotloop-io/hotloop-flow</code>, with the tags <code>2.3.0</code>, <code>2.3</code> and <code>2</code>. The chart is at
+            <code>https://hotloop.io/hotloop-flow/</code>. From 2.2.0 it is a plain image bump, with no migration, but one
+            change can touch a flow that already runs: the <code>json</code> node now checks <code>msg.schema</code>. 2.2.0 was
+            the first release under the HotLoop Business Source License 1.1, which every release since shares: free for home and lab, and free for business through <a href="https://embernet.ai">EmberNet</a>.
             Version 0.1.0 was published as Emberwire, and 2.0.0 does not read what the old names wrote. Read the
-            <a href="/releases/flow/">release notes</a> before you upgrade.
+            <a href="/releases/flow/#flow-2.3.0">2.3.0 notes</a> before you upgrade.
           </p>
         </div>
       </div>
@@ -209,20 +219,15 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           </div>
         </div>
       ))}
-      <div class="notice info after">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
-        <div>
-          <strong>Next release, not shipped: HotLoop nodes.</strong>
-          <p>
-            Entity changes in, an entity's state, run a script, and apply a recipe, plus an option on the Modbus, OPC UA,
-            S7 and EtherNet/IP write nodes to send the write through HotLoop's write gate. It is merged to
-            <code>main</code> in <a href="https://github.com/HotLoop-io/hotloop-flow/pull/76">pull request 76</a> and is
-            in no release yet, so 2.2.0 does not have it.
-          </p>
-        </div>
-      </div>
-
       <CardDetail label="The full detail, from the release notes">
+        <div id="new-in-2-3" class="stack">
+          <p class="muted"><strong>New in 2.3.0.</strong> All of it is in <code>ghcr.io/hotloop-io/hotloop-flow:2.3.0</code>. The consequence: a flow can act through HotLoop's write gate, an agent can use a flow as a tool, and a plugin no longer means an npm package.</p>
+          <div><h4>HotLoop nodes and gated writes</h4><p>A HotLoop connection is a URL and an account. <code>hotloop in</code> follows the live feed and sends a message for each entity that changes, <code>hotloop state</code> reads one entity, and <code>hotloop script</code> and <code>hotloop recipe</code> run a script or apply a recipe. HotLoop checks every field, runs every write through its write gate and keeps the record, with the reason <code>flow:&lt;node id&gt;</code>. The Modbus, OPC UA, S7 and EtherNet/IP write nodes have a Write through HotLoop option. A write the gate refuses never reaches the equipment, and a HotLoop that can't be reached fails the write instead of falling back to writing directly.</p></div>
+          <div><h4>MCP, in both directions</h4><p><code>mcp tool</code> and <code>mcp result</code> serve a flow as a tool at <code>/mcp</code>. An agent signs in with a session or API token like anyone else, the call runs with that token's permissions, and every call and refusal lands in the audit log under the caller's name. An API token can carry a rate limit. <code>mcp client</code> calls a tool on any MCP server, and never sends a call twice, because a tool may move equipment and a dropped connection doesn't say whether it ran. Nothing is served until a flow has a tool node.</p></div>
+          <div><h4>Plugins without npm</h4><p>A plugin is a WebAssembly module, a descriptor the editor draws its dialog from, and an ed25519 signature over both. Unsigned and tampered plugins refuse to load and say why. A guest past its memory ceiling or its timeout traps to a Catch node while everything else keeps running, and a plugin that asks for host access nobody granted fails the deploy of any flow that uses it. With no trusted keys every plugin is refused.</p></div>
+          <div><h4>Typed wires and the Inject check</h4><p>Give the <code>json</code> node a JSON Schema and every value it handles is checked, with an error like <code>payload.temp: got string, want number</code>. Nodes can declare what they accept and what each output promises, in two keys every other tool ignores, so a flow that carries them still round-trips byte for byte. When both ends of a wire declare a schema and no message could satisfy both, the deploy is refused. An <code>inject</code> that sets a literal the next node can never take, like 250 into a node that takes 0 to 100, is refused the same way. The editor draws the type on each wire, red when the two can never agree.</p></div>
+          <div><h4>What changed</h4><p>The <code>json</code> node used to ignore <code>msg.schema</code> and now validates against it, so a flow that leaves a <code>msg.schema</code> on its messages for another purpose will see that. Three durable queue fixes: a removed durable wire refuses a late write, a drop-oldest wire no longer evicts a message twice, and a late hand-back no longer stays charged to the quota. The count is now 79 node types.</p></div>
+        </div>
         <div id="whats-new" class="stack">
           <p class="muted"><strong>New in 2.2.0.</strong> All of it is in <code>ghcr.io/hotloop-io/hotloop-flow:2.2.0</code>. The consequence: a flow that has to talk to a PLC, survive a restart or explain itself no longer needs a workaround.</p>
           <div><h4>Tracing and replay</h4><p>Click a debug message and the canvas lights up the path it took, with timing and the payload at every hop, through splits, joins, and subflows. Replay a captured message into a draft of the flow and compare the output, or turn a trace into a test. The trace buffer is bounded, and OpenTelemetry export is proven against a real collector.</p></div>
@@ -230,7 +235,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           <div><h4>The plant floor</h4><p>Modbus TCP read and write, OPC UA read, subscribe and write, S7 and EtherNet/IP read and write, and Sparkplug B as an edge node and as a host. Modbus was tried against pymodbus, OPC UA against Microsoft's OPC PLC, S7 and EtherNet/IP against simulators, and Sparkplug B against a real Mosquitto. None has met a physical PLC.</p></div>
         </div>
         <div id="since-2-1" class="stack">
-          <p class="muted"><strong>Already in, from 2.1.0.</strong> These shipped in 2.1.0 and are in 2.2.0. The consequence: "who changed the flow on line 3, and put it back" is a command, not an archaeology project.</p>
+          <p class="muted"><strong>Already in, from 2.1.0.</strong> These shipped in 2.1.0 and are in 2.3.0. The consequence: "who changed the flow on line 3, and put it back" is a command, not an archaeology project.</p>
           <div><h4>Deploy records, diff and rollback</h4><p>Every deploy keeps who, from where, when, the note, the revision it replaced, and the flow file byte for byte, with the credentials encrypted as they stood. A diff reads node by node and keeps layout apart from logic, and rollback puts an old record back as a new deploy, flows and credentials together. An optional git mirror commits every deployment under whoever deployed it.</p></div>
           <div><h4>Flows as code</h4><p><code>hotloop-flow deploy</code> prints the diff against what is running and deploys against the revision it came from, so a race is a red pipeline. A pipeline holds an API token that can read and deploy and nothing else, never an admin password.</p></div>
           <div><h4>Flow tests and a deploy gate</h4><p>A <code>flows.test.yaml</code> next to <code>flows.json</code> runs on the real runtime and nodes, with Delay, Trigger, and Inject on a clock the test moves and the outside world stood in for. Turn on <code>tests.gate</code> and a deploy that fails the suite is refused with the whole report. Rollbacks are not gated.</p></div>
@@ -249,8 +254,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         <h2>Absolute numbers, with the limits stated up front.</h2>
         <p class="lede">
           Linux under WSL2, 24 CPUs (a Ryzen 9 7900X), 2026-10-02, the native binary built from <code>main</code>, three
-          runs of each command, and the range is what's printed. The image row is the published 2.2.0 image, read on
-          2026-10-20. Flow's repository prints absolute numbers only, because a side-by-side table moves every time the
+          runs of each command, and the range is what's printed. The image row is the 2.3.0 image, built from the release tree with <code>podman build --platform linux/amd64 --build-arg VERSION=v2.3.0 .</code> and read on 2026-10-22 with <code>podman image inspect</code>, 44,833,285 bytes. It was not read from ghcr.io, because the tag wasn't pushed yet. Flow's repository prints absolute numbers only, because a side-by-side table moves every time the
           box changes and ends up describing the other thing more than this one.
         </p>
       </div>
@@ -311,7 +315,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           </li>
           <li>
             <strong>WSL2 is not a Pi.</strong> The Pi 5 is measured below. A Pi 4 and a Zero 2 W have not run it yet, and the image grew from 32.1 MB
-            at 2.1.0 to 39.1 MB at 2.2.0 with the plant nodes, tracing and the SQLite state store, without anyone
+            at 2.1.0 to 39.1 MB at 2.2.0 and 44.8 MB at 2.3.0, with the plant nodes, tracing, the SQLite state store, the HotLoop and MCP nodes, JSON Schema checking and the plugin host, without anyone
             splitting the growth between them.
           </li>
         </ol>
@@ -372,8 +376,8 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         <p class="muted">
           Two more, so nobody has to find them. The throughput, latency and cold start rows are from the run on
           2026-08-08, on an earlier build of Flow, so don't divide them by the newer absolute numbers above. The image
-          row is today's published 2.2.0 image against the Node-RED image from that run. When I ran it, Flow was 25.1 MB
-          and the gap was 29×, and Flow has grown since, with the plant nodes, tracing, and the SQLite state store.
+          row is the 2.3.0 image, built from the release tree (44.8 MB, measured as above), against the Node-RED image from that run. When I ran it, Flow was 25.1 MB
+          and the gap was 29×, and Flow has grown since, with the plant nodes, tracing, the SQLite state store, and the HotLoop, MCP and plugin work of 2.3.0.
         </p>
         <p class="muted">
           Memory isn't in this table, on purpose. Those numbers came off <code>podman stats</code>, which reports what
