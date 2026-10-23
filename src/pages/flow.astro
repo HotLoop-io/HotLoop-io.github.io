@@ -180,7 +180,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
             <code>https://hotloop.io/hotloop-flow/</code>. From 2.2.0 it is a plain image bump, with no migration, but one
             change can touch a flow that already runs: the <code>json</code> node now checks <code>msg.schema</code>. 2.2.0 was
             the first release under the HotLoop Business Source License 1.1, which every release since shares: free for home and lab, and free for business through <a href="https://embernet.ai">EmberNet</a>.
-            Version 0.1.0 was published as Emberwire, and 2.0.0 does not read what the old names wrote. Read the
+            Version 0.1.0 was published as Emberwire, and 2.0.0 does not read data written under the old names. Read the
             <a href="/releases/flow/#flow-2.3.0">2.3.0 notes</a> before you upgrade.
           </p>
         </div>
@@ -255,7 +255,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         <p class="lede">
           Linux under WSL2, 24 CPUs (a Ryzen 9 7900X), 2026-10-02, the native binary built from <code>main</code>, three
           runs of each command, and the range is what's printed. The image row is the 2.3.0 image, built from the release tree with <code>podman build --platform linux/amd64 --build-arg VERSION=v2.3.0 .</code> and read on 2026-10-22 with <code>podman image inspect</code>, 44,833,285 bytes. It was not read from ghcr.io, because the tag wasn't pushed yet. Flow's repository prints absolute numbers only, because a side-by-side table moves every time the
-          box changes and ends up describing the other thing more than this one.
+          box changes and ends up describing the box more than Flow.
         </p>
       </div>
       <div class="table-wrap">
@@ -297,7 +297,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
 
       <div class="caveats">
         <h3>Now, walking our own numbers back.</h3>
-        <p class="muted">A benchmark table with no caveats under it is marketing wearing a lab coat. These figures are not allowed to say four things.</p>
+        <p class="muted">A benchmark table with no caveats under it is marketing wearing a lab coat. Here are four things these figures do not say.</p>
         <ol>
           <li>
             <strong>The HTTP number includes the whole HTTP stack, on purpose</strong>, since that is what a client of
@@ -314,9 +314,9 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
             rows say.
           </li>
           <li>
-            <strong>WSL2 is not a Pi.</strong> The Pi 5 is measured below. A Pi 4 and a Zero 2 W have not run it yet, and the image grew from 32.1 MB
-            at 2.1.0 to 39.1 MB at 2.2.0 and 44.8 MB at 2.3.0, with the plant nodes, tracing, the SQLite state store, the HotLoop and MCP nodes, JSON Schema checking and the plugin host, without anyone
-            splitting the growth between them.
+            <strong>WSL2 is not a Pi.</strong> The Pi 5 is measured above. A Pi 4 and a Zero 2 W have not run it yet, and the image grew from 32.1 MB
+            at 2.1.0 to 39.1 MB at 2.2.0 and 44.8 MB at 2.3.0. That growth came from the plant nodes, tracing, the SQLite state store, the HotLoop and MCP nodes, JSON Schema checking and the plugin host, and nobody has
+            measured how much each one added.
           </li>
         </ol>
         <p class="muted">
@@ -451,7 +451,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
     <div class="wrap">
       <div class="section-head">
         <span class="label">Compatibility</span>
-        <h2>{nodes.length} node types, and each one says how close it is.</h2>
+        <h2>{nodes.length} node types, and each one states how closely it matches Node-RED.</h2>
         <p class="lede">
           A node that is partially compatible and silent about how is worse than one that is obviously absent,
           because the flow appears to work and quietly does the wrong thing. So a test fails the build if a node
@@ -501,8 +501,8 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
       <ul class="notdone">
         {notDone.map(([h, b]) => <li><strong>{h}</strong> {b}</li>)}
         <li>
-          <strong>It has never run on a real plant floor.</strong> Everything past the deploy line is unproven in the
-          field, and it will not be described as production-hardened until a plant has tried to break it.
+          <strong>It has never run on a real plant floor.</strong> Nothing about it is proven in the
+          field yet, and it will not be described as production-hardened until a plant has tried to break it.
         </li>
       </ul>
     </div>
