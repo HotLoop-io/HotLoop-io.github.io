@@ -32,7 +32,7 @@ export const LINES = [
     id: 'core',
     label: 'HotLoop core',
     version: CURRENT,
-    blurb: 'One codebase and one version. IoT to Edge to Gateway is the path a site grows along, and Edge Relay is the headless forwarder beside them.',
+    blurb: 'One codebase and one version. IoT to Edge to Gateway is the path a site grows along, and Edge Relay is the forwarder with no screen that sits beside them.',
     members: [
       core('iot', 'HotLoop IoT', '/iot/', 'The automation base, built in Go for OT.'),
       core('edge', 'HotLoop Edge', '/edge/', 'IoT plus the machine layer.'),

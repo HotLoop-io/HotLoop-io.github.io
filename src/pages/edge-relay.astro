@@ -41,7 +41,7 @@ const v = latest.data.version;
       <h1>Poll, forward, survive. Nothing else.</h1>
       <p class="lede">
         A headless edge node for a Pi or a small industrial PC. It polls equipment with the same drivers the Gateway
-        uses, forwards every reading over Sparkplug B, and buffers to disk when the uplink goes away. No database, no
+        uses, forwards every reading over Sparkplug B (the MQTT standard for industrial data), and buffers to disk when the uplink goes away. No database, no
         UI, no login, and no way to write to a machine. That's the feature: a box with nothing to click can't be
         clicked wrong.
       </p>
@@ -50,7 +50,7 @@ const v = latest.data.version;
         <div>
           <strong>Edge Relay {v} is out, released in lockstep with the Gateway.</strong>
           <p>
-            The image is <code>{p.image}:{v}</code> for amd64, arm64 and arm/v7, about 15 MB, and it pulls with no login. The
+            The image is <code>{p.image}:{v}</code> for amd64, arm64, and arm/v7, about 15 MB, and it pulls with no login. The
             chart is <code>{p.chart}</code> from <code>https://hotloop.io/hotloop</code>, and there is a Quadlet unit
             for a box that isn't in a cluster.
           </p>
@@ -72,25 +72,25 @@ const v = latest.data.version;
         <h2>Not a smaller Gateway with the options turned off.</h2>
         <p class="lede">
           It's a different binary. It never links the database, the web UI, the automation engine, the entity
-          registry or MCP, and a test asks the compiler what actually got linked and fails the build if any of them
+          registry, or AI agent access (MCP), and a test asks the compiler what actually got linked and fails the build if any of them
           sneaks in. There's no "relay mode" buried in the Gateway, because a mode is one bad environment variable
           away from a web server listening on a box nobody's watching.
         </p>
       </div>
       <div class="grid grid-3">
         <article class="card reveal"><h3>Every driver</h3><p>OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, and UniFi, from the same code the Gateway polls with.</p></article>
-        <article class="card reveal"><h3>Store-and-forward</h3><p>Sparkplug B births, sequence numbers and deaths. When the link drops it queues to one file on disk and replays in order, flagged historical.</p></article>
+        <article class="card reveal"><h3>Store-and-forward</h3><p>Sparkplug B births, sequence numbers, and deaths. When the link drops it queues to one file on disk and replays in order, flagged historical.</p></article>
         <article class="card reveal"><h3>Configured by a file</h3><p>Devices and tags come from one JSON file. A bad file is refused and the old one keeps running. A pushed file applies the moment it lands.</p></article>
         <article class="card reveal"><h3>Finds devices that announce themselves</h3><p>The relay listens to MQTT brokers for ESPHome, Zigbee2MQTT, Tasmota, and Shelly devices, read and forward only. It still can't write to a thing.</p></article>
-        <article class="card reveal"><h3>No write path</h3><p>It reads and forwards. It can't take a write, serve a screen or answer an agent, because it has no users to pin an action on.</p></article>
+        <article class="card reveal"><h3>No write path</h3><p>It reads and forwards. It can't take a write, serve a screen or answer an AI agent, because it has no users to pin an action on.</p></article>
         <article class="card reveal"><h3>Managed from the Gateway</h3><p>The Gateway's fleet API tracks every relay from its births and deaths, and sends a rebirth, a restart, or a new device file over the connection the relay dialed out on.</p></article>
         <article class="card reveal"><h3>Honest about what's proven</h3><p>Run end to end against a real Mosquitto broker, Modbus TCP slaves, an HTTP endpoint, and an OPC UA test server. Not yet run on real EtherNet/IP or S7comm hardware.</p></article>
       </div>
       <CardDetail>
         <div><h4>Every driver</h4><p>OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, and UniFi. The same code the Gateway polls with, down to the reconnect and back-off, so a bug fixed there is fixed here.</p></div>
-        <div><h4>Store-and-forward</h4><p>Births, sequence numbers and deaths the way Sparkplug B says. When the link drops it queues to one file on disk and replays in order, flagged historical, when it's back. The historian upstream gets the gap filled instead of a hole.</p></div>
+        <div><h4>Store-and-forward</h4><p>Births, sequence numbers, and deaths, the way Sparkplug B says. When the link drops it queues to one file on disk and replays in order, flagged historical, when it's back. The historian upstream gets the gap filled instead of a hole.</p></div>
         <div><h4>Configured by a file</h4><p>Devices and tags come from one JSON file, and a file the Gateway pushes is read at start. A bad file is refused and the old one keeps running. A pushed file also applies the moment it lands: new devices connect, removed ones let go, changed ones reconnect, and the ones nobody touched keep their sessions. The Sparkplug session stays up with no death certificate, and a removed metric goes out once as null so the Gateway stops showing its last good value forever.</p></div>
-        <div><h4>No write path</h4><p>It reads and forwards. It can't take a write, serve a screen or answer an agent, because every one of those needs a signed-in person to pin the action on, and it has no users at all.</p></div>
+        <div><h4>No write path</h4><p>It reads and forwards. It can't take a write, serve a screen or answer an AI agent, because every one of those needs a signed-in person to pin the action on, and it has no users at all.</p></div>
         <div><h4>Managed from the Gateway</h4><p>The Gateway's fleet API (no screen yet) tracks every relay you register from its births and deaths, and sends a rebirth, a restart, or a new device file over the connection the relay already dialed out on. Every birth also carries the relay's version and image digest, so the fleet list shows what each one runs, and an admin can approve an update a relay is holding. A pushed file lands on the relay's volume and wins over the chart's devices from 4.17.0 on; a 4.16.0 relay dropped it on the floor. Commands need no way in to the edge box, and nobody drives out to it.</p></div>
         <div><h4>Honest about what's proven</h4><p>Run end to end against a real Mosquitto broker, polling an HTTP endpoint, Modbus TCP slaves, and an OPC UA test server, with live config reload proven the same way. Discovery is proven against recordings of real devices, not a bench of them. It hasn't been run against real EtherNet/IP or S7comm hardware or a certified Sparkplug host yet. Until it has, this card stays here.</p></div>
       </CardDetail>

@@ -24,7 +24,7 @@ export const TIERS: Record<Tier, { label: string; chip: 'ok' | 'warn' | 'info' |
   decode: {
     label: 'Decode tested',
     chip: 'warn',
-    blurb: 'Tested hard at the frame level and never run against a physical PLC. The first real one is part of commissioning, not a formality.',
+    blurb: 'Tested hard on the raw protocol messages (frames) and never run against a physical PLC. The first real one is part of commissioning, not a formality.',
   },
   'gateway-mode': {
     label: 'Gateway mode',

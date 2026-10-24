@@ -21,13 +21,13 @@ const wontDo: [string, string, string?][] = [
 const built: [string, string, string?][] = [
   ['Durable executions', 'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database.',
     'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database and not a goroutine praying nobody pulls the plug.'],
-  ['Triggers', 'A HotLoop alarm or tag reading, a webhook, a schedule, an MQTT burst, a file that shows up, a new email in an IMAP mailbox, or a new row in ERPNext becomes a batch of items.'],
+  ['Triggers', 'A HotLoop alarm or tag reading, a webhook, a schedule, a burst of MQTT messages, a file that shows up, a new email in an IMAP mailbox, or a new row in ERPNext becomes a batch of items.'],
   ['Steps that call real systems', 'HTTP, PostgreSQL, email, files, ERPNext, ntfy, Discord, and Gotify, with an OAuth2 credential vault sealed by a key outside the database.',
     'HTTP, PostgreSQL, email, files (CSV, Excel, and a PDF\'s text), ERPNext, and the notifiers: ntfy, Discord and Gotify. A credential vault with OAuth2 holds the secrets, sealed with a key that lives outside the database.'],
   ['Steps that talk to HotLoop', 'Read tags and alarms, acknowledge, call a service, run a script, apply a recipe. Every command goes through the gateway\'s write gate.',
     'Read tags and alarms, acknowledge an alarm, call a service, run a script, apply a recipe, and trigger an automation on a HotLoop gateway. Every command goes through the gateway\'s write gate, with a reason in its audit trail, so Cascade has no side door to a device.'],
   ['People and governance', 'Users with enforced MFA, OIDC sign-in, projects and roles, an audit log, and version history on every workflow.'],
-  ['Watching it', 'Prometheus metrics, and every execution is one OpenTelemetry trace with a span per step. With no endpoint named, nothing is sent.'],
+  ['Watching it', 'Prometheus metrics, and every execution is one OpenTelemetry trace (a step-by-step timeline) with a span per step. With no endpoint named, nothing is sent.'],
   ['Bringing a workflow in', 'It converts a workflow exported as JSON from another tool. What it is sure of comes across, and the rest comes across switched off.',
     'It converts a workflow exported as JSON from another tool. What it can be sure of comes across, and everything else comes across switched off with its original settings in the notes. It never guesses what a JavaScript expression meant, and it never brings credentials.'],
 ];
@@ -36,7 +36,7 @@ const planned: [string, string][] = [
   ['0.2.0', 'SAML, LDAP and AD, SCIM, custom roles, external secrets, log streaming, variables, folders, insights, and redaction policies.'],
   ['0.3.0', 'Git source control and environments, the multi-main HA scheduler with trigger leases, retention, backup, and restore.'],
   ['0.4.0', 'The rest of the connector list, a published connector spec, a plugin SDK, and forms with human approval steps that work from a phone.'],
-  ['0.5.0', 'LLM and agent steps, an MCP client and server, and a builder that uses your own model. Bring your own key or run it local.'],
+  ['0.5.0', 'LLM and agent steps, an MCP client and server (so AI agents can use it), and a builder that uses your own model. Bring your own key or run it local.'],
 ];
 ---
 
@@ -67,7 +67,7 @@ const planned: [string, string][] = [
       <div class="cluster"><span class="label">HotLoop Cascade</span><span class="chip ok">Released, {CASCADE}</span></div>
       <h1>The plant talking to everything else, without losing the job.</h1>
       <p class="lede">
-        An alarm, a webhook, a schedule, a new row, or an MQTT burst becomes a batch of items, and the items run
+        An alarm, a webhook, a schedule, a new row, or a burst of MQTT sensor messages becomes a batch of items, and the items run
         through steps that call real systems with real credentials. If an API is down or the box reboots halfway
         through, the job still finishes, because every step is checkpointed. The consequence: the maintenance
         ticket still gets created after the network comes back.
@@ -77,10 +77,10 @@ const planned: [string, string][] = [
         <div>
           <strong>Cascade {CASCADE} is out. 0.1.1 was the first release.</strong>
           <p>
-            {CASCADE} is the same code as 0.1.1, built and tested on Podman only. There was a 0.1.0 tag before
-            that and it never published anything, because its chart test failed on a hosted runner. The repository is
-            private, but the image and the chart are public and pull with no login, so there is nothing to sign up for
-            before you try it.
+            The image and the chart are public and pull with no login, so there is nothing to sign up for before you
+            try it. The repository is private. {CASCADE} is the same code as 0.1.1, built and tested on Podman only.
+            There was a 0.1.0 tag before that and it never published anything, because its chart test failed on a
+            hosted runner.
           </p>
         </div>
       </div>
@@ -139,7 +139,7 @@ const planned: [string, string][] = [
         <h2>A queue that is the database, so there is nothing else to babysit.</h2>
         <p class="muted">
           Cascade is one static Go binary. It runs on SQLite on a Raspberry Pi, or on Postgres with as many workers as
-          you want on k3s, and Postgres is the queue too, so there is no Redis on the plant cluster to patch and watch.
+          you want on k3s, and Postgres is the queue too, so there is no separate Redis queue service on the plant cluster to patch and watch.
           Nothing on the box is a second thing that can fail on its own schedule.
         </p>
       </div>
@@ -197,7 +197,7 @@ const planned: [string, string][] = [
       <div class="section-head">
         <span class="label">Not built yet</span>
         <h2>The plan after {CASCADE}.</h2>
-        <p class="lede">None of this exists today. It is the order the work is in, and no phase is a paid tier.</p>
+        <p class="lede">Here is where Cascade goes next, in the order the work is in, and no phase is a paid tier. None of this exists today.</p>
       </div>
       <div class="table-wrap">
         <table class="data stack">

@@ -45,10 +45,10 @@ const gw = product('gateway');
   <section class="page-hero">
     <div class="wrap stack">
       <div class="cluster"><span class="label">HotLoop Gateway</span><span class="chip ok">{latest.data.version} is out</span></div>
-      <h1>An industrial gateway that tells you what it has not proven.</h1>
+      <h1>An industrial gateway that reads your plant, and tells you what it has not proven.</h1>
       <p class="lede">
         It reads real equipment over real protocols, keeps every reading with its quality, alarms on it, automates
-        against it, and lets agents read the whole plant over MCP. What makes it worth running: it won't lie to you
+        against it, and lets AI agents (over MCP) read the whole plant. What makes it worth running: it won't lie to you
         about a sensor it can't see, and it won't move a machine nobody said it could.
       </p>
       <div class="notice info">
@@ -84,7 +84,7 @@ const gw = product('gateway');
           HotLoop is one codebase shipped as four products, all from the same tag.
           {' '}<a href="/iot/">IoT</a> is the automation base, <a href="/edge/">Edge</a> adds the machine layer, and
           the Gateway is both of those plus what a whole site needs: fleet management, multi-site roll-ups and
-          scheduled reports. The <a href="/edge-relay/">Edge Relay</a> is the headless one that polls and forwards.
+          scheduled reports. The <a href="/edge-relay/">Edge Relay</a> is the one with no screen that polls and forwards.
         </p>
         <p class="muted">
           All four are out in {latest.data.version}, each with its own image and chart. The Gateway kept the image
@@ -340,12 +340,12 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
         </p>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>Historian</h3><p>TimescaleDB when the extension's there, native partitioning when it isn't. Per-tag deadband, so a sensor twitching in its last bit doesn't write a row every scan until the disk fills.</p></article>
-        <article class="card reveal"><h3>Alarms</h3><p>ISA-18.2, <code>rtn-unack</code> included. Acknowledged and cleared are separate, so the trip at 03:00 that fixed itself is still on the list when the morning shift walks in.</p></article>
+        <article class="card reveal"><h3>Historian</h3><p>TimescaleDB (a time-series database) when the extension's there, native partitioning when it isn't. Per-tag deadband, so a sensor twitching in its last bit doesn't write a row every scan until the disk fills.</p></article>
+        <article class="card reveal"><h3>Alarms</h3><p>ISA-18.2 (the alarm-management standard), <code>rtn-unack</code> (cleared but not yet acknowledged) included. Acknowledged and cleared are separate, so the trip at 03:00 that fixed itself is still on the list when the morning shift walks in.</p></article>
         <article class="card reveal"><h3>Automations</h3><p>Eleven trigger types, entity state and the sun included, and conditions compiled on save. A broken rule gets caught in the editor, not at 3am halfway through a batch.</p></article>
         <article class="card reveal"><h3>The Board and dashboards</h3><p>The Board is the screen that lives on a wall, with gauges that show the alarm limits where they fall. Build other dashboards for a role or a physical screen.</p></article>
         <article class="card reveal"><h3>Entities</h3><p>The infeed pump, not register 40001. Every tag gets an entity, and a motor, valve, or PID loop is one entity built from the tags that make it up.</p></article>
-        <article class="card reveal"><h3>Plant tree</h3><p>One ISA-95 tree, enterprise down to equipment, plus labels. Filter a whole area in one click, and the site, area, and line your devices already carry stay in step with it.</p></article>
+        <article class="card reveal"><h3>Plant tree</h3><p>One ISA-95 tree (the standard plant hierarchy), enterprise down to equipment, plus labels. Filter a whole area in one click, and the site, area, and line your devices already carry stay in step with it.</p></article>
         <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook, and email. Acknowledge from an ntfy push or the Discord bot and the Gateway records it. Discord has only met a stand-in.</p></article>
         <article class="card reveal"><h3>Reports</h3><p>Historian numbers on a schedule, as CSV or HTML, stored and emailed. Only good readings count, every row says how many it threw out, and an empty period says no data, never zero.</p></article>
         <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, secured, and Ignition 8.3.9 reads it end to end. The SCADA you already paid for can see every tag, and there is no write handler in there to worry about.</p></article>
@@ -376,7 +376,7 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
       </div>
       <div class="grid grid-3">
         <article class="card reveal"><h3>MQTT discovery</h3><p>Point ESPHome, Zigbee2MQTT, Tasmota, or a Shelly (Gen2 and later) at the broker and it shows up. Nothing is armed until a person accepts it. Proven on recordings, not a bench.</p></article>
-        <article class="card reveal"><h3>Network discovery</h3><p>mDNS and SSDP are overheard, and DHCP is heard if the deployment allows it. Nothing is probed until a network is named, and nothing is added by itself.</p></article>
+        <article class="card reveal"><h3>Network discovery</h3><p>mDNS and SSDP announcements are overheard, and DHCP is heard if the deployment allows it. Nothing is probed until a network is named, and nothing is added by itself.</p></article>
         <article class="card reveal"><h3>Historian targets</h3><p>Every reading also goes to the plant's own PostgreSQL, TimescaleDB, SQL Server, InfluxDB 2 or 3, or MySQL and MariaDB, with the same deadband and the same quality. Polling never waits for a target.</p></article>
         <article class="card reveal"><h3>Dashboards</h3><p>A card builder with twelve card types, given to roles or bound to a physical screen, with the Board as one of them. A card commands nothing itself, so a button still meets the write gate.</p></article>
         <article class="card reveal"><h3>A database you pick</h3><p>SQLite, PostgreSQL or TimescaleDB per product from one binary, so a Pi skips the 300 MB database image. Moving between them is a backup and restore.</p></article>

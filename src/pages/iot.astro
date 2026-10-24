@@ -36,7 +36,7 @@ const p = product('iot');
       <div class="cluster"><span class="label">HotLoop IoT</span><span class="chip ok">{CURRENT} is out</span></div>
       <h1>The automation base for the plant floor.</h1>
       <p class="lede">
-        Entities, automations, helpers, scripts, the logbook, dashboards, notifications, and MCP, on MQTT with
+        Entities, automations, helpers, scripts, the logbook, dashboards, notifications, and AI agents (over MCP), on MQTT (what most smart-home and shop-floor gear speaks) with
         discovery, plus every industrial driver HotLoop has. Written from scratch in Go, one static binary. It's the
         box for your garage, your greenhouse, your small shop, and the used PLC you bought off eBay because you
         couldn't help yourself.
@@ -46,9 +46,9 @@ const p = product('iot');
         <div>
           <strong>HotLoop IoT {CURRENT} is out. It's the first release of IoT, and it ships beside the Gateway, Edge, and the Edge Relay from the same tag.</strong>
           <p>
-            The image is <code>{p.image}:{CURRENT}</code> for amd64, arm64 and arm/v7, about 29 MB on arm, and it pulls
+            The image is <code>{p.image}:{CURRENT}</code> for amd64, arm64, and arm/v7, about 29 MB on arm, and it pulls
             with no login. The chart is <code>{p.chart}</code> from <code>https://hotloop.io/hotloop</code>. MQTT
-            discovery was the condition for shipping it, and it's in: IoT finds your Shelly, ESPHome, Tasmota and
+            discovery was the condition for shipping it, and it's in: IoT finds your Shelly, ESPHome, Tasmota, and
             Zigbee2MQTT gear by itself instead of making you type topics.
           </p>
         </div>
@@ -68,13 +68,13 @@ const p = product('iot');
         <span class="label">Why it exists</span>
         <h2>Everything is an entity, and everything else is built on that.</h2>
         <p class="muted">
-          A tag is what a driver talks about: a register, a NodeId, a DB offset. An entity is what people talk
+          A tag is what a driver talks about: a register, an OPC UA node address, a data block offset. An entity is what people talk
           about: the zone 1 temperature, the conveyor run switch. IoT puts every signal behind an entity whose id
           never changes. Somebody deletes the tag and re-imports it during a PLC change? The entity comes back with
           its id, so the rule that says <code>sensor.oven_temperature</code> keeps working instead of quietly dying.
         </p>
         <p class="muted">
-          Every line is ours, written in Go, for OT. Nothing embedded, bridged or forked, so when something breaks at
+          Every line is ours, written in Go, for OT. Nothing embedded, bridged, or forked, so when something breaks at
           3am there's one codebase to read and nobody else's bug to wait on. Every command goes through the one write
           gate, and a failed read is bad quality, never a zero.
         </p>
@@ -91,7 +91,7 @@ const p = product('iot');
           Its database is <strong>{p.databases}</strong>, picked by a setting, in the same image. SQLite for the Pi
           on the shelf with no second container, PostgreSQL when it grows up. IoT keeps 30 days of history by
           default, because Pi disks are small. Moving up to Edge or the Gateway keeps your data and your config, and
-          it has been run on the Quadlet units, so starting small doesn't paint you into a corner.
+          it has been run on the Quadlet units (container service files for a Linux box), so starting small doesn't paint you into a corner.
         </p>
       </div>
     </div>

@@ -12,7 +12,7 @@ const rows: [string, boolean, boolean, boolean, boolean][] = [
   ['Every protocol driver, MQTT included', true, true, true, true],
   ['Entities, automations, helpers, scripts, logbook', true, true, true, false],
   ['Notifications and ISA-18.2 alarms', true, true, true, false],
-  ['MCP for agents', true, true, true, false],
+  ['MCP for AI agents', true, true, true, false],
   ['MQTT discovery (Shelly, ESPHome, Tasmota, Zigbee2MQTT), read and forward only on the relay', true, true, true, true],
   ['Network discovery (mDNS, SSDP, DHCP)', true, true, true, false],
   ["Historian targets in the plant's own database", true, true, true, false],
@@ -95,12 +95,12 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
       <div class="stack">
         <h2 class="sub">Moving up keeps your data</h2>
         <p class="muted">
-          Every product runs the same schema. Going from IoT to Edge to the Gateway is designed to be an image swap
-          on the same database, with your devices, entities, rules, alarms, history, and users already there. Going
-          back down deletes nothing: what the smaller product doesn't have just sits there until you come back. The
-          point: outgrowing the Pi is supposed to cost you an image pull, not a migration
-          project. The Quadlet move has been run, IoT to Edge to the Gateway on one database volume. The same move as a
-          Helm upgrade on a real cluster has not been run, and neither has going back down a product, so don't try either on a box you care about.
+          Outgrowing the Pi is supposed to cost you an image pull, not a migration project. Every product runs the
+          same schema, so going from IoT to Edge to the Gateway is designed to be an image swap on the same database,
+          with your devices, entities, rules, alarms, history, and users already there. Going back down deletes
+          nothing: what the smaller product doesn't have just sits there until you come back. The Podman (Quadlet)
+          move has been run, IoT to Edge to the Gateway on one database volume. The same move as a Helm (Kubernetes)
+          upgrade on a real cluster has not been run, and neither has going back down a product, so don't try either on a box you care about.
         </p>
       </div>
       <div class="stack">
