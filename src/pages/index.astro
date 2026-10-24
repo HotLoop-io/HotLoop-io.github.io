@@ -66,11 +66,11 @@ const fmt = (d: Date) =>
     <div class="wrap-wide stats">
       <div class="stat">
         <div class="n mono">{nativeCount}</div>
-        <p>Native drivers in the Gateway. Every one is a working driver, and the integrations table says which ones have never run against a real PLC.</p>
+        <p>Native drivers in the Gateway. No placeholder drivers, and a table that admits which ones have never met a real PLC.</p>
       </div>
       <div class="stat">
         <div class="n mono">{nodes.length}</div>
-        <p>Node types in Flow. Each one states how closely it matches Node-RED, and the build fails if one that differs doesn't say how.</p>
+        <p>Node types in Flow. Each one says how close it is to Node-RED, and the build fails if one lies about it.</p>
       </div>
       <div class="stat">
         <div class="n mono">44.8<small>MB</small></div>
@@ -85,9 +85,9 @@ const fmt = (d: Date) =>
         <span class="label">The loop</span>
         <h2>Sense, decide, act, and around again.</h2>
         <p class="lede">
-          That's the whole product. A rule you set once and hope for the best is not a loop. A loop is something you can
-          walk away from, because it tells you when it can't see and it refuses a bad command, even when somebody
-          sends one.
+          That's the whole product. A rule you set once and pray over is not a loop. A loop is something you can
+          walk away from, because it tells you the truth when it can't see and it refuses to do something stupid when somebody
+          tells it to.
         </p>
       </div>
       <div class="grid grid-3">
@@ -97,20 +97,20 @@ const fmt = (d: Date) =>
         </article>
         <article class="card reveal">
           <h3>Decide</h3>
-          <p>ISA-18.2 alarms, so an alarm that cleared before anybody saw it is still on the list at shift change. Rules compile on save, so a typo is caught in the editor.</p>
+          <p>ISA-18.2 alarms, so an alarm that cleared before anybody saw it is still on the list at shift change. Rules compile on save, so a typo dies in the editor.</p>
         </article>
         <article class="card reveal">
           <h3>Act</h3>
           <p>
-            Every write, from a person, a rule, or an agent, goes through one gate that nothing bypasses. Out of range is
+            Every write, from a person, a rule, or an agent, crosses one gate nothing routes around. Out of range is
             refused, not clamped. {' '}<a href="/gateway/#the-gate">Go try to break it</a>.
           </p>
         </article>
       </div>
       <CardDetail>
         <div><h4>Sense</h4><p>Poll real equipment over real protocols, and keep the quality of every reading, not just the number. A failed read is bad, never zero, so a dead sensor doesn't trip every low alarm on the unit and send the night shift chasing a tank that's fine.</p></div>
-        <div><h4>Decide</h4><p>ISA-18.2 alarms, including the one homegrown systems forget: the alarm that cleared on its own before anybody saw it. It's still on the list at shift change. Rules compile when you save them, so a typo is caught in the editor, not at 3am halfway through a batch.</p></div>
-        <div><h4>Act</h4><p>Every write, from a person, a rule, or an agent, goes through one gate that nothing bypasses. Out of range is refused, not clamped, and the refusal gets written down. Want to watch it say no? <a href="/gateway/#the-gate">Go try to break it</a>.</p></div>
+        <div><h4>Decide</h4><p>ISA-18.2 alarms, including the one homegrown systems forget: the alarm that cleared on its own before anybody saw it. It's still on the list at shift change. Rules compile when you save them, so a typo dies in the editor, not at 3am halfway through a batch.</p></div>
+        <div><h4>Act</h4><p>Every write, from a person, a rule, or an agent, crosses one gate that nothing routes around. Out of range is refused, not clamped, and the refusal gets written down. Want to watch it say no? <a href="/gateway/#the-gate">Go try to break it</a>.</p></div>
       </CardDetail>
     </div>
   </section>
@@ -203,10 +203,10 @@ const fmt = (d: Date) =>
           <h2>One license, no keys.</h2>
           <p class="lede">
             Every HotLoop product is under the HotLoop Business Source License 1.1. Home and lab use is free. A
-            business signs up for <a href="https://embernet.ai">EmberNet</a> at no cost and runs HotLoop there for free.
+            business signs up for <a href="https://embernet.ai">EmberNet</a>, free, and runs HotLoop there, free.
             Each version turns into GPL-3.0 or later four years after it ships. There's no key to type in and nothing waiting
-            behind a paywall. Want somebody else to own the rollout, SLAs and warranty included? That's what our Official
-            Systems Integrator, {' '}<a href="https://fireballz.ai">Fireball Industries</a>, is for.
+            behind a paywall. Want somebody else to own the rollout, SLAs and warranty included? That's our Official
+            Systems Integrator, {' '}<a href="https://fireballz.ai">Fireball Industries</a>.
           </p>
         </div>
         <a class="btn primary" href="/license/">What the license means</a>

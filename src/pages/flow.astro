@@ -451,7 +451,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
     <div class="wrap">
       <div class="section-head">
         <span class="label">Compatibility</span>
-        <h2>{nodes.length} node types, and each one states how closely it matches Node-RED.</h2>
+        <h2>{nodes.length} node types, and each one says how close it is to Node-RED.</h2>
         <p class="lede">
           A node that is partially compatible and silent about how is worse than one that is obviously absent,
           because the flow appears to work and quietly does the wrong thing. So a test fails the build if a node
@@ -501,8 +501,8 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
       <ul class="notdone">
         {notDone.map(([h, b]) => <li><strong>{h}</strong> {b}</li>)}
         <li>
-          <strong>It has never run on a real plant floor.</strong> Nothing about it is proven in the
-          field yet, and it will not be described as production-hardened until a plant has tried to break it.
+          <strong>It has never run on a real plant floor.</strong> Everything past the deploy line is unproven in the
+          field, and it will not be described as production-hardened until a plant has tried to break it.
         </li>
       </ul>
     </div>
