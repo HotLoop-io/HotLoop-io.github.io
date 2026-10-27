@@ -21,9 +21,9 @@ const wontDo: [string, string, string?][] = [
 const built: [string, string, string?][] = [
   ['Durable executions', 'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database.',
     'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database and not a goroutine praying nobody pulls the plug.'],
-  ['Triggers', 'A HotLoop alarm or tag reading, a webhook, a schedule, an MQTT burst, a file that shows up, a new email in an IMAP mailbox, or a new row in ERPNext becomes a batch of items.'],
-  ['Steps that call real systems', 'HTTP, PostgreSQL, email, files, ERPNext, ntfy, Discord, and Gotify, with an OAuth2 credential vault sealed by a key outside the database.',
-    'HTTP, PostgreSQL, email, files (CSV, Excel, and a PDF\'s text), ERPNext, and the notifiers: ntfy, Discord and Gotify. A credential vault with OAuth2 holds the secrets, sealed with a key that lives outside the database.'],
+  ['Triggers', 'A HotLoop alarm or tag reading, a webhook, a schedule, an MQTT burst, a file that shows up, a new email in an IMAP mailbox, or a new row in EmberOps becomes a batch of items.'],
+  ['Steps that call real systems', 'HTTP, PostgreSQL, email, files, EmberOps, ntfy, Discord, and Gotify, with an OAuth2 credential vault sealed by a key outside the database.',
+    'HTTP, PostgreSQL, email, files (CSV, Excel, and a PDF\'s text), EmberOps, and the notifiers: ntfy, Discord and Gotify. A credential vault with OAuth2 holds the secrets, sealed with a key that lives outside the database.'],
   ['Steps that talk to HotLoop', 'Read tags and alarms, acknowledge, call a service, run a script, apply a recipe. Every command goes through the gateway\'s write gate.',
     'Read tags and alarms, acknowledge an alarm, call a service, run a script, apply a recipe, and trigger an automation on a HotLoop gateway. Every command goes through the gateway\'s write gate, with a reason in its audit trail, so Cascade has no side door to a device.'],
   ['People and governance', 'Users with enforced MFA, OIDC sign-in, projects and roles, an audit log, and version history on every workflow.'],
@@ -42,7 +42,7 @@ const planned: [string, string][] = [
 
 <Base
   title="HotLoop Cascade: workflows that survive a reboot"
-  description="HotLoop Cascade connects the plant to webhooks, MQTT, ERPNext, and notifications, with every step checkpointed. Version 0.1.2 is out. Free for home and lab."
+  description="HotLoop Cascade connects the plant to webhooks, MQTT, EmberOps, and notifications, with every step checkpointed. Version 0.1.2 is out. Free for home and lab."
   ogAlt="HotLoop Cascade, durable workflows for the plant."
 >
   <JsonLd
@@ -53,7 +53,7 @@ const planned: [string, string][] = [
       name: 'HotLoop Cascade',
       url: 'https://hotloop.io/cascade/',
       description:
-        'A workflow engine in one static Go binary where every step is checkpointed, on SQLite for a Raspberry Pi or Postgres for a cluster, with ntfy, Discord, Gotify, webhook, email, and ERPNext steps.',
+        'A workflow engine in one static Go binary where every step is checkpointed, on SQLite for a Raspberry Pi or Postgres for a cluster, with ntfy, Discord, Gotify, webhook, email, and EmberOps steps.',
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Linux',
       license: 'https://hotloop.io/license/',
@@ -179,7 +179,7 @@ const planned: [string, string][] = [
         <h2>What {CASCADE} ships.</h2>
         <p class="lede">
           Every item here is built and was tried against real services, never mocks: Postgres, a headless browser,
-          Mosquitto, a HotLoop Gateway, ntfy, Gotify, a mail server, and ERPNext. The one exception is Discord, which
+          Mosquitto, a HotLoop Gateway, ntfy, Gotify, a mail server, and EmberOps. The one exception is Discord, which
           has only been tried against a stand-in that answers as its documentation says, not the real thing.
         </p>
       </div>
