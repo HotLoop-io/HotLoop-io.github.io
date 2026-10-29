@@ -7,12 +7,12 @@ import { lead } from '../lib/lead';
 import CardMore from './CardMore.astro';
 const steps: [string, string, string][] = [
   ['door', 'The caller may write.', 'A logged-in user needs values.write, and a viewer does not have it. An agent needs the MCP token, or it gets a 401. A write straight to a tag that fails this is a 403 before the gate hears a word. (A call through an entity hands this check to the gate instead, so that refusal is audited.)'],
-  ['writes', 'Writes are on.', 'safety.allowWrites. It ships off, and it has shipped off since 4.4.0, because a fresh install that can move machinery before anybody decided it should is a lawsuit with a web UI.'],
-  ['agents', 'Agent writes are on.', 'safety.allowMcpWrites, checked only for an agent. It narrows the master switch. It can never open a door the master switch closed.'],
+  ['writes', 'Writes are on.', 'Writes ship off. The switch is safety.allowWrites, and it has shipped off since 4.4.0, because a fresh install that can move machinery before anybody decided it should is a lawsuit with a web UI.'],
+  ['agents', 'Agent writes are on.', 'Agents get their own switch, safety.allowMcpWrites, checked only for an agent. It narrows the master switch. It can never open a door the master switch closed.'],
   ['armed', 'The tag is armed.', 'Every tag is read-only until somebody marks it writable, one at a time, on purpose. A browse import of 4,000 tags arms none of them.'],
   ['range', 'The value is in range.', 'Out of range is refused, never clamped. Somebody who typed 500 on a 0 to 250 setpoint made a mistake, and quietly sending 250 means they never find out.'],
   ['check', 'The entity agrees.', "A call through an entity adds the entity's own rules: a number's step, a text's pattern, an entity somebody disabled. They're checked here, inside the gate, so that refusal is audited like any other. A write straight to a tag has none."],
-  ['device', 'The device is running.', "No running device, no write, and the refusal is audited. One that's up but mid-reconnect gets past this, the audit row opens, and the write fails there with a 503, on the record as a failed attempt. The dry run checks the live session itself, so a recipe or a script finds out before anything moves."],
+  ['device', 'The device is running.', "No running device, no write, and the refusal is audited. One that's up but mid-reconnect gets past this check. The audit row opens, and the write fails there with a 503, on the record as a failed attempt. The dry run checks the live session itself, so a recipe or a script finds out before anything moves."],
   ['audit', 'The audit row is written, then the value goes out.', 'In that order. A refusal is recorded as a refusal, and a write that hangs or crashes the process still left evidence that it was attempted.'],
 ];
 ---
@@ -29,7 +29,7 @@ const steps: [string, string, string][] = [
       <legend>Who's asking</legend>
       <input type="radio" name="wg-who" id="wg-op" value="operator" checked /><label for="wg-op">Operator</label>
       <input type="radio" name="wg-who" id="wg-view" value="viewer" /><label for="wg-view">Viewer</label>
-      <input type="radio" name="wg-who" id="wg-mcp" value="agent" /><label for="wg-mcp">Agent over MCP</label>
+      <input type="radio" name="wg-who" id="wg-mcp" value="agent" /><label for="wg-mcp">AI agent (over MCP)</label>
     </fieldset>
 
     <div class="switches">
