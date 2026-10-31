@@ -13,7 +13,7 @@ const releases = await getCollection('releases');
 const counts = Object.fromEntries(
   TIER_ORDER.map((t) => [
     t,
-    // The gateway-mode entry stands for nine protocols, so count what it lists.
+    // The gateway-mode entry stands for eight protocols, so count what it lists.
     protocols
       .filter((p) => p.data.verification === t)
       .reduce((n, p) => n + (t === 'gateway-mode' ? p.data.aka.length : 1), 0),

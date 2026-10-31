@@ -205,21 +205,116 @@
     ]
   },
   {
+    "id": "snmp",
+    "name": "SNMP",
+    "aka": [
+      "Simple Network Management Protocol",
+      "SNMPv1",
+      "SNMPv2c",
+      "SNMPv3"
+    ],
+    "order": 9,
+    "verification": "live",
+    "verifiedAgainst": [
+      "net-snmp's snmpd 5.9.4 (Debian's 5.9.4+dfsg-2 package) in a container in the lab, read over v1, v2c, and v3 at every security level, over UDP and TCP. The driver is gosnmp, a different implementation."
+    ],
+    "notVerifiedNote": "SNMP has not been read off a physical switch, UPS, or PDU. The agent it was proven against is net-snmp's, which is what a Linux box runs and what many appliances are built on, and it is not any vendor's firmware. Vendors differ about which MIBs they serve, how they number interfaces, and how they answer a bulk request, so treat the first read of a real device as commissioning: compare the sampled values on the integration's probe with the device's own display.",
+    "summary": "Switches, UPSs, PDUs, power meters, and any Linux box running snmpd, read-only. HotLoop never sends a SET.",
+    "vendors": [],
+    "addressExamples": [
+      {
+        "expr": "1.3.6.1.2.1.1.5.0",
+        "means": "sysName. A scalar ends in .0."
+      },
+      {
+        "expr": "1.3.6.1.2.1.2.2.1.8.2",
+        "means": "ifOperStatus of the interface with ifIndex 2. A table cell ends in its row's index."
+      }
+    ],
+    "trap": "A wrong community answers with nothing. An SNMPv1 or v2c agent drops a request carrying a community it does not know, so a wrong community, a wrong port, a firewall, and an agent that is down all look like a timeout. HotLoop's message says all four. SNMPv3 does tell them apart: a wrong passphrase or an unknown user is refused as such.",
+    "configKeys": [
+      "version",
+      "community",
+      "username",
+      "securityLevel",
+      "authProtocol",
+      "authPassword",
+      "privProtocol",
+      "privPassword",
+      "contextName",
+      "transport",
+      "retries",
+      "maxRepetitions",
+      "browseRoots",
+      "browseMaxNodes"
+    ],
+    "body": [
+      "Read-only, always. HotLoop never sends an SNMP SET, because a SET can change a switch's configuration, and the point of this driver is to see the plant network, not to run it.",
+      "There is no default community. `public` is how a plant's switches get read by whoever asks, so a v1 or v2c device has to be given one. The community and the v3 passphrases are stored encrypted like every other device secret.",
+      "Counters are raw. A Counter32 or Counter64 only goes up and wraps, so the tag holds what the agent sent and a rate is for whatever reads the tag. TimeTicks are hundredths of a second: the integration scales sysUpTime to seconds for you.",
+      "An object the agent does not have is a bad reading with the reason, and the others in the same request still read. Browse walks the system, interface, host resources, and load tables and names each object from the MIB that defines it. You point HotLoop at a device through the integrations flow: it asks what it needs, looks at the real device, and keeps the points you choose, with nothing armed."
+    ]
+  },
+  {
+    "id": "bacnet",
+    "name": "BACnet/IP",
+    "aka": [
+      "BACnet",
+      "ASHRAE 135"
+    ],
+    "order": 10,
+    "verification": "live",
+    "verifiedAgainst": [
+      "bacpypes3 0.0.110, an independent BACnet stack in Python, serving every object type HotLoop reads",
+      "Frames recorded off that device, decoded by tests that always run. The client is written for HotLoop from the standard and shares no code with bacpypes3."
+    ],
+    "notVerifiedNote": "BACnet/IP has not been read off a physical controller. The device it was proven against is bacpypes3's, an independent implementation of the standard, and it is not any vendor's firmware. Vendors differ about what they put in the object list, how they answer a request that is too big, and whether they answer a unicast Who-Is at all, and HotLoop's answers to the last two are tested only against the behavior bacpypes3 has. A controller on an MS/TP trunk behind a router cannot be reached.",
+    "summary": "Building controllers, meters, and thermostats on the IP network, read-only. HotLoop never writes a BACnet property.",
+    "vendors": [],
+    "addressExamples": [
+      {
+        "expr": "analog-input:1",
+        "means": "The present value of analog input 1. ai:1 is the same."
+      },
+      {
+        "expr": "av:3.units",
+        "means": "A property other than the present value, by name."
+      },
+      {
+        "expr": "multi-state-value:2",
+        "means": "The present value of a multi-state value."
+      }
+    ],
+    "trap": "Status flags are part of the reading. An object whose fault flag is set reads bad, with the reason. One that is out of service or overridden reads uncertain, because its present value is something a person or a program put there, not a measurement.",
+    "configKeys": [
+      "deviceInstance",
+      "localAddress",
+      "retries",
+      "browseMaxObjects"
+    ],
+    "body": [
+      "Read-only, on purpose. A BACnet write lands on a commandable output through a priority array, and a priority left set holds the equipment where it was put after whoever set it has gone home. That is a feature to design deliberately, not one to leave lying around.",
+      "Connecting asks the device who it is: a unicast Who-Is, and the device instance from the I-Am. A device that does not answer one is asked for its own device object under the wildcard instance. Set `deviceInstance` and a different device answering at a reused address, or a swapped controller, is refused instead of read.",
+      "ReadPropertyMultiple answers each property on its own, so an object that is not there fails its tag and no other. Nothing is segmented: a device whose answer will not fit one frame is asked for half as many objects at a time.",
+      "Routing is not built. HotLoop talks to a device it can send a UDP datagram to, so a controller on an MS/TP trunk behind a BACnet router is not reachable. Address the router's own BACnet/IP side, or put a gateway in front. You point HotLoop at a device through the integrations flow, and nothing it makes is armed."
+    ]
+  },
+  {
     "id": "gateway-mode",
     "name": "Everything else",
-    "aka": ["PROFINET", "EtherCAT", "HART", "BACnet/IP", "DNP3", "FINS", "MELSEC/SLMP", "CANopen", "FANUC FOCAS"],
-    "order": 9,
+    "aka": ["PROFINET", "EtherCAT", "HART", "DNP3", "FINS", "MELSEC/SLMP", "CANopen", "FANUC FOCAS"],
+    "order": 11,
     "verification": "gateway-mode",
     "verifiedAgainst": [],
-    "summary": "Nine protocols with no driver, by choice, reached through the gateway a site already has.",
+    "summary": "Eight protocols with no driver, by choice, reached through the gateway a site already has.",
     "vendors": [],
     "addressExamples": [],
     "trap": "",
     "configKeys": [],
     "body": [
-      "PROFINET, EtherCAT, HART, BACnet/IP, DNP3, FINS, MELSEC/SLMP, CANopen, and FANUC FOCAS are not spoken natively, and there is no driver for them. That is a deliberate choice, not a gap waiting to be filled with a stub.",
-      "Sites running these protocols almost always already have a gateway that re-publishes on OPC UA or Modbus, such as a PROFINET IO controller with an OPC UA server, a HART multiplexer with a Modbus map, or a BACnet/IP to Modbus bridge. Point a device at that endpoint and configure it as OPC UA or Modbus.",
-      "Writing nine more drivers that each duplicate what a site's existing gateway already does would add nine more things to get subtly wrong, for protocols where the equipment is hardest to test against. If a site genuinely has no gateway and needs one of these natively, that is a real piece of work to schedule, not a file to add that logs \"not implemented\".",
+      "PROFINET, EtherCAT, HART, DNP3, FINS, MELSEC/SLMP, CANopen, and FANUC FOCAS are not spoken natively, and there is no driver for them. That is a deliberate choice, not a gap waiting to be filled with a stub.",
+      "Sites running these protocols almost always already have a gateway that re-publishes on OPC UA or Modbus, such as a PROFINET IO controller with an OPC UA server, or a HART multiplexer with a Modbus map. Point a device at that endpoint and configure it as OPC UA or Modbus.",
+      "Writing eight more drivers that each duplicate what a site's existing gateway already does would add eight more things to get subtly wrong, for protocols where the equipment is hardest to test against. If a site genuinely has no gateway and needs one of these natively, that is a real piece of work to schedule, not a file to add that logs \"not implemented\".",
       "There are no placeholder drivers in the tree. A protocol either has a working implementation or it is on this page. The previous version of this product had sixteen protocol files, of which fifteen returned \"not implemented\" while the catalog advertised all sixteen. A test now enforces that every protocol the model declares has a driver compiled in, and vice versa."
     ]
   }

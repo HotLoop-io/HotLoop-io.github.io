@@ -22,7 +22,7 @@ const gw = product('gateway');
 
 <Base
   title="HotLoop Gateway: OPC UA, Modbus and MQTT gateway"
-  description="An industrial automation gateway with eight native drivers, ISA-18.2 alarms, a historian, and one write gate that nothing can route around."
+  description="An industrial automation gateway with ten native drivers, ISA-18.2 alarms, a historian, and one write gate that nothing can route around."
   ogAlt="HotLoop Gateway, an industrial automation gateway."
 >
   <JsonLd
@@ -33,7 +33,7 @@ const gw = product('gateway');
       name: 'HotLoop Gateway',
       url: 'https://hotloop.io/gateway/',
       description:
-        'An industrial automation gateway that polls equipment over OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, and a UniFi network, keeps the history, raises ISA-18.2 alarms, and exposes the plant to agents over MCP.',
+        'An industrial automation gateway that polls equipment over OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, SNMP, BACnet/IP, and a UniFi network, keeps the history, raises ISA-18.2 alarms, and exposes the plant to agents over MCP.',
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Linux',
       license: 'https://hotloop.io/license/',
@@ -303,7 +303,7 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
     <div class="wrap">
       <div class="section-head">
         <span class="label">What it speaks</span>
-        <h2>Eight native drivers, and a table that admits how far each has been proven.</h2>
+        <h2>Ten native drivers, and a table that admits how far each has been proven.</h2>
       </div>
       <div class="grid grid-4">
         {native.map((p) => (
@@ -324,6 +324,16 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
             Their decoding is tested hard, and tested decoding is still not a value that came off a real controller.
             If you're the first to point either one at real hardware, treat it as commissioning: check a value you
             already know before you trust a single screen.
+          </p>
+        </div>
+      </div>
+      <div class="notice after">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+        <div>
+          <strong>SNMP and BACnet/IP have never been read off physical gear.</strong>
+          <p>
+            SNMP was read from net-snmp's agent at every v3 security level, and BACnet/IP from bacpypes3, an independent BACnet stack, and frames recorded off it. Neither is any vendor's firmware.
+            Vendors differ about their MIBs, their object lists, and how they answer a request that is too big, so treat the first read of a real switch, UPS, or controller as commissioning: compare the probe's values with the device's own display.
           </p>
         </div>
       </div>
