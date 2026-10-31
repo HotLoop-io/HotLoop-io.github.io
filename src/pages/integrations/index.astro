@@ -27,7 +27,7 @@ const lv = Object.fromEntries(LEVELS.map(([k, l, c]) => [k, { label: l, chip: c 
 
 <Base
   title="HotLoop integrations: OPC UA, Modbus, Sparkplug B"
-  description={`Eight native Gateway drivers and ${nodes.length} Flow nodes, each labeled by how far it has been proven. None are certified yet, and we say so.`}
+  description={`Ten native Gateway drivers and ${nodes.length} Flow nodes, each labeled by how far it has been proven. None are certified yet, and we say so.`}
   ogAlt="HotLoop integrations, with four verification tiers."
 >
   <section class="page-hero">
@@ -35,7 +35,7 @@ const lv = Object.fromEntries(LEVELS.map(([k, l, c]) => [k, { label: l, chip: c 
       <span class="label">Integrations</span>
       <h1>What it speaks, and how far each one has been proven.</h1>
       <p class="lede">
-        Eight native drivers (the connections to your PLCs and devices) on the Gateway and {nodes.length} node types in Flow. Most integration pages are a wall of
+        Ten native drivers (the connections to your PLCs and devices) on the Gateway and {nodes.length} node types in Flow. Most integration pages are a wall of
         logos. This one has four tiers, and the top one is empty on purpose. Read the tier before the name: it tells
         you whether your first day with a driver is an install or a commissioning job.
       </p>
@@ -189,7 +189,7 @@ const lv = Object.fromEntries(LEVELS.map(([k, l, c]) => [k, { label: l, chip: c 
   .scope:has(#l-divergent:checked) tr[data-level]:not([data-level='divergent']),
   .scope:has(#l-flow-only:checked) tr[data-level]:not([data-level='flow-only']) { display: none; }
 
-  /* Eight cards should land as 4 + 4, not 5 + 3 with a hole. */
+  /* Ten cards, flowing to however many fit the row. */
   .cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); }
   .proto { display: grid; gap: var(--hl-s3); align-content: start; text-decoration: none; color: inherit; transition: transform var(--hl-transition-fast), border-color var(--hl-transition-fast), box-shadow var(--hl-transition-fast); }
   .proto:hover { transform: translateY(-2px); border-color: var(--hl-orange); box-shadow: var(--hl-sh-2); }
