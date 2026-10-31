@@ -30,6 +30,8 @@ const protocols = defineCollection({
       verification,
       verifiedAgainst: z.array(z.string()).default([]),
       notVerifiedNote: z.string().default(''),
+      // The bold line above the note. Blank means the PLC wording a decode-only driver has always had.
+      notVerifiedHeading: z.string().default(''),
       summary: z.string(),
       vendors: z.array(z.string()).default([]),
       addressExamples: z

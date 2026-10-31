@@ -218,6 +218,7 @@
     "verifiedAgainst": [
       "net-snmp's snmpd 5.9.4 (Debian's 5.9.4+dfsg-2 package) in a container in the lab, read over v1, v2c, and v3 at every security level, over UDP and TCP. The driver is gosnmp, a different implementation."
     ],
+    "notVerifiedHeading": "Verified live against a software agent. Not read off a physical switch, UPS, or PDU.",
     "notVerifiedNote": "SNMP has not been read off a physical switch, UPS, or PDU. The agent it was proven against is net-snmp's, which is what a Linux box runs and what many appliances are built on, and it is not any vendor's firmware. Vendors differ about which MIBs they serve, how they number interfaces, and how they answer a bulk request, so treat the first read of a real device as commissioning: compare the sampled values on the integration's probe with the device's own display.",
     "summary": "Switches, UPSs, PDUs, power meters, and any Linux box running snmpd, read-only. HotLoop never sends a SET.",
     "vendors": [],
@@ -268,6 +269,7 @@
       "bacpypes3 0.0.110, an independent BACnet stack in Python, serving every object type HotLoop reads",
       "Frames recorded off that device, decoded by tests that always run. The client is written for HotLoop from the standard and shares no code with bacpypes3."
     ],
+    "notVerifiedHeading": "Verified live against a software device. Not read off a physical controller.",
     "notVerifiedNote": "BACnet/IP has not been read off a physical controller. The device it was proven against is bacpypes3's, an independent implementation of the standard, and it is not any vendor's firmware. Vendors differ about what they put in the object list, how they answer a request that is too big, and whether they answer a unicast Who-Is at all, and HotLoop's answers to the last two are tested only against the behavior bacpypes3 has. A controller on an MS/TP trunk behind a router cannot be reached.",
     "summary": "Building controllers, meters, and thermostats on the IP network, read-only. HotLoop never writes a BACnet property.",
     "vendors": [],
