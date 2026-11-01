@@ -135,6 +135,7 @@ const pages = [
   ['unifi', 'UniFi in HotLoop', 'Read-only Network driver, screens and events are out. Writes, Protect, Access and PDUs come next.', 'Integration'],
   ['flow', 'HotLoop Flow', "Node-RED's idea, with a runtime that does not fall over. Free for home and lab, free for business through EmberNet.", 'Product'],
   ['cascade', 'HotLoop Cascade', 'The plant talking to everything else, with every step checkpointed. Released, 0.1.2.', 'Product'],
+  ['transmitter', 'HotLoop Transmitter', 'OPC UA PubSub from inside the PLC, in Structured Text. Being built, not released.', 'Product'],
   ['integrations', 'What it speaks, and how far each one has been proven.', `${nativeCount} Gateway protocols and ${nodeCount} Flow nodes. ${certified === 0 ? 'None are certified, and we say so.' : `${certified} certified.`}`, 'Integrations'],
   ['license', 'Which license applies to you?', 'One license for every HotLoop product: free for home and lab, free for business through EmberNet.', 'License'],
   ['terms', 'HotLoop Terms of Service', 'What you can do with HotLoop, what we do for you, and what happens when something goes wrong.', 'Terms'],
@@ -142,6 +143,7 @@ const pages = [
   ['releases-core', 'HotLoop core release notes', 'IoT, Edge, Gateway, and Edge Relay on one version. Which versions are published, and which are only merged. Every entry says which.', 'Releases'],
   ['releases-flow', 'Flow release notes', 'Every Flow release, from the first one to the current one.', 'Releases'],
   ['releases-cascade', 'Cascade release notes', 'Cascade 0.1.2 and 0.1.1, and why the 0.1.0 tag never published anything.', 'Releases'],
+  ['releases-transmitter', 'Transmitter release notes', 'There is no Transmitter release yet. What the first one will contain.', 'Releases'],
   ['404', 'That loop did not close.', 'The page you were looking for is not here.', 'Error 404'],
   ...protocols.map((p) => [`integrations-${p.id}`, p.name, p.summary, 'Integration']),
 ];

@@ -9,6 +9,7 @@ export function getStaticPaths() {
     { params: { product: 'core' }, props: { filter: 'core' } },
     { params: { product: 'flow' }, props: { filter: 'flow' } },
     { params: { product: 'cascade' }, props: { filter: 'cascade' } },
+    { params: { product: 'transmitter' }, props: { filter: 'transmitter' } },
   ];
 }
 
@@ -16,7 +17,7 @@ const { filter } = Astro.props;
 const all = (await getCollection('releases')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
 const releases = filter === 'all' ? all : all.filter((r) => r.data.product === filter);
 
-const NAME = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade' } as const;
+const NAME = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade', transmitter: 'Transmitter' } as const;
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 
 const unpublished = all.filter((r) => r.data.product === 'core' && !r.data.published);
@@ -35,7 +36,7 @@ const chipFor = (r: (typeof all)[number]) => {
 // release: once 4.17.0 came out, "until 4.17.0" would have been a lie about
 // what 4.16.0 did.
 const shippedIn = unpublished[0] && all.filter((p) => p.data.product === 'core' && p.data.published && older(unpublished[0].data.version, p.data.version)).at(-1);
-const title = filter === 'all' ? 'Release notes' : `${NAME[filter as 'core' | 'flow' | 'cascade']} release notes`;
+const title = filter === 'all' ? 'Release notes' : `${NAME[filter as 'core' | 'flow' | 'cascade' | 'transmitter']} release notes`;
 
 // Three pages, three different titles and descriptions. Identical ones make search
 // engines pick one of them arbitrarily and ignore the rest.
@@ -60,7 +61,11 @@ const seo = {
     description:
       'HotLoop Cascade release notes, from 0.1.1, the first release, to 0.1.2, and why the 0.1.0 tag never published anything.',
   },
-}[filter as 'all' | 'core' | 'flow' | 'cascade'];
+  transmitter: {
+    title: 'HotLoop Transmitter release notes and version history',
+    description: 'HotLoop Transmitter release notes. There is no release yet; this page lists what the first one will contain.',
+  },
+}[filter as 'all' | 'core' | 'flow' | 'cascade' | 'transmitter'];
 ---
 
 <Base
@@ -77,6 +82,7 @@ const seo = {
         <a class="pill" href="/releases/core/" aria-current={filter === 'core' ? 'page' : undefined}>HotLoop core</a>
         <a class="pill" href="/releases/flow/" aria-current={filter === 'flow' ? 'page' : undefined}>Flow</a>
         <a class="pill" href="/releases/cascade/" aria-current={filter === 'cascade' ? 'page' : undefined}>Cascade</a>
+        <a class="pill" href="/releases/transmitter/" aria-current={filter === 'transmitter' ? 'page' : undefined}>Transmitter</a>
         <a class="pill rss" href="/releases/rss.xml">RSS</a>
       </nav>
 
