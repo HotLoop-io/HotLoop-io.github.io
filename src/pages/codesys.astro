@@ -1,0 +1,302 @@
+---
+import Base from '../layouts/Base.astro';
+import FamilyLine from '../components/FamilyLine.astro';
+import JsonLd from '../components/JsonLd.astro';
+import CardDetail from '../components/CardDetail.astro';
+import { CODESYS } from '../lib/products';
+
+const R = CODESYS.released;
+const helmCmd = [
+  'kubectl -n <namespace> create secret generic <release>-profile --from-file=profile.json',
+  `helm repo add hotloop-codesys ${CODESYS.chartRepo}`,
+  `helm install <release> hotloop-codesys/${CODESYS.chart} -n <namespace>`,
+].join('\n');
+
+const does: [string, string, string?][] = [
+  ['It reads the PLC the documented way.', 'Through the runtime\'s own OPC UA server, with HotLoop\'s CODESYS connector. Nothing is installed in CODESYS, so there is nothing in the runtime to patch.',
+    'CODESYS documents one way for a third party to read a controller\'s variables, and it is the runtime\'s own OPC UA server. The PLC publishes what you want seen with a Symbol Configuration in the IDE, and HotLoop reads those variables by the names the programmer gave them, like Application.GVL_Line.rTemp, not by a node id. The Symbol Configuration is the only change to the PLC project. The CODESYS Gateway\'s channel protocol is not documented for third parties, so this does not speak it.'],
+  ['It draws the screens.', 'HotLoop dashboards: values, gauges, trends, and alarm lists, on a phone, a panel PC, or a wall, with one layout that folds from twelve columns to one.',
+    'These are the dashboards every HotLoop product has. A dashboard can be handed to the roles that need it or bound to one physical screen, which opens full bleed with bigger touch targets. A card commands nothing by itself.'],
+  ['It raises the alarms.', 'ISA-18.2 alarms on the PLC\'s variables, including the one that cleared before anybody saw it, so a trip that fixed itself is still on the list at shift change.'],
+  ['It watches from the side.', 'HotLoop runs beside the runtime on the same node, with its own database and nothing else in the path. If the runtime stops answering, every tag reads bad with the reason, never zero, and HotLoop reconnects by itself.',
+    'A restart of the runtime, or a new program loaded, drops the session. The device goes disconnected, every tag reads bad with the reason "the PLC\'s runtime is not answering", and HotLoop reconnects with backoff and reads the symbols as they now are. In the lab that took about 88 seconds from a runtime restart to good values again.'],
+];
+
+const wontDo: [string, string][] = [
+  ['It won\'t write to your PLC.', 'Every tag it sets up is read-only, and the profile marks none writable. A person can arm a tag later, one at a time, and then the write gate and the PLC\'s own symbol rights both get a say.'],
+  ['It won\'t put anything in the runtime.', 'No library, no task, no function block, no agent. The runtime keeps doing its scan, and the only thing the PLC project needs is a Symbol Configuration that publishes the variables.'],
+  ['It won\'t need a database pod.', 'SQLite on the node\'s own storage, one replica. One file, and nothing else on the node that can fail on its own schedule.'],
+  ['It won\'t lose its screens to a bad link.', 'Both pods tolerate an unreachable or not-ready node with no time limit, so a node that loses its control plane keeps them. The tolerations are in the chart. Nobody has cut the link on a real node yet, and the table below says so.'],
+];
+
+const built: [string, string, string?][] = [
+  ['The connector', 'HotLoop core\'s CODESYS driver: read and discover by symbol, with arrays and structures walked into one point per field.',
+    'It lists what the application exports as the types it has: a STRING is a string, a TIME is milliseconds, an enumeration is an integer. An array lists its first 32 elements, and any element can still be addressed by its symbol. It cuts every request to the limits the runtime publishes, because a 4.22.0.0 runtime refuses more than 100 at a time. It is verified live against a runtime in a container, and not on a physical controller.'],
+  ['The chart', 'A wrapper around HotLoop Edge with defaults for a runtime on a node: SQLite, one replica, and the parts you do not need beside a PLC switched off.'],
+  ['The provisioner', 'One static Go binary that applies a profile to HotLoop and keeps it right every five minutes: the device, the variables, the alarms, and one screen.',
+    'The profile is one JSON file in a Secret the installer provides, never part of the chart or the image, so both are generic. A variable the PLC gained since is added, one it lost reads bad with the server\'s reason, and the screen and alarms are replaced only when the profile\'s revision is higher, so a change a person made survives until a newer profile is shipped on purpose.'],
+  ['EmberNet sign-in', 'From HotLoop 4.19 the Edge chart signs people in from the EmberCORE dashboard\'s signed assertion, and this chart inherits it.',
+    'In a lab cluster a good assertion signed a person in as an operator or an admin, and a wrong app, a wrong tenant, an expired one, a wrong issuer, or a tampered one was refused. Local sign-in still works for the provisioner.'],
+];
+
+const proven: [string, string][] = [
+  ['Shown', 'The device, its tags (none writable), its alarm, and its screen appeared with no hand step. Every value read good and moved. The pods came back after a pod delete. The install read bad with the reason "the PLC\'s runtime is not answering" through a runtime restart and came back by itself about 88 seconds later.'],
+  ['Run against', 'A CODESYS Control for Linux SL 4.22.0.0 runtime in a container, running HotLoop\'s own lab program built with the CODESYS ScriptEngine, with a HotLoop Edge image built from HotLoop\'s main branch, on k3s v1.36.'],
+  ['Not shown', 'An install from the real App Store page. A physical controller. k3s v1.35.7. A node really losing its link to the control plane. A download from the CODESYS IDE while the runtime stays up. A runtime on the host\'s own network beside the HotLoop pod on one node. A runtime with user management on, or a certificate-secured endpoint.'],
+];
+---
+
+<Base
+  title="HotLoop for CODESYS: screens and alarms for a PLC"
+  description={R
+    ? `HotLoop beside a CODESYS runtime: the screens and alarms, read through its own OPC UA server, with nothing installed in CODESYS. Version ${CODESYS.version}.`
+    : "HotLoop beside a CODESYS runtime: the screens and alarms, read through its own OPC UA server, with nothing installed in CODESYS. Not released yet."}
+  ogAlt="HotLoop for CODESYS, the screens and alarms for a CODESYS PLC."
+>
+  <JsonLd
+    slot="head"
+    data={{
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'HotLoop for CODESYS',
+      url: 'https://hotloop.io/codesys/',
+      description:
+        'HotLoop beside a CODESYS runtime: operator screens and alarms on the PLC\'s variables, read through the runtime\'s own OPC UA server with HotLoop\'s CODESYS connector, with nothing installed in CODESYS.',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Linux',
+      license: 'https://hotloop.io/license/',
+      isAccessibleForFree: true,
+      ...(R ? { softwareVersion: CODESYS.version } : {}),
+      publisher: { '@id': 'https://hotloop.io/#organization' },
+    }}
+  />
+
+  <section class="page-hero">
+    <div class="wrap stack">
+      <div class="cluster">
+        <span class="label">HotLoop for CODESYS</span>
+        {R ? <span class="chip ok">Released, {CODESYS.version}</span> : <span class="chip warn">Not released yet</span>}
+      </div>
+      <h1>The screen for your CODESYS PLC, and a second set of eyes on it.</h1>
+      <p class="lede">
+        HotLoop for CODESYS runs HotLoop on the same node as a CODESYS runtime. It reads the PLC's variables through the
+        runtime's own OPC UA server, puts them on screens that work on a panel PC, a phone, or a wall, and raises alarms
+        on them. Nothing is installed in CODESYS and nothing writes to the PLC. The consequence: the operators get a
+        screen, and the PLC gets a second set of eyes that doesn't depend on anything else on the node.
+      </p>
+      {!R && (
+        <div class="notice info">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
+          <div>
+            <strong>This is built, and it is not out.</strong>
+            <p>
+              It has run against a real CODESYS runtime in our lab, and the screenshots below are that run. You cannot install
+              it yet: it needs HotLoop {CODESYS.needsCore}, which has not shipped, and the chart and the provisioner image are
+              not published. This page says so until they are, and the <a href="/releases/codesys/">release notes</a> say
+              what the first version holds.
+            </p>
+          </div>
+        </div>
+      )}
+      <div class="cluster">
+        <a class="btn primary" href="#install">How it installs</a>
+        <a class="btn" href="/releases/codesys/">Release notes</a>
+        <a class="btn" href="https://docs.hotloop.io/codesys/overview/">Docs</a>
+        <a class="btn" href="/products/">See the rest of the lineup</a>
+      </div>
+      <FamilyLine id="codesys" />
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What it does</span>
+        <h2>Screens, alarms, and a PLC that never knows we are there.</h2>
+        <p class="lede">
+          The screens are drawn outside the runtime, over the OPC UA server the runtime already has. So a change to a screen is
+          a HotLoop edit, not a download to the PLC, and the same screen is on the panel PC and on a phone.
+        </p>
+      </div>
+      <div class="grid grid-2">
+        {does.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+      </div>
+      <CardDetail>
+        {does.filter((r) => r[2]).map(([h, , l]) => <div><h4>{h}</h4><p>{l}</p></div>)}
+      </CardDetail>
+    </div>
+  </section>
+
+  <section class="block" id="screens">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What it looks like</span>
+        <h2>A real run, with made-up plant labels.</h2>
+        <p class="lede">
+          This is a HotLoop Edge build from main, the 4.19 line, reading a CODESYS Control for Linux SL 4.22.0.0 runtime in a
+          container. The PLC program is HotLoop's own lab program, so the numbers are the lab's, and the labels (Line 2, Mixer
+          temperature, Riverside Bottling) are ours, put there by the profile. It is HotLoop's default interface, and light or
+          dark follows your system.
+        </p>
+      </div>
+      <div class="shots">
+        <figure>
+          <img class="shot light" src="/codesys/screen.png" width="1440" height="900" loading="lazy" alt="The Line 2 screen: four value cards, a gauge, a fifteen minute trend of the mixer temperature, and an alarm list with one alarm" />
+          <img class="shot dark" src="/codesys/screen-dark.png" width="1440" height="900" loading="lazy" alt="The Line 2 screen, in dark" />
+          <figcaption>The screen the profile makes: values, a gauge, a trend, and the alarm list. Everything on it reads from the PLC through the runtime's OPC UA server.</figcaption>
+        </figure>
+        <figure>
+          <img class="shot light" src="/codesys/alarms.png" width="1440" height="900" loading="lazy" alt="The alarm list with Mixer temperature high, marked returned to normal and unacknowledged" />
+          <img class="shot dark" src="/codesys/alarms-dark.png" width="1440" height="900" loading="lazy" alt="The alarm list, in dark" />
+          <figcaption>An alarm that cleared on its own before anybody saw it stays on the list as rtn-unack, so a trip that fixed itself is still there at shift change.</figcaption>
+        </figure>
+        <figure>
+          <img class="shot light" src="/codesys/device.png" width="1440" height="900" loading="lazy" alt="The Devices screen with one CODESYS device, six tags, connected" />
+          <img class="shot dark" src="/codesys/device-dark.png" width="1440" height="900" loading="lazy" alt="The Devices screen, in dark" />
+          <figcaption>The device the provisioner made: a codesys device on the runtime's OPC UA address, six tags, connected.</figcaption>
+        </figure>
+        <figure class="phone">
+          <img class="shot light" src="/codesys/screen-phone.png" width="390" height="844" loading="lazy" alt="The Line 2 screen on a phone, in one column" />
+          <img class="shot dark" src="/codesys/screen-phone-dark.png" width="390" height="844" loading="lazy" alt="The Line 2 screen on a phone, in dark" />
+          <figcaption>The same screen on a phone. One layout folds from twelve columns to one, so nobody builds the phone version.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What it won't do</span>
+        <h2>Four refusals, and each one is on purpose.</h2>
+      </div>
+      <div class="grid grid-2">
+        {wontDo.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What is built</span>
+        <h2>{R ? `What ${CODESYS.version} ships.` : 'What the first version holds.'}</h2>
+        <p class="lede">
+          Four parts, and each says how far it has been proven. The table further down names what was run and what was not.
+        </p>
+      </div>
+      <div class="grid grid-2">
+        {built.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+      </div>
+      <CardDetail>
+        {built.filter((r) => r[2]).map(([h, , l]) => <div><h4>{h}</h4><p>{l}</p></div>)}
+      </CardDetail>
+    </div>
+  </section>
+
+  <section class="block" id="install">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">How it installs</span>
+        <h2>{R ? 'From the App Store on EmberNet, or with Helm.' : 'From the App Store on EmberNet, or with Helm, once it ships.'}</h2>
+        <p class="lede">
+          The chart is <code>{CODESYS.chart}</code> at <code>{CODESYS.chartRepo}</code>, and it wraps <code>hotloop-edge</code>
+          on the HotLoop {CODESYS.needsCore} line. The provisioner is <code>{CODESYS.image}</code>. It needs a CODESYS runtime on the
+          same node that publishes its OPC UA server on port 4840, and a Symbol Configuration in the PLC program for the variables
+          you want to see.
+        </p>
+      </div>
+      <div class="grid grid-2">
+        <article class="card reveal">
+          <h3>Helm</h3>
+          <pre><code>{helmCmd}</code></pre>
+          <p class="muted">
+            The profile is one Secret with one key, <code>profile.json</code>: the device, the variables to keep, the alarms,
+            and the screen. To get HotLoop alone, to set up by hand, switch the provisioner off with
+            <code>--set provisioner.enabled=false</code>.
+          </p>
+        </article>
+        <article class="card reveal">
+          <h3>EmberNet</h3>
+          <p>
+            On EmberNet it is an App Store app. The Store lists it for EmberNet staff, who install it onto the tenant, and the
+            Store writes the profile into the namespace as <code>&lt;release&gt;-profile</code>, so there is nothing to do
+            afterward. Pick the node the runtime is on and it starts beside it.
+          </p>
+          <p class="muted">
+            Business use of HotLoop is free through <a href="https://embernet.ai">EmberNet</a>.
+          </p>
+        </article>
+      </div>
+      <p class="muted note">
+        The steps, the profile's shape, and the sign-in are on the <a href="https://docs.hotloop.io/codesys/install/">install page</a>
+        in the docs. The commands above are what the chart takes. They have not been run against a published chart, because
+        there is not one yet.
+      </p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Proven, and not</span>
+        <h2>What was run, and what was not, so you don't find out at commissioning.</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="data stack">
+          <thead><tr><th>Check</th><th>What</th></tr></thead>
+          <tbody>
+            {proven.map(([k, v]) => <tr><td class="mono">{k}</td><td data-label="What">{v}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p class="muted note">
+        What comes next is on the <a href="https://docs.hotloop.io/codesys/roadmap/">roadmap</a>, and it is mostly this table
+        turned from "not shown" to "shown".
+      </p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="card cta reveal">
+        <div class="stack">
+          <span class="label">Licensing</span>
+          <h2>It installs HotLoop Edge, so the same terms.</h2>
+          <p class="muted">
+            HotLoop for CODESYS runs HotLoop Edge, which is under the HotLoop Business Source License 1.1. Home and lab use is
+            free. Business use is free through <a href="https://embernet.ai">EmberNet</a>. Support, SLAs and rollouts come from our
+            Official Systems Integrator, <a href="https://fireballz.ai">Fireball Industries</a>.
+          </p>
+        </div>
+        <a class="btn primary" href="/license/">Read the license</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
+  .page-hero h1 { max-width: 22ch; }
+  .page-hero .notice { max-width: 68ch; }
+  .note { max-width: 72ch; margin-top: var(--hl-s5); }
+  pre { overflow-x: auto; }
+  .shots { display: grid; gap: var(--hl-s6); }
+  .shots figure { margin: 0; display: grid; gap: var(--hl-s2); }
+  .shots figcaption { color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); max-width: 72ch; }
+  .shots figure.phone { max-width: 340px; }
+  .shot { width: 100%; height: auto; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); }
+  .shot.dark { display: none; }
+  .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
+  .cta .stack { max-width: 62ch; }
+</style>
+<style is:global>
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .shot.light { display: none; }
+    :root:not([data-theme="light"]) .shot.dark { display: block; }
+  }
+  :root[data-theme="dark"] .shot.light { display: none; }
+  :root[data-theme="dark"] .shot.dark { display: block; }
+  :root[data-theme="light"] .shot.light { display: block; }
+  :root[data-theme="light"] .shot.dark { display: none; }
+</style>

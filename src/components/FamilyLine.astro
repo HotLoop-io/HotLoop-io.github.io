@@ -1,5 +1,5 @@
 ---
-// The same strip on all six product pages: the one family sentence, which release
+// The same strip on all seven product pages: the one family sentence, which release
 // line this product ships on, and its docs, install, release notes and roadmap.
 import { getCollection } from 'astro:content';
 import { FAMILY_SENTENCE, LINES, memberOf, lineOf } from '../lib/family';
@@ -16,8 +16,8 @@ const shared = line.members.length > 1 ? `Ships with ${line.members.filter((x) =
 ---
 
 <aside class="family" aria-label="Where this product sits in the HotLoop family">
-  <p>{FAMILY_SENTENCE} <a href="/products/">See all six</a>.</p>
-  <p class="line"><span class="chip ok">{line.label} line, {version}</span> {shared}</p>
+  <p>{FAMILY_SENTENCE} <a href="/products/">See all seven</a>.</p>
+  <p class="line">{line.released ? <span class="chip ok">{line.label} line, {version}</span> : <span class="chip warn">{line.label}, not released yet</span>} {shared}</p>
   <p class="links">
     <a href={m.docs}>Docs</a>
     <a href={m.install}>Install</a>
