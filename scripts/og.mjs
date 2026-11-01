@@ -126,22 +126,24 @@ const nativeCount = protocols.filter((p) => p.verification !== 'gateway-mode').l
 const certified = protocols.filter((p) => p.verification === 'certified').length;
 
 const pages = [
-  ['home', 'Automation loops for the real world.', 'IoT, Edge, Gateway, and Edge Relay from one codebase, with Flow and Cascade beside them.', 'HotLoop'],
-  ['products', 'One codebase. Four products.', 'HotLoop IoT, Edge, Gateway, and Edge Relay, released together from one tag.', 'Products'],
+  ['home', 'Automation loops for the real world.', 'IoT, Edge, Gateway, and Edge Relay from one codebase, with Flow, Cascade, and HotLoop for CODESYS beside them.', 'HotLoop'],
+  ['products', 'Seven products. Four release lines.', 'IoT, Edge, Gateway, and Edge Relay from one tag, plus Flow, Cascade, and HotLoop for CODESYS.', 'Products'],
   ['iot', 'HotLoop IoT', 'The automation base for the plant floor, built in Go. 4.18.11 is out.', 'Product'],
   ['edge', 'HotLoop Edge', 'IoT plus the machine layer: store-and-forward that survives a dead WAN, and an OPC UA server.', 'Product'],
   ['gateway', 'HotLoop Gateway', 'An industrial gateway that tells you what it has not proven. Eight native drivers, one write gate.', 'Product'],
   ['edge-relay', 'HotLoop Edge Relay', 'Poll, forward over Sparkplug B, survive the uplink dying. No database, no UI.', 'Product'],
   ['unifi', 'UniFi in HotLoop', 'Read-only Network driver, screens and events are out. Writes, Protect, Access and PDUs come next.', 'Integration'],
   ['flow', 'HotLoop Flow', "Node-RED's idea, with a runtime that does not fall over. Free for home and lab, free for business through EmberNet.", 'Product'],
+  ['codesys', 'HotLoop for CODESYS', 'The screens and alarms for a CODESYS PLC, beside the runtime. Not released yet.', 'Product'],
   ['cascade', 'HotLoop Cascade', 'The plant talking to everything else, with every step checkpointed. Released, 0.1.2.', 'Product'],
   ['integrations', 'What it speaks, and how far each one has been proven.', `${nativeCount} Gateway protocols and ${nodeCount} Flow nodes. ${certified === 0 ? 'None are certified, and we say so.' : `${certified} certified.`}`, 'Integrations'],
   ['license', 'Which license applies to you?', 'One license for every HotLoop product: free for home and lab, free for business through EmberNet.', 'License'],
   ['terms', 'HotLoop Terms of Service', 'What you can do with HotLoop, what we do for you, and what happens when something goes wrong.', 'Terms'],
-  ['releases', 'Release notes', 'What changed in HotLoop core, Flow and Cascade, including which versions are actually published.', 'Releases'],
+  ['releases', 'Release notes', 'What changed in HotLoop core, Flow, Cascade, and HotLoop for CODESYS, including which versions are actually published.', 'Releases'],
   ['releases-core', 'HotLoop core release notes', 'IoT, Edge, Gateway, and Edge Relay on one version. Which versions are published, and which are only merged. Every entry says which.', 'Releases'],
   ['releases-flow', 'Flow release notes', 'Every Flow release, from the first one to the current one.', 'Releases'],
   ['releases-cascade', 'Cascade release notes', 'Cascade 0.1.2 and 0.1.1, and why the 0.1.0 tag never published anything.', 'Releases'],
+  ['releases-codesys', 'HotLoop for CODESYS release notes', 'What is in the first version, and that nothing of it is published yet.', 'Releases'],
   ['404', 'That loop did not close.', 'The page you were looking for is not here.', 'Error 404'],
   ...protocols.map((p) => [`integrations-${p.id}`, p.name, p.summary, 'Integration']),
 ];

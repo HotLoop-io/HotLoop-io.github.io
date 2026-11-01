@@ -36,7 +36,7 @@ const fmt = (d: Date) =>
 
 <Base
   title="HotLoop: automation loops for the real world"
-  description="HotLoop is six products for the plant floor: IoT, Edge, Gateway, and Edge Relay, plus Flow and Cascade. Free for home, lab, and business via EmberNet."
+  description="Seven products for the plant floor: IoT, Edge, Gateway, Edge Relay, Flow, Cascade, and HotLoop for CODESYS. Free for home, lab, and business via EmberNet."
   ogAlt="HotLoop. Automation loops for the real world."
 >
   <section class="hero">
@@ -132,13 +132,13 @@ const fmt = (d: Date) =>
     <div class="wrap">
       <div class="section-head">
         <span class="label">The products</span>
-        <h2>Six products, from a Pi on a shelf to the whole plant.</h2>
+        <h2>Seven products, from a Pi on a shelf to the whole plant.</h2>
         <p class="lede">{FAMILY_SENTENCE}</p>
       </div>
       <div class="lines">
         {LINES.map((l) => (
           <div class="line">
-            <p class="line-head"><span class="chip ok">{l.label} line, {l.id === 'flow' ? fl.data.version : l.version}</span></p>
+            <p class="line-head">{l.released ? <span class="chip ok">{l.label} line, {l.id === 'flow' ? fl.data.version : l.version}</span> : <span class="chip warn">{l.label} line, not released yet</span>}</p>
             <div class="grid grid-4 lineup">
               {l.members.map((m) => (
                 <a class="card mini reveal" href={m.href}>
@@ -150,7 +150,7 @@ const fmt = (d: Date) =>
           </div>
         ))}
       </div>
-      <p class="more"><a class="btn" href="/products/">Compare all six</a></p>
+      <p class="more"><a class="btn" href="/products/">Compare all seven</a></p>
     </div>
   </section>
 

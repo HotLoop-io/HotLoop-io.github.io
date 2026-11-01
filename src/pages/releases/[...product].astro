@@ -2,13 +2,14 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 
-// One file serves /releases/, /releases/core/, /releases/flow/ and /releases/cascade/.
+// One file serves /releases/, /releases/core/, /releases/flow/, /releases/cascade/ and /releases/codesys/.
 export function getStaticPaths() {
   return [
     { params: { product: undefined }, props: { filter: 'all' } },
     { params: { product: 'core' }, props: { filter: 'core' } },
     { params: { product: 'flow' }, props: { filter: 'flow' } },
     { params: { product: 'cascade' }, props: { filter: 'cascade' } },
+    { params: { product: 'codesys' }, props: { filter: 'codesys' } },
   ];
 }
 
@@ -16,7 +17,7 @@ const { filter } = Astro.props;
 const all = (await getCollection('releases')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
 const releases = filter === 'all' ? all : all.filter((r) => r.data.product === filter);
 
-const NAME = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade' } as const;
+const NAME = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade', codesys: 'HotLoop for CODESYS' } as const;
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 
 const unpublished = all.filter((r) => r.data.product === 'core' && !r.data.published);
@@ -29,22 +30,22 @@ const chipFor = (r: (typeof all)[number]) => {
   if (r.data.published) return { cls: 'ok', label: 'Published' };
   // `all` is newest first, so the last match is the first release it went out in.
   const first = all.filter((p) => p.data.product === r.data.product && p.data.published && older(r.data.version, p.data.version)).at(-1);
-  return first ? { cls: 'info', label: `Not tagged, shipped in ${first.data.version}` } : { cls: 'warn', label: 'Merged, not published' };
+  return first ? { cls: 'info', label: `Not tagged, shipped in ${first.data.version}` } : { cls: 'warn', label: r.data.product === 'codesys' ? 'Not published yet' : 'Merged, not published' };
 };
 // The release that finally shipped the untagged run. Not simply the newest
 // release: once 4.17.0 came out, "until 4.17.0" would have been a lie about
 // what 4.16.0 did.
 const shippedIn = unpublished[0] && all.filter((p) => p.data.product === 'core' && p.data.published && older(unpublished[0].data.version, p.data.version)).at(-1);
-const title = filter === 'all' ? 'Release notes' : `${NAME[filter as 'core' | 'flow' | 'cascade']} release notes`;
+const title = filter === 'all' ? 'Release notes' : `${NAME[filter as keyof typeof NAME]} release notes`;
 
 // Three pages, three different titles and descriptions. Identical ones make search
 // engines pick one of them arbitrarily and ignore the rest.
 const coreFirst = all.filter((r) => r.data.product === 'core').at(-1)?.data.version;
 const seo = {
   all: {
-    title: 'HotLoop release notes: HotLoop core, Flow and Cascade',
+    title: 'HotLoop release notes: core, Flow, Cascade, CODESYS',
     description:
-      'What changed in HotLoop core (IoT, Edge, Gateway, and Edge Relay), Flow, and Cascade, version by version, including which versions have actually been published.',
+      'What changed in HotLoop core, Flow, Cascade, and HotLoop for CODESYS, version by version, and which versions have actually been published.',
   },
   core: {
     title: 'HotLoop core release notes and version history',
@@ -60,7 +61,12 @@ const seo = {
     description:
       'HotLoop Cascade release notes, from 0.1.1, the first release, to 0.1.2, and why the 0.1.0 tag never published anything.',
   },
-}[filter as 'all' | 'core' | 'flow' | 'cascade'];
+  codesys: {
+    title: 'HotLoop for CODESYS release notes and version history',
+    description:
+      'HotLoop for CODESYS release notes: what is in the first version, and whether it has been published.',
+  },
+}[filter as 'all' | 'core' | 'flow' | 'cascade' | 'codesys'];
 ---
 
 <Base
@@ -77,6 +83,7 @@ const seo = {
         <a class="pill" href="/releases/core/" aria-current={filter === 'core' ? 'page' : undefined}>HotLoop core</a>
         <a class="pill" href="/releases/flow/" aria-current={filter === 'flow' ? 'page' : undefined}>Flow</a>
         <a class="pill" href="/releases/cascade/" aria-current={filter === 'cascade' ? 'page' : undefined}>Cascade</a>
+        <a class="pill" href="/releases/codesys/" aria-current={filter === 'codesys' ? 'page' : undefined}>HotLoop for CODESYS</a>
         <a class="pill rss" href="/releases/rss.xml">RSS</a>
       </nav>
 
