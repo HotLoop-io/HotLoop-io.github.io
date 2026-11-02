@@ -75,7 +75,7 @@ const planned: [string, string][] = [
           A step that fails is retried from where it stopped. A webhook that arrives while Cascade is down is in a durable
           inbox when it comes up. A schedule fires each slot exactly once, no matter how many copies of Cascade are looking.
           You build all of that by drawing a workflow, not by writing it, and a run is drawn the way it ran, step by step,
-          so a failure is something you look at, not something you reconstruct from a log.
+          so a failure is something you look at, not something you reconstruct from a log. What starts a workflow: a HotLoop alarm or tag reading, a webhook, a schedule, an MQTT burst, a file that shows up, or a new email in an IMAP mailbox.
         </p>
       </div>
       <div class="stack">
@@ -136,7 +136,7 @@ const planned: [string, string][] = [
           One file and a volume is Cascade on SQLite on a Raspberry Pi. On Postgres, it is a server, a worker, and the
           database, and Postgres is the queue too, so there is no Redis to patch. Both start at boot, restart on failure,
           and run read-only, non-root, with every capability dropped. On k3s the chart can split it into API, webhook, and
-          worker pods that scale separately.
+          worker pods that scale separately. Prometheus metrics come with it, and every execution is one OpenTelemetry trace with a span per step, so a stuck job shows up on a graph. With no endpoint named, nothing is sent.
         </p>
       </div>
     </div>
