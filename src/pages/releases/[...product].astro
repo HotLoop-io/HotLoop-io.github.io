@@ -10,6 +10,7 @@ export function getStaticPaths() {
     { params: { product: 'flow' }, props: { filter: 'flow' } },
     { params: { product: 'cascade' }, props: { filter: 'cascade' } },
     { params: { product: 'codesys' }, props: { filter: 'codesys' } },
+    { params: { product: 'transmitter' }, props: { filter: 'transmitter' } },
   ];
 }
 
@@ -17,7 +18,7 @@ const { filter } = Astro.props;
 const all = (await getCollection('releases')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
 const releases = filter === 'all' ? all : all.filter((r) => r.data.product === filter);
 
-const NAME = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade', codesys: 'HotLoop for CODESYS' } as const;
+const NAME = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade', codesys: 'HotLoop for CODESYS', transmitter: 'HotLoop Transmitter' } as const;
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 
 const unpublished = all.filter((r) => r.data.product === 'core' && !r.data.published);
@@ -66,7 +67,11 @@ const seo = {
     description:
       'HotLoop for CODESYS release notes: what is in the first version, and whether it has been published.',
   },
-}[filter as 'all' | 'core' | 'flow' | 'cascade' | 'codesys'];
+  transmitter: {
+    title: 'HotLoop Transmitter release notes and version history',
+    description: 'HotLoop Transmitter release notes. There is no release yet; this page lists what the first one will contain.',
+  },
+}[filter as 'all' | 'core' | 'flow' | 'cascade' | 'codesys' | 'transmitter'];
 ---
 
 <Base
@@ -84,6 +89,7 @@ const seo = {
         <a class="pill" href="/releases/flow/" aria-current={filter === 'flow' ? 'page' : undefined}>Flow</a>
         <a class="pill" href="/releases/cascade/" aria-current={filter === 'cascade' ? 'page' : undefined}>Cascade</a>
         <a class="pill" href="/releases/codesys/" aria-current={filter === 'codesys' ? 'page' : undefined}>HotLoop for CODESYS</a>
+        <a class="pill" href="/releases/transmitter/" aria-current={filter === 'transmitter' ? 'page' : undefined}>Transmitter</a>
         <a class="pill rss" href="/releases/rss.xml">RSS</a>
       </nav>
 

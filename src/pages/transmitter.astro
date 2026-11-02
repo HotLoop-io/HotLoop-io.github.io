@@ -1,0 +1,170 @@
+---
+import Base from '../layouts/Base.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+const snippet = `PROGRAM PLC_PRG
+VAR
+    pub : HLTX.FB_HLTX_Publisher;
+    bInit : BOOL;
+END_VAR
+
+IF NOT bInit THEN
+    bInit := TRUE;
+    pub.sDestination := '239.0.0.22';
+    pub.uiPublisherId := 1;
+    pub.tPublishingInterval := T#100MS;
+    pub.AddReal(ADR(GVL.rTemperature));
+    pub.AddBool(ADR(GVL.bRunning));
+END_IF
+pub.bEnable := TRUE;
+pub();`;
+
+const wontDo: [string, string][] = [
+  ['It won\'t block your scan.', 'The socket is non-blocking and the message is built in a fixed buffer. A socket error, a bad address, or a field list that does not fit becomes a state and a counter on the block, never a fault in your application.'],
+  ['It won\'t fragment.', 'A message is at most 1472 bytes, so it fits one Ethernet frame. A field list that does not fit puts the block in an error state and sends nothing, instead of cutting your data.'],
+  ['It won\'t encrypt.', 'This version sends in the clear. Message signing and encryption are not built, and the roadmap says so.'],
+  ['It won\'t subscribe.', 'It publishes. HotLoop core is what subscribes to OPC UA PubSub.'],
+];
+
+const built: [string, string][] = [
+  ['One block, called once per cycle', 'FB_HLTX_Publisher sends one NetworkMessage per publishing interval, with one DataSetMessage that carries every field you added.'],
+  ['The types a PLC uses', 'BOOL, SINT, USINT, INT, UINT, DINT, UDINT, LINT, ULINT, REAL, LREAL, STRING and TIME, plus arrays of any of them but STRING.'],
+  ['Two encodings', 'Variant, which any subscriber reads without a layout, and RawData, which is smaller and needs the receiver to know the layout.'],
+  ['Unicast or multicast', 'A dotted address, a port, and for multicast a TTL and the interface to send from. Publisher id, writer group, dataset writer and the interval are inputs of the block.'],
+  ['Counters that tell the truth', 'Messages sent, sends refused, publish slots skipped, the size of the last message, and the time the block spent in its last call and its longest.'],
+  ['Nothing to license', 'It is Structured Text over SysSocket, which every CODESYS runtime with sockets has. No other library, no configurator.'],
+];
+
+const planned: [string, string][] = [
+  ['Next', 'Timestamps, several DataSetMessages in one NetworkMessage, delta frames and keep-alives, WSTRING, and a per-field status.'],
+  ['Not planned', 'Message security, chunked messages, the subscriber side, and an MQTT transport.'],
+];
+---
+
+<Base
+  title="HotLoop Transmitter: OPC UA PubSub from the PLC"
+  description="HotLoop Transmitter is a CODESYS library that publishes PLC values as OPC UA PubSub over UDP, written in Structured Text. In development, not released."
+  ogAlt="HotLoop Transmitter, OPC UA PubSub from the PLC."
+>
+  <JsonLd
+    slot="head"
+    data={{
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'HotLoop Transmitter',
+      url: 'https://hotloop.io/transmitter/',
+      description: 'A CODESYS library, written in Structured Text over SysSocket UDP, that publishes PLC values as OPC UA PubSub (UADP, OPC 10000-14).',
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'CODESYS runtimes',
+      license: 'https://hotloop.io/license/',
+      publisher: { '@id': 'https://hotloop.io/#organization' },
+    }}
+  />
+  <section class="page-hero">
+    <div class="wrap stack">
+      <div class="cluster"><span class="label">HotLoop Transmitter</span><span class="chip warn">Being built, not released</span></div>
+      <h1>Put the process value on the wire from inside the PLC.</h1>
+      <p class="lede">
+        A CODESYS library that publishes your variables as OPC UA PubSub, the way Part 14 of the spec says, from a function block you call once per
+        cycle. It is named for the instrument loop's transmitter: the part that puts the value on the wire so something else can read it.
+        The consequence: a PLC with no PubSub library can still feed anything that subscribes, HotLoop included.
+      </p>
+      <div class="notice info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
+        <div>
+          <strong>There is no release yet.</strong>
+          <p>
+            The library builds and runs on the CODESYS Control for Linux SL 4.22.0.0 runtime in a container, and what it sends was read back by an
+            independent decoder. It has not run on a physical controller. Nothing on this page is installable until a version is tagged.
+          </p>
+        </div>
+      </div>
+      <div class="cluster">
+        <a class="btn primary" href="#use">How it is used</a>
+        <a class="btn" href="/releases/transmitter/">Release notes</a>
+        <a class="btn" href="https://docs.hotloop.io/transmitter/overview/">Docs</a>
+        <a class="btn" href="/products/">See the rest of the lineup</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="use">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Use it</span>
+        <h2>Add the library, call one block.</h2>
+        <p class="lede">
+          Install the <code>.library</code> file in the CODESYS library repository, add it to the project's Library Manager, and publish what you
+          choose. The install steps are in the <a href="https://docs.hotloop.io/transmitter/install/">docs</a>.
+        </p>
+      </div>
+      <pre><code>{snippet}</code></pre>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What it won't do</span>
+        <h2>Four refusals, each on purpose.</h2>
+      </div>
+      <div class="grid grid-2">
+        {wontDo.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What is built</span>
+        <h2>What is in the first version.</h2>
+        <p class="lede">Each of these ran on the real runtime and was read back by a decoder that is not ours.</p>
+      </div>
+      <div class="grid grid-3">
+        {built.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Roadmap</span>
+        <h2>What comes after.</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="data stack">
+          <thead><tr><th>When</th><th>What</th></tr></thead>
+          <tbody>
+            {planned.map(([v, w]) => <tr><td class="mono">{v}</td><td data-label="What">{w}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="card cta reveal">
+        <div class="stack">
+          <span class="label">Licensing</span>
+          <h2>Under the HotLoop Business Source License 1.1.</h2>
+          <p class="muted">
+            Like the rest of HotLoop. Home and lab use is free. Business use is free through <a href="https://embernet.ai">EmberNet</a>.
+          </p>
+        </div>
+        <a class="btn primary" href="/license/">Read the license</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
+  .page-hero h1 { max-width: 22ch; }
+  .page-hero .notice { max-width: 68ch; }
+  pre { overflow-x: auto; }
+  .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
+  .cta .stack { max-width: 62ch; }
+</style>
