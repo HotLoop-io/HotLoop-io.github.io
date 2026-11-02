@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import JsonLd from '../components/JsonLd.astro';
+import FamilyLine from '../components/FamilyLine.astro';
 
 const snippet = `PROGRAM PLC_PRG
 VAR
@@ -85,6 +86,7 @@ const planned: [string, string][] = [
         <a class="btn" href="https://docs.hotloop.io/transmitter/overview/">Docs</a>
         <a class="btn" href="/products/">See the rest of the lineup</a>
       </div>
+      <FamilyLine id="transmitter" />
     </div>
   </section>
 

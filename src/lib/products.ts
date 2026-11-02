@@ -150,10 +150,10 @@ export const GATEWAY_FEATURES: Feature[] = [
 ];
 
 // Cascade is its own product and is not one of the four from the shared codebase,
-// so it lives beside PRODUCTS. 0.1.1 was its first release. A 0.1.0 tag exists and
-// never published anything. The repository is private, the image and chart are public.
-// Change it here when the next release ships.
-export const CASCADE = '0.1.2';
+// so it lives beside PRODUCTS. 0.1.1 was its first release, 1.0.0 the editor and identity
+// release. A 0.1.0 tag exists and never published anything. The repository is private, the
+// image and chart are public. Change it here when the next release ships.
+export const CASCADE = '1.0.2';
 
 // HotLoop for CODESYS is the seventh product and its own release line: a chart and a
 // provisioner (HotLoop-io/hotloop-codesys) around HotLoop Edge. It is built and has run
@@ -172,4 +172,13 @@ export const CODESYS = {
 };
 if (CODESYS.released && !CODESYS.version) {
   throw new Error('HotLoop for CODESYS is marked released with no version.');
+}
+
+// HotLoop Transmitter is the eighth product and its own release line: a CODESYS library
+// (HotLoop-io/hotloop-transmitter) that publishes PLC values as OPC UA PubSub. There is no
+// tag and no release yet. When one ships, set `released` and `version` here and in the release
+// note (src/content/releases/transmitter/).
+export const TRANSMITTER = { released: false, version: '1.0.0' };
+if (TRANSMITTER.released && !TRANSMITTER.version) {
+  throw new Error('HotLoop Transmitter is marked released with no version.');
 }

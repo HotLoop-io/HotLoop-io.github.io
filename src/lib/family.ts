@@ -1,10 +1,10 @@
-// The lineup as one family: seven products on four release lines. Every page that
+// The lineup as one family: eight products on five release lines. Every page that
 // introduces the lineup reads from here, so the sentence and the links match
 // everywhere. The docs site (HotLoop-io/docs) says the same thing in its landing.
-import { CURRENT, CASCADE, CODESYS } from './products';
+import { CURRENT, CASCADE, CODESYS, TRANSMITTER } from './products';
 
 export const FAMILY_SENTENCE =
-  'HotLoop is seven products for the plant floor: four that grow with a site (IoT, Edge, Gateway, Edge Relay), plus Flow for wiring, Cascade for workflows, and HotLoop for CODESYS for the PLC\'s own screen.';
+  'HotLoop is eight products for the plant floor: four that grow with a site (IoT, Edge, Gateway, Edge Relay), plus Flow for wiring, Cascade for workflows, HotLoop for CODESYS for the PLC\'s own screens, and Transmitter for putting its values on the wire.';
 
 const DOCS = 'https://docs.hotloop.io';
 
@@ -74,6 +74,18 @@ export const LINES: Line[] = [
       : `Not released yet. It needs HotLoop ${CODESYS.needsCore}, and nothing of it is published.`,
     members: [
       { id: 'codesys', name: 'HotLoop for CODESYS', href: '/codesys/', tagline: 'Screens and alarms for a CODESYS PLC, beside the runtime.', docs: `${DOCS}/codesys/overview/`, install: `${DOCS}/codesys/install/`, releases: '/releases/codesys/', roadmap: `${DOCS}/codesys/roadmap/` },
+    ],
+  },
+  {
+    id: 'transmitter',
+    label: 'Transmitter',
+    version: TRANSMITTER.released ? TRANSMITTER.version : '',
+    released: TRANSMITTER.released,
+    blurb: TRANSMITTER.released
+      ? 'Its own release line, running next to HotLoop.'
+      : 'Not released yet. The library builds and has run against a CODESYS runtime in a container, and there is no download.',
+    members: [
+      { id: 'transmitter', name: 'HotLoop Transmitter', href: '/transmitter/', tagline: 'OPC UA PubSub from inside the PLC.', docs: `${DOCS}/transmitter/overview/`, install: `${DOCS}/transmitter/install/`, releases: '/releases/transmitter/', roadmap: `${DOCS}/transmitter/roadmap/` },
     ],
   },
 ];
