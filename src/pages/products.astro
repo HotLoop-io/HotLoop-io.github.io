@@ -30,16 +30,16 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
 ---
 
 <Base
-  title="HotLoop products: six on three release lines"
-  description="HotLoop is six products for the plant floor: IoT, Edge, Gateway, and Edge Relay, plus Flow and Cascade. What each one has, and which release line it ships on."
-  ogAlt="The HotLoop lineup: IoT, Edge, Gateway, Edge Relay, Flow, and Cascade."
+  title="HotLoop products: seven on four release lines"
+  description="Seven products for the plant floor: IoT, Edge, Gateway, Edge Relay, Flow, Cascade, and HotLoop for CODESYS. What each has, and which release line it ships on."
+  ogAlt="The HotLoop lineup: IoT, Edge, Gateway, Edge Relay, Flow, Cascade, and HotLoop for CODESYS."
 >
   <section class="page-hero">
     <div class="wrap stack">
       <span class="label">Products</span>
-      <h1>Six products. Three release lines.</h1>
+      <h1>Seven products. Four release lines.</h1>
       <p class="lede">
-        {FAMILY_SENTENCE} The four share one codebase and one version, and every one of them speaks every protocol,
+        {FAMILY_SENTENCE} The first four share one codebase and one version, and every one of them speaks every protocol,
         MQTT included, so what you're really picking is how much of the plant the box has to run.
       </p>
     </div>
@@ -48,7 +48,7 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
   <section class="wrap body">
     {LINES.map((l) => (
       <div class="line">
-        <p class="line-head"><span class="chip ok">{l.label} line, {l.id === 'flow' ? flowVersion : l.version}</span> <span class="muted">{l.blurb}</span></p>
+        <p class="line-head">{l.released ? <span class="chip ok">{l.label} line, {l.id === 'flow' ? flowVersion : l.version}</span> : <span class="chip warn">{l.label} line, not released yet</span>} <span class="muted">{l.blurb}</span></p>
         <div class="grid grid-2 cards">
           {l.members.map((m) => (
             <a class="card product reveal" href={m.href}>
@@ -117,7 +117,8 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
     <p class="muted flow">
       Where each one is headed: the <a href="https://docs.hotloop.io/roadmap/">HotLoop roadmap</a> for the four core
       products, the <a href="https://docs.hotloop.io/flow/roadmap/">Flow roadmap</a> and the
-      {' '}<a href="https://docs.hotloop.io/cascade/roadmap/">Cascade roadmap</a>. The docs for all six are at
+      {' '}<a href="https://docs.hotloop.io/cascade/roadmap/">Cascade roadmap</a>, and the
+      {' '}<a href="https://docs.hotloop.io/codesys/roadmap/">HotLoop for CODESYS roadmap</a>. The docs for all seven are at
       {' '}<a href="https://docs.hotloop.io/products/">docs.hotloop.io</a>.
     </p>
   </section>

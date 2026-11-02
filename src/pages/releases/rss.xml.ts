@@ -12,14 +12,14 @@ export async function GET(context: APIContext) {
       b.data.date.getTime() - a.data.date.getTime() ||
       b.data.version.localeCompare(a.data.version, undefined, { numeric: true }),
   );
-  const NAME = { core: 'HotLoop core', flow: 'HotLoop Flow', cascade: 'HotLoop Cascade' } as const;
+  const NAME = { core: 'HotLoop core', flow: 'HotLoop Flow', cascade: 'HotLoop Cascade', codesys: 'HotLoop for CODESYS' } as const;
 
   return rss({
     title: 'HotLoop release notes',
-    description: 'What changed in HotLoop core (IoT, Edge, Gateway, and Edge Relay), HotLoop Flow, and HotLoop Cascade, including which versions are actually published.',
+    description: 'What changed in HotLoop core (IoT, Edge, Gateway, and Edge Relay), HotLoop Flow, HotLoop Cascade, and HotLoop for CODESYS, including which versions are actually published.',
     site: context.site!,
     items: releases.map((r) => ({
-      title: `${NAME[r.data.product]} ${r.data.version}${r.data.published ? '' : ' (merged, never published on its own)'}`,
+      title: `${NAME[r.data.product]} ${r.data.version}${r.data.published ? '' : r.data.product === 'core' ? ' (merged, never published on its own)' : ' (not published yet)'}`,
       pubDate: r.data.date,
       description: r.data.summary,
       link: `/releases/${r.data.product}/#${r.data.product}-${r.data.version}`,

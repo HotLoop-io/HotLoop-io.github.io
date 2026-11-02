@@ -154,3 +154,22 @@ export const GATEWAY_FEATURES: Feature[] = [
 // never published anything. The repository is private, the image and chart are public.
 // Change it here when the next release ships.
 export const CASCADE = '0.1.2';
+
+// HotLoop for CODESYS is the seventh product and its own release line: a chart and a
+// provisioner (HotLoop-io/hotloop-codesys) around HotLoop Edge. It is built and has run
+// against a real runtime in the lab, and nothing of it is published yet: the chart index at
+// hotloop.io/hotloop-codesys/ answers and lists no chart, and it needs HotLoop 4.19.0.
+// When it is installable, set `released` and `version` here and in the release note
+// (src/content/releases/codesys/), and every page that reads this says so. The build refuses
+// a released product with no version, so a "Released" chip can't point at nothing.
+export const CODESYS = {
+  released: false,
+  version: '0.3.0',
+  needsCore: '4.19.0',
+  chart: 'hotloop-codesys',
+  chartRepo: 'https://hotloop.io/hotloop-codesys/',
+  image: 'ghcr.io/hotloop-io/hotloop-provision',
+};
+if (CODESYS.released && !CODESYS.version) {
+  throw new Error('HotLoop for CODESYS is marked released with no version.');
+}
