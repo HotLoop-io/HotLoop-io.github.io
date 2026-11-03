@@ -87,7 +87,7 @@ const fmt = (d: Date) =>
       </div>
       <ul class="logos">
         <li><a class="plate" href="https://shepherdboyfarms.com" rel="noopener" aria-label="Shepherd Boy Farms"><img src="/customers/shepherd-boy-farms-logo.png" alt="Shepherd Boy Farms" width="2472" height="1238" loading="lazy" decoding="async" /></a></li>
-        <li><a class="plate dg" href="https://www.dayglo.com" rel="noopener" aria-label="DayGlo"><img class="on-light" src="/customers/dayglo-logo-standard.png" alt="DayGlo" width="279" height="69" loading="lazy" decoding="async" /><img class="on-dark" src="/customers/dayglo-logo.svg" alt="DayGlo" width="648" height="180" loading="lazy" decoding="async" /></a></li>
+        <li><a class="plate" href="https://www.dayglo.com" rel="noopener" aria-label="DayGlo"><img class="on-light" src="/customers/dayglo-logo-standard-transparent.png" alt="DayGlo" width="279" height="69" loading="lazy" decoding="async" /><img class="on-dark" src="/customers/dayglo-logo.svg" alt="DayGlo" width="648" height="180" loading="lazy" decoding="async" /></a></li>
         <li><a class="plate" href="https://www.tranetechnologies.com" rel="noopener" aria-label="Trane Technologies"><img class="on-light" src="/customers/trane-technologies-logo.svg" alt="Trane Technologies" width="626" height="175" loading="lazy" decoding="async" /><img class="on-dark blend" src="/customers/trane-technologies-logo-reversed.png" alt="Trane Technologies" width="1310" height="730" loading="lazy" decoding="async" /></a></li>
       </ul>
     </div>
@@ -239,9 +239,6 @@ const fmt = (d: Date) =>
   .plate:hover { border-color: var(--hl-orange); }
   .plate img { height: auto; width: auto; max-height: 64px; max-width: 100%; display: block; object-fit: contain; }
   .plate .on-dark { display: none; }
-  /* DayGlo's own standard logo file carries a pale pink background (#FEF1F8, the color of their page header),
-     so on the light theme its plate takes that color and the file's edge disappears. Nothing in the file is changed. */
-  .plate.dg { background: #FEF1F8; }
   /* Trane's reversed logo is a 1310 by 730 picture with a wide black margin around the mark, so it is drawn
      larger to make the mark the same size as the standard one, and the black margin is blended into the surface. */
   .plate .blend { max-height: none; width: 273px; height: 152px; margin-block: -44px; }
@@ -299,10 +296,8 @@ const fmt = (d: Date) =>
     :root:not([data-theme="light"]) .plate .on-light { display: none; }
     :root:not([data-theme="light"]) .plate .on-dark { display: block; }
     :root:not([data-theme="light"]) .plate .blend { mix-blend-mode: lighten; }
-    :root:not([data-theme="light"]) .plate.dg { background: var(--hl-card); }
   }
   :root[data-theme="dark"] .plate .on-light { display: none; }
   :root[data-theme="dark"] .plate .on-dark { display: block; }
   :root[data-theme="dark"] .plate .blend { mix-blend-mode: lighten; }
-  :root[data-theme="dark"] .plate.dg { background: var(--hl-card); }
 </style>
