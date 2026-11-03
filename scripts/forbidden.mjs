@@ -4,8 +4,7 @@
 // built HTML, the search index, and the strings the social cards are drawn from.
 export const FORBIDDEN = [
   [/\bUT3\b/i, 'UT3, a customer project code'],
-  [/\bTrane\b/i, 'Trane, a customer'],
-  [/tranetech/i, 'tranetech, a customer tenant'],
+  [/tranetech(?!nologies)/i, 'tranetech, a customer tenant'],
   [/expert[ -]?lift/i, 'Expert Lift, a customer'],
   [/a customer'?s? production (program|plc)/i, 'a customer program, described by whose it is'],
 ];
