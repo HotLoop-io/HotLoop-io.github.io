@@ -2,7 +2,7 @@
 
 HotLoop IoT, Edge, Gateway, Edge Relay, Flow, Cascade, HotLoop for CODESYS and HotLoop Transmitter. HotLoop LLC.
 
-Last updated: October 19, 2026. Effective: October 19, 2026.
+Last updated: November 2, 2026. Effective: October 19, 2026.
 
 These terms apply to everyone who downloads, installs or uses HotLoop. They explain what you can do with it, what we do for you, and what happens if something goes wrong. By downloading, installing or using HotLoop, or by using our websites, you agree to them. If you accept for an organization, you confirm you can bind it.
 
