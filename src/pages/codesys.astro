@@ -79,10 +79,11 @@ const proven: [string, string][] = [
       </div>
       <h1>The screen for your CODESYS PLC, and a second set of eyes on it.</h1>
       <p class="lede">
-        HotLoop for CODESYS runs HotLoop on the same node as a CODESYS runtime. It reads the PLC's variables through the
-        runtime's own OPC UA server, puts them on screens that work on a panel PC, a phone, or a wall, and raises alarms
-        on them. Nothing is installed in CODESYS and nothing writes to the PLC. The consequence: the operators get a
-        screen, and the PLC gets a second set of eyes that doesn't depend on anything else on the node.
+        Your CODESYS PLC runs the machine, and somebody still has to draw its screens and watch its alarms without
+        downloading anything into the runtime. HotLoop for CODESYS runs HotLoop on the same node and reads the PLC's variables
+        through the runtime's own OPC UA server. The operators get screens on a panel PC, a phone, or a wall. The PLC gets
+        alarms on its variables and a second set of eyes that doesn't depend on anything else on the node. Nothing is
+        installed in CODESYS, and nothing writes to the PLC.
       </p>
       {!R && (
         <div class="notice info">
@@ -114,7 +115,7 @@ const proven: [string, string][] = [
         <h2>Screens, alarms, and a PLC that never knows we are there.</h2>
         <p class="lede">
           The screens are drawn outside the runtime, over the OPC UA server the runtime already has. So a change to a screen is
-          a HotLoop edit, not a download to the PLC, and the same screen is on the panel PC and on a phone.
+          a HotLoop edit, not a download to the PLC, and the same screen is on the panel PC and on a phone. Under it is <a href="/edge/">HotLoop Edge</a>, so everything on the Edge page is true here too, and it is the seventh product in the <a href="/products/">family</a>.
         </p>
       </div>
       <div class="grid grid-2">
@@ -160,36 +161,6 @@ const proven: [string, string][] = [
           <figcaption>The same screen on a phone. One layout folds from twelve columns to one, so nobody builds the phone version.</figcaption>
         </figure>
       </div>
-    </div>
-  </section>
-
-  <section class="block">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="label">What it won't do</span>
-        <h2>Four refusals, and each one is on purpose.</h2>
-      </div>
-      <div class="grid grid-2">
-        {wontDo.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
-      </div>
-    </div>
-  </section>
-
-  <section class="block">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="label">What is built</span>
-        <h2>{R ? `What ${CODESYS.version} ships.` : 'What the first version holds.'}</h2>
-        <p class="lede">
-          Four parts, and each says how far it has been proven. The table further down names what was run and what was not.
-        </p>
-      </div>
-      <div class="grid grid-2">
-        {built.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
-      </div>
-      <CardDetail>
-        {built.filter((r) => r[2]).map(([h, , l]) => <div><h4>{h}</h4><p>{l}</p></div>)}
-      </CardDetail>
     </div>
   </section>
 
@@ -254,6 +225,36 @@ const proven: [string, string][] = [
         What comes next is on the <a href="https://docs.hotloop.io/codesys/roadmap/">roadmap</a>, and it is mostly this table
         turned from "not shown" to "shown".
       </p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What is built</span>
+        <h2>{R ? `What ${CODESYS.version} ships.` : 'What the first version holds.'}</h2>
+        <p class="lede">
+          Four parts, and each says how far it has been proven. The table further down names what was run and what was not.
+        </p>
+      </div>
+      <div class="grid grid-2">
+        {built.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+      </div>
+      <CardDetail>
+        {built.filter((r) => r[2]).map(([h, , l]) => <div><h4>{h}</h4><p>{l}</p></div>)}
+      </CardDetail>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">What it won't do</span>
+        <h2>Four refusals, and each one is on purpose.</h2>
+      </div>
+      <div class="grid grid-2">
+        {wontDo.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+      </div>
     </div>
   </section>
 

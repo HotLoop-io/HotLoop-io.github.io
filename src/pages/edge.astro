@@ -36,9 +36,11 @@ const p = product('edge');
       <div class="cluster"><span class="label">HotLoop Edge</span><span class="chip ok">{CURRENT} is out</span></div>
       <h1>IoT, plus everything that lives next to a machine.</h1>
       <p class="lede">
-        Ignition Edge had the right idea, and this is ours. Everything in <a href="/iot/">HotLoop IoT</a>, plus
-        store-and-forward to whatever sits upstream and an OPC UA server (the standard your SCADA already reads). The upshot: the machine keeps running its
-        screens and its logic when the network doesn't, and the SCADA you already paid for can still read it.
+        A machine's screen and logic should not depend on a network three buildings away. Edge is HotLoop on a box next to
+        the machine: everything in <a href="/iot/">IoT</a>, plus an OPC UA server your SCADA can read and a queue that
+        buffers readings and replays them in order when the uplink comes back. When the WAN dies, the operator still has a
+        screen, the alarm still raises, and the rule still runs. The backhoe through the fiber becomes an IT ticket, not a
+        line down.
       </p>
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
@@ -63,23 +65,23 @@ const p = product('edge');
   <section class="block">
     <div class="wrap grid grid-2 split">
       <div class="stack">
-        <span class="label">What it is for</span>
+        <span class="label">What it does</span>
         <h2>A box at the machine that keeps working when the network doesn't.</h2>
         <p class="muted">
           The operator's screen runs against the box on the machine, not a server three buildings away. When the
-          uplink drops, readings buffer and replay in order, flagged historical, when it comes back. The
-          alarm still raises, the rule still runs, the panel still answers. A backhoe through the fiber is an IT
-          ticket, not a line down. A hard kill with the link up loses what was in memory, about one poll, and the
-          docs say so.
+          uplink drops, readings buffer and replay in order, flagged historical, when it comes back. A hard kill with the
+          link up loses what was in memory, about one poll, and the docs say so.
         </p>
       </div>
       <div class="stack">
-        <span class="label">The database</span>
-        <h2>{p.databases}.</h2>
+        <span class="label">Where it fits</span>
+        <h2>In the middle of the lineup, and not a dead end.</h2>
         <p class="muted">
-          Picked by a setting, same image. TimescaleDB (PostgreSQL built for time-series data) when the box keeps real history, SQLite when it's a small PC
-          with a small disk. Moving up to the Gateway is designed to keep your data and your config, so the box you
-          start with isn't a dead end.
+          <a href="/iot/">IoT</a> is the base, and Edge is IoT plus the machine layer. The <a href="/gateway/">Gateway</a>
+          is Edge plus fleet, multi-site and reports, and the <a href="/edge-relay/">Edge Relay</a> is the one with no screen.
+          One codebase, one tag. The database is a setting in the same image: <strong>{p.databases}</strong>, with
+          TimescaleDB (PostgreSQL built for time-series data) when the box keeps real history and SQLite on a small PC with a
+          small disk. Moving up to the Gateway is designed to keep your data and your config.
         </p>
       </div>
     </div>
@@ -112,15 +114,19 @@ const p = product('edge');
           forget a permission check, and we're not signing up for that.
         </p>
       </div>
-      <div class="grid grid-3">
-        <article class="card reveal"><h3>A canvas that never reflows</h3><p>A fixed screen that scales and never shuffles things around, because an operator's thumb goes to where the pump was yesterday, and it better still be there.</p></article>
-        <article class="card reveal"><h3>ISA-101 by default</h3><p>The ISA-101 standard for plant screens: gray backgrounds, color only for abnormal, alarm priority by shape as well as color. When the screen is gray, the one red thing gets seen.</p></article>
-        <article class="card reveal"><h3>Faceplates</h3><p>Click a motor and get its popup: start, stop, reset, mode, speed, its interlocks, and its alarms, built from the motor entity that already exists.</p></article>
-        <article class="card reveal"><h3>Panel mode</h3><p>Open the box at <code>/?screen=name</code> and the dashboard bound to that name fills the panel: no header, big touch targets, and it works with the uplink down.</p></article>
-        <article class="card reveal"><h3>A person behind every write</h3><p>On your own computer you're already signed in. A shared panel signs operators in with a PIN or a badge, so the audit names a human, not "panel 3".</p></article>
-        <article class="card reveal"><h3>What is not built</h3><p>The ISA-101 symbol library, the faceplates and the PIN sign-in for shared panels are design. Dashboards, which they build on, are in {CURRENT}, and this page will say when these move.</p></article>
+      <div class="grid grid-2 split">
+        <div class="stack">
+          <h3>Built, and out in every product</h3>
+          <p class="muted">Dashboards, bound to a physical screen, and panel mode: open the box at <code>/?screen=name</code> and the dashboard bound to that name fills the panel, with no header, big touch targets, and it works with the uplink down.</p>
+        </div>
+        <div class="stack">
+          <h3>Planned, and not built</h3>
+          <p class="muted">The ISA-101 symbol library, motor and valve faceplates, and PIN sign-in for shared panels, so the audit names a person and not "panel 3". They build on the dashboards and the same write gate, and this page will say when they ship.</p>
+        </div>
       </div>
-      <CardDetail>
+      <CardDetail label="The planned HMI work, in detail">
+        <div><h4>A canvas that never reflows</h4><p>A fixed screen that scales and never shuffles things around, because an operator's thumb goes to where the pump was yesterday, and it had better still be there.</p></div>
+        <div><h4>Faceplates</h4><p>Click a motor and get its popup: start, stop, reset, mode, speed, its interlocks, and its alarms, built from the motor entity that already exists.</p></div>
         <div><h4>ISA-101 by default</h4><p>The ISA-101 standard for plant screens: gray backgrounds, color only for abnormal, alarm priority by shape as well as color. When the whole screen is gray, the one red thing gets seen. No 3D gradients on the tank.</p></div>
         <div><h4>Panel mode</h4><p>Open the box at <code>/?screen=name</code> and the dashboard bound to that name fills the panel with no header, no tabs and big touch targets. It works against the box itself with the uplink down. Panel mode drops the header, so the alarm list on a panel is an alarms card on its dashboard.</p></div>
         <div><h4>A person behind every write</h4><p>On your own computer you're already signed in. A shared panel signs operators in with a PIN or a badge and signs them out when idle, so the audit names a human, not "panel 3".</p></div>
