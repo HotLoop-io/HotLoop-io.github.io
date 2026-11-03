@@ -229,8 +229,9 @@ const proven: [string, string][] = [
       </div>
       <p class="muted note">
         The steps, the profile's shape, and the sign-in are on the <a href="https://docs.hotloop.io/codesys/install/">install page</a>
-        in the docs. The commands above are what the chart takes. They have not been run against a published chart, because
-        there is not one yet.
+        in the docs. {!R ? <strong>Not released yet, so the Helm commands above will not work today.</strong> : null}
+        {' '}The chart repository answers and lists no chart, so <code>helm repo add</code> succeeds and <code>helm install</code> finds nothing
+        to install. The commands are what the chart will take, and they have not been run against a published chart.
       </p>
     </div>
   </section>

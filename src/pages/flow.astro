@@ -7,6 +7,15 @@ import Backpressure from '../components/Backpressure.astro';
 import CardDetail from '../components/CardDetail.astro';
 
 const nodes = await getCollection('nodes');
+const podmanFlow = `podman run --rm ghcr.io/hotloop-io/hotloop-flow:2.8.1 hash-password -password 'something-long'
+openssl rand -hex 32
+podman run -d --name hotloop-flow -p 1880:1880 -v hotloop-flow-data:/data \\
+  -e HOTLOOP_FLOW_ADMIN_USER=admin \\
+  -e HOTLOOP_FLOW_ADMIN_PASSWORD_HASH='<the hash>' \\
+  -e HOTLOOP_FLOW_CREDENTIAL_SECRET='<the secret>' \\
+  ghcr.io/hotloop-io/hotloop-flow:2.8.1`;
+const helmFlow = `helm repo add hotloop-flow https://hotloop.io/hotloop-flow/
+helm install line3-flows hotloop-flow/hotloop-flow`;
 const level = (l: string) => nodes.filter((n) => n.data.level === l).length;
 
 // Straight from the numbers table in Flow's own README and docs/bench. Absolute
@@ -218,14 +227,14 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         <div class="group" id={g.id}>
           <h3 class="group-title">{g.label}</h3>
           <p class="group-sub">{g.h}</p>
-          <div class={`grid ${g.cols === 4 ? 'grid-4' : 'grid-3'}`}>
+          <ul class="rows">
             {g.cards.map((c) => (
-              <article class="card reveal">
-                <div class="cluster head"><h3 class="t-md">{c.h}</h3>{c.chip && <span class="chip ok">{c.chip}</span>}</div>
+              <li>
+                <div class="rh"><strong>{c.h}</strong>{c.chip && <span class="chip ok">{c.chip}</span>}</div>
                 <p set:html={c.b} />
-              </article>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       ))}
       <CardDetail label="The full detail, from the release notes">
@@ -289,6 +298,33 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           <img class="flow-shot dark" src="/flow/dashboard-signin-dark.png" width="800" height="500" loading="lazy" alt="The dashboard notice in dark" />
           <figcaption>Flow won't start unlocked. When the EmberCORE dashboard signs people in, a runtime opened any other way says to come in through the dashboard.</figcaption>
         </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="install">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Install it</span>
+        <h2>One image, one volume, and an admin account before it will start.</h2>
+        <p class="lede">
+          Flow refuses to run unlocked, so every path sets an admin password hash and a credential secret first. The image
+          is <code>ghcr.io/hotloop-io/hotloop-flow:2.8.1</code> for amd64 and arm64, with no shell in it, so hashing the
+          password is a subcommand of the binary. Keep the credential secret somewhere that is not the box: every broker
+          and database password Flow stores is unreadable without it.
+        </p>
+      </div>
+      <div class="grid grid-2">
+        <article class="card reveal">
+          <h3>Podman</h3>
+          <pre><code>{podmanFlow}</code></pre>
+          <p class="muted">Quadlet units that follow the tag, and the full steps, are on <a href="https://docs.hotloop.io/flow/install/">the install page</a>.</p>
+        </article>
+        <article class="card reveal">
+          <h3>k3s with Helm</h3>
+          <pre><code>{helmFlow}</code></pre>
+          <p class="muted">The chart makes the admin password and the credential secret on first install and keeps them on every upgrade. One release is one instance, on purpose.</p>
+        </article>
       </div>
     </div>
   </section>
@@ -594,6 +630,11 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
 
   .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
   .cta .stack { max-width: 62ch; }
+  .rows { list-style: none; padding: 0; margin: 0; display: grid; border-top: 1px solid var(--hl-border); }
+  .rows li { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(0, 2.4fr); gap: var(--hl-s2) var(--hl-s6); padding: var(--hl-s4) 0; border-bottom: 1px solid var(--hl-border); align-items: start; }
+  .rows .rh { display: flex; flex-direction: column; align-items: flex-start; gap: var(--hl-s1); }
+  .rows p { margin: 0; color: var(--hl-ink-soft); }
+  @media (max-width: 720px) { .rows li { grid-template-columns: 1fr; } }
   .flow-shots { display: grid; gap: var(--hl-s7); }
   .flow-shots figure { display: grid; gap: var(--hl-s3); margin: 0; }
   .flow-shots figcaption { color: var(--hl-ink-soft); max-width: 70ch; }
