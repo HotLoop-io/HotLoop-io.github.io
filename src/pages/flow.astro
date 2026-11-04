@@ -7,14 +7,23 @@ import Backpressure from '../components/Backpressure.astro';
 import CardDetail from '../components/CardDetail.astro';
 
 const nodes = await getCollection('nodes');
+const podmanFlow = `podman run --rm ghcr.io/hotloop-io/hotloop-flow:2.8.1 hash-password -password 'something-long'
+openssl rand -hex 32
+podman run -d --name hotloop-flow -p 1880:1880 -v hotloop-flow-data:/data \\
+  -e HOTLOOP_FLOW_ADMIN_USER=admin \\
+  -e HOTLOOP_FLOW_ADMIN_PASSWORD_HASH='<the hash>' \\
+  -e HOTLOOP_FLOW_CREDENTIAL_SECRET='<the secret>' \\
+  ghcr.io/hotloop-io/hotloop-flow:2.8.1`;
+const helmFlow = `helm repo add hotloop-flow https://hotloop.io/hotloop-flow/
+helm install line3-flows hotloop-flow/hotloop-flow`;
 const level = (l: string) => nodes.filter((n) => n.data.level === l).length;
 
 // Straight from the numbers table in Flow's own README and docs/bench. Absolute
 // numbers only: Flow's repository dropped the side-by-side table on purpose,
 // because it moves every time the box changes.
 const bench = [
-  ['Binary, linux/amd64, static', '22.0 MB'],
-  ['Image, 2.3.0 amd64, as Podman reports it', '44.8 MB'],
+  ['Binary, linux/amd64, static', '41.7 MB'],
+  ['Image, 2.8.0 amd64, as Podman reports it', '45.64 MB'],
   ['Start to answering its first request', '0.05 s'],
   ['Memory in use (RSS), idle', '16.4 to 16.7 MiB'],
   ['RSS, peak under the HTTP load', '26.4 to 28.5 MiB'],
@@ -27,9 +36,9 @@ const bench = [
 // dropped it. Throughput, latency and cold start are that day's run: both runtimes
 // in rootless Podman on one 12 CPU Linux box, the same five-node flow file, the same
 // load generator, 8 connections, 30 seconds, nodered/node-red:latest. The image row
-// is the 2.3.0 image, built from the release tree, against the Node-RED image from that run.
+// is the 2.8.0 image, built from the release tree, against the Node-RED image from that run.
 const versus = [
-  ['Image size', '44.8 MB', '717 MB', '16×'],
+  ['Image size', '45.64 MB', '717 MB', '16×'],
   ['Throughput', '3,460 req/s', '1,290 req/s', '2.7×'],
   ['Latency p50', '1.03 ms', '4.61 ms', '4.5×'],
   ['Latency p99', '16.72 ms', '23.14 ms', '1.4×'],
@@ -73,7 +82,7 @@ const notDone = [
   ['AI agents (MCP).', 'Out in 2.3.0, tested against the Go SDK’s client, the MCP Inspector and a real HotLoop 4.18.10. Not done: OAuth, stdio servers, resources, prompts, sampling, and a tool’s output schema.'],
   ['Plugins on a Pi.', 'Signed WebAssembly plugins are out in 2.3.0 and have never run on a Pi. The traps and refusals are tested against guests built from Rust, TinyGo and Go, and the per-call numbers are from an x86 box.'],
   ['A real Pi.', 'The durable store’s writes per hour are measured on x86 under WSL. A Pi 4 and a Zero 2 W have not run it yet, and an SD card is the first place a context store would show a bug.'],
-  ['The editor.', 'It is hand-built TypeScript and it does not look like the rest of HotLoop yet. A rewrite comes last, after a design pass, and the browser tests are the bar it has to clear.'],
+  ['The editor.', 'It was rebuilt in 2.5.0 in HotLoop\'s colors and type, and the 60 browser tests passed untouched. It has not been opened in Firefox or Safari, on a tablet, on a plant HMI screen, or inside the live EmberCORE dashboard frame. The screenshots and the browser tests run in Chrome.'],
 ];
 
 // What Flow does, grouped by the question a plant person asks. Every card is a title
@@ -126,6 +135,14 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
     ],
   },
   {
+    id: 'flowlab', label: 'FlowLab', h: 'A second way to run a tab, for test benches and data loggers. It has 28 node types of its own, beside the 79 for messages.', cols: 3,
+    cards: [
+      { h: 'Diagrams with loops and an error wire', chip: 'In 2.7.0', b: 'In a diagram each node runs once, when every wired input has a value, and nodes with no wire between them run at the same time. While and for loops carry a value from one pass to the next, and an error travels on a wire of its own. Flows run exactly as they did.' },
+      { h: 'A panel and a debugger', chip: 'In 2.7.0', b: 'A panel at <code>/panel/&lt;diagram id&gt;</code> with controls, indicators and charts that opens on a phone, and a run bar with highlight execution, probes, breakpoints and step.' },
+      { h: 'Analysis, DAQ and TDMS', chip: 'In 2.8.0', b: 'Statistics, integral, derivative and Butterworth filter nodes, a node that reads NI hardware through NI\'s gRPC Device Server, a durable MQTT output, and a TDMS log. The DAQ node has met a stand-in server, and the TDMS files have not met NI\'s own software.' },
+    ],
+  },
+  {
     id: 'locked', label: 'Locked down by default', h: 'It refuses to start without a login in front of it.', cols: 3,
     cards: [
       { h: 'No login is a startup error', b: 'Turning authentication off takes an environment variable, on purpose, and the editor wears a no-login badge while it is off.' },
@@ -133,7 +150,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
       { h: 'Credentials under GCM', b: 'Credentials are encrypted with AES-256-GCM under an Argon2id key, and deploy records never hand them out, encrypted or not.' },
       { h: 'exec off, files fenced', b: 'The exec node ships disabled until an operator allowlists commands, with no shell. File nodes are scoped to the volume, symlinks resolved.' },
       { h: 'A sandbox with nothing to reach', b: 'The Function node runs on goja with no require, no process, no filesystem, and no network. Plugins run as signed WebAssembly with a memory ceiling and a timeout.' },
-      { h: 'One static binary', b: 'A 22.0 MB static binary that idles at about 16 MiB and answers its first request in 0.05 s. A Pi 4 and a Zero 2 W have not run it yet.' },
+      { h: 'One static binary', b: 'A 41.7 MB static binary that idles at about 16 MiB and answers its first request in 0.05 s. A Pi 4 and a Zero 2 W have not run it yet.' },
     ],
   },
 ];
@@ -210,14 +227,14 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         <div class="group" id={g.id}>
           <h3 class="group-title">{g.label}</h3>
           <p class="group-sub">{g.h}</p>
-          <div class={`grid ${g.cols === 4 ? 'grid-4' : 'grid-3'}`}>
+          <ul class="rows">
             {g.cards.map((c) => (
-              <article class="card reveal">
-                <div class="cluster head"><h3 class="t-md">{c.h}</h3>{c.chip && <span class="chip ok">{c.chip}</span>}</div>
+              <li>
+                <div class="rh"><strong>{c.h}</strong>{c.chip && <span class="chip ok">{c.chip}</span>}</div>
                 <p set:html={c.b} />
-              </article>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       ))}
       <CardDetail label="The full detail, from the release notes">
@@ -285,14 +302,41 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
     </div>
   </section>
 
+  <section class="block" id="install">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Install it</span>
+        <h2>One image, one volume, and an admin account before it will start.</h2>
+        <p class="lede">
+          Flow refuses to run unlocked, so every path sets an admin password hash and a credential secret first. The image
+          is <code>ghcr.io/hotloop-io/hotloop-flow:2.8.1</code> for amd64 and arm64, with no shell in it, so hashing the
+          password is a subcommand of the binary. Keep the credential secret somewhere that is not the box: every broker
+          and database password Flow stores is unreadable without it.
+        </p>
+      </div>
+      <div class="grid grid-2">
+        <article class="card reveal">
+          <h3>Podman</h3>
+          <pre><code>{podmanFlow}</code></pre>
+          <p class="muted">Quadlet units that follow the tag, and the full steps, are on <a href="https://docs.hotloop.io/flow/install/">the install page</a>.</p>
+        </article>
+        <article class="card reveal">
+          <h3>k3s with Helm</h3>
+          <pre><code>{helmFlow}</code></pre>
+          <p class="muted">The chart makes the admin password and the credential secret on first install and keeps them on every upgrade. One release is one instance, on purpose.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <section class="block" id="numbers">
     <div class="wrap">
       <div class="section-head">
         <span class="label">The numbers</span>
-        <h2>A 22.0 MB binary that answers in 0.05 s, with the limits stated up front.</h2>
+        <h2>A 41.7 MB binary that answers in 0.05 s, with the limits stated up front.</h2>
         <p class="lede">
           Linux under WSL2, 24 CPUs (a Ryzen 9 7900X), 2026-10-02, the native binary built from <code>main</code>, three
-          runs of each command, and the range is what's printed. The image row is the 2.3.0 image, built from the release tree with <code>podman build --platform linux/amd64 --build-arg VERSION=v2.3.0 .</code> and read on 2026-10-22 with <code>podman image inspect</code>, 44,833,285 bytes. It was not read from ghcr.io, because the tag wasn't pushed yet. Flow's repository prints absolute numbers only, because a side-by-side table moves every time the
+          runs of each command, and the range is what's printed. The two size rows were measured again on 2026-11-01 for 2.8.0: the binary is 41,693,346 bytes built with <code>CGO_ENABLED=0 go build -trimpath -ldflags="-s -w"</code>, and the image row is the 2.8.0 amd64 image built from the release tree with <code>podman build --platform linux/amd64 --build-arg VERSION=v2.8.0 .</code> and read with <code>podman image inspect</code>, 45,635,783 bytes. It was not read from ghcr.io, because the tag wasn't pushed yet. The other rows are still the 2026-10-02 build. Flow's repository prints absolute numbers only, because a side-by-side table moves every time the
           box changes and ends up describing the box more than Flow.
         </p>
       </div>
@@ -353,7 +397,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           </li>
           <li>
             <strong>WSL2 is not a Pi.</strong> The Pi 5 is measured above. A Pi 4 and a Zero 2 W have not run it yet, and the image grew from 32.1 MB
-            at 2.1.0 to 39.1 MB at 2.2.0 and 44.8 MB at 2.3.0. That growth came from the plant nodes, tracing, the SQLite state store, the HotLoop and MCP nodes, JSON Schema checking and the plugin host, and nobody has
+            at 2.1.0 to 39.1 MB at 2.2.0, 44.8 MB at 2.3.0, 44.95 MB at 2.5.0, 45.34 MB at 2.7.0 and 45.64 MB at 2.8.0. That growth came from the plant nodes, tracing, the SQLite state store, the HotLoop and MCP nodes, JSON Schema checking, the plugin host and FlowLab, and nobody has
             measured how much each one added.
           </li>
         </ol>
@@ -383,6 +427,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           The upshot: if a plant depends on it, you want the one that is still standing at 3am.
         </p>
       </div>
+      <CardDetail label="The table and every caveat behind it">
       <div class="table-wrap">
         <table class="data">
           <thead><tr><th>Measure</th><th>Flow</th><th>Node-RED</th><th>Ratio</th></tr></thead>
@@ -414,8 +459,8 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         <p class="muted">
           Two more, so nobody has to find them. The throughput, latency and cold start rows are from the run on
           2026-08-08, on an earlier build of Flow, so don't divide them by the newer absolute numbers above. The image
-          row is the 2.3.0 image, built from the release tree (44.8 MB, measured as above), against the Node-RED image from that run. When I ran it, Flow was 25.1 MB
-          and the gap was 29×, and Flow has grown since, with the plant nodes, tracing, the SQLite state store, and the HotLoop, MCP and plugin work of 2.3.0.
+          row is the 2.8.0 image, built from the release tree (45.64 MB, measured as above), against the Node-RED image from that run. When I ran it, Flow was 25.1 MB
+          and the gap was 29×, and Flow has grown since, with the plant nodes, tracing, the SQLite state store, the HotLoop, MCP and plugin work of 2.3.0, and FlowLab since.
         </p>
         <p class="muted">
           Memory isn't in this table, on purpose. Those numbers came off <code>podman stats</code>, which reports what
@@ -425,6 +470,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           old numbers pulled.
         </p>
       </div>
+      </CardDetail>
     </div>
   </section>
 
@@ -539,8 +585,9 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
       <ul class="notdone">
         {notDone.map(([h, b]) => <li><strong>{h}</strong> {b}</li>)}
         <li>
-          <strong>It has never run on a real plant floor.</strong> Everything past the deploy line is unproven in the
-          field, and it will not be described as production-hardened until a plant has tried to break it.
+          <strong>It is new to the plant floor.</strong> A plant runs it through EmberNet now, and that is the only field
+          proof it has. Everything past the deploy line is still proven against simulators and stand-ins, and it will not be
+          described as production-hardened until a plant has tried to break it.
         </li>
       </ul>
     </div>
@@ -585,6 +632,11 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
 
   .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
   .cta .stack { max-width: 62ch; }
+  .rows { list-style: none; padding: 0; margin: 0; display: grid; border-top: 1px solid var(--hl-border); }
+  .rows li { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(0, 2.4fr); gap: var(--hl-s2) var(--hl-s6); padding: var(--hl-s4) 0; border-bottom: 1px solid var(--hl-border); align-items: start; }
+  .rows .rh { display: flex; flex-direction: column; align-items: flex-start; gap: var(--hl-s1); }
+  .rows p { margin: 0; color: var(--hl-ink-soft); }
+  @media (max-width: 720px) { .rows li { grid-template-columns: 1fr; } }
   .flow-shots { display: grid; gap: var(--hl-s7); }
   .flow-shots figure { display: grid; gap: var(--hl-s3); margin: 0; }
   .flow-shots figcaption { color: var(--hl-ink-soft); max-width: 70ch; }

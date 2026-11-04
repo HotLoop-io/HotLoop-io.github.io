@@ -73,8 +73,8 @@ const fmt = (d: Date) =>
         <p>Node types in Flow, our Node-RED-compatible wiring tool. Each one says how close it is to Node-RED, and the build fails if one lies about it.</p>
       </div>
       <div class="stat">
-        <div class="n mono">44.8<small>MB</small></div>
-        <p>The whole Flow 2.3.0 container image (amd64), as Podman reports it. The method and the caveats are on <a href="/flow/#numbers">the Flow page</a>, because a benchmark without caveats is marketing in a lab coat.</p>
+        <div class="n mono">45.6<small>MB</small></div>
+        <p>The whole Flow 2.8.0 container image (amd64), as Podman reports it. The method and the caveats are on <a href="/flow/#numbers">the Flow page</a>, because a benchmark without caveats is marketing in a lab coat.</p>
       </div>
     </div>
   </section>
@@ -83,11 +83,12 @@ const fmt = (d: Date) =>
     <div class="wrap">
       <div class="section-head">
         <span class="label" id="running-at">Running at</span>
-        <p class="lede">HotLoop runs at the plants of Shepherd Boy Farms and DayGlo, both through EmberNet.</p>
+        <p class="lede">HotLoop runs at the plants of Shepherd Boy Farms, DayGlo, and Trane Technologies, through EmberNet.</p>
       </div>
       <ul class="logos">
         <li><a class="plate" href="https://shepherdboyfarms.com" rel="noopener" aria-label="Shepherd Boy Farms"><img src="/customers/shepherd-boy-farms-logo.png" alt="Shepherd Boy Farms" width="2472" height="1238" loading="lazy" decoding="async" /></a></li>
-        <li><a class="plate" href="https://www.dayglo.com" rel="noopener" aria-label="DayGlo"><img src="/customers/dayglo-logo.svg" alt="DayGlo" width="648" height="180" loading="lazy" decoding="async" /></a></li>
+        <li><a class="plate" href="https://www.dayglo.com" rel="noopener" aria-label="DayGlo"><img class="on-light" src="/customers/dayglo-logo-standard-transparent.png" alt="DayGlo" width="279" height="69" loading="lazy" decoding="async" /><img class="on-dark" src="/customers/dayglo-logo.svg" alt="DayGlo" width="648" height="180" loading="lazy" decoding="async" /></a></li>
+        <li><a class="plate" href="https://www.tranetechnologies.com" rel="noopener" aria-label="Trane Technologies"><img class="on-light" src="/customers/trane-technologies-logo.svg" alt="Trane Technologies" width="626" height="175" loading="lazy" decoding="async" /><img class="on-dark blend" src="/customers/trane-technologies-logo-reversed.png" alt="Trane Technologies" width="1310" height="730" loading="lazy" decoding="async" /></a></li>
       </ul>
     </div>
   </section>
@@ -138,7 +139,7 @@ const fmt = (d: Date) =>
       <div class="lines">
         {LINES.map((l) => (
           <div class="line">
-            <p class="line-head"><span class="chip ok">{l.label} line, {l.id === 'flow' ? fl.data.version : l.version}</span></p>
+            <p class="line-head">{l.released ? <span class="chip ok">{l.label} line, {l.id === 'flow' ? fl.data.version : l.version}</span> : <span class="chip warn">{l.label} line, not released yet</span>}</p>
             <div class="grid grid-4 lineup">
               {l.members.map((m) => (
                 <a class="card mini reveal" href={m.href}>
@@ -229,13 +230,18 @@ const fmt = (d: Date) =>
 </Base>
 
 <style>
-  /* Customer logos are the companies' own files, never recolored. Both sit on the same
-     dark plate in either theme, because DayGlo's mark has a white wordmark. Sized by height only. */
+  /* Customer logos are the companies' own files, never recolored or redrawn. Every plate is the page's own
+     surface, and where a company publishes a standard and a reversed mark the page shows the standard one
+     in light and the reversed one in dark. The plates span the content width and share one size. */
   .running .section-head { margin-bottom: var(--hl-s5); }
-  .logos { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--hl-s4); align-items: stretch; }
-  .plate { display: flex; align-items: center; justify-content: center; padding: var(--hl-s4) var(--hl-s6); background: #14120F; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); transition: border-color var(--hl-transition-fast); }
+  .logos { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: var(--hl-s4); }
+  .plate { display: flex; align-items: center; justify-content: center; height: 120px; padding: var(--hl-s4) var(--hl-s6); box-sizing: border-box; background: var(--hl-card); border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); transition: border-color var(--hl-transition-fast); }
   .plate:hover { border-color: var(--hl-orange); }
-  .plate img { height: 72px; width: auto; display: block; }
+  .plate img { height: auto; width: auto; max-height: 64px; max-width: 100%; display: block; object-fit: contain; }
+  .plate .on-dark { display: none; }
+  /* Trane's reversed logo is a 1310 by 730 picture with a wide black margin around the mark, so it is drawn
+     larger to make the mark the same size as the standard one, and the black margin is blended into the surface. */
+  .plate .blend { max-height: none; width: 273px; height: 152px; margin-block: -44px; }
   .hero { padding-top: clamp(var(--hl-s7), 6vw, var(--hl-s8)); }
   .grid-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 620px); gap: clamp(var(--hl-s6), 5vw, var(--hl-s8)); align-items: center; }
   /* Side by side, the copy column gets about 250px at 1024 and the h1 broke
@@ -284,4 +290,14 @@ const fmt = (d: Date) =>
   .licensing { display: flex; flex-wrap: wrap; gap: var(--hl-s6); align-items: center; justify-content: space-between; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
   .licensing > div { display: grid; gap: var(--hl-s3); max-width: 60ch; }
   .licensing .lede { font-size: var(--hl-fs-md); }
+</style>
+<style is:global>
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .plate .on-light { display: none; }
+    :root:not([data-theme="light"]) .plate .on-dark { display: block; }
+    :root:not([data-theme="light"]) .plate .blend { mix-blend-mode: lighten; }
+  }
+  :root[data-theme="dark"] .plate .on-light { display: none; }
+  :root[data-theme="dark"] .plate .on-dark { display: block; }
+  :root[data-theme="dark"] .plate .blend { mix-blend-mode: lighten; }
 </style>

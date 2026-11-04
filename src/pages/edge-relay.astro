@@ -40,10 +40,11 @@ const v = latest.data.version;
       <div class="cluster"><span class="label">HotLoop Edge Relay</span><span class="chip ok">{v} is out</span></div>
       <h1>Poll, forward, survive. Nothing else.</h1>
       <p class="lede">
-        A headless edge node for a Pi or a small industrial PC. It polls equipment with the same drivers the Gateway
-        uses, forwards every reading over Sparkplug B (the MQTT standard for industrial data), and buffers to disk when the uplink goes away. No database, no
-        UI, no login, and no way to write to a machine. That's the feature: a box with nothing to click can't be
-        clicked wrong.
+        You have a PLC in a cabinet three miles from anything with a screen, and you want its numbers upstream without
+        putting a server in the cabinet. The Edge Relay is the answer: a headless box for a Pi or a small industrial PC that
+        polls the equipment with the same drivers as the Gateway, forwards every reading over Sparkplug B (the MQTT standard
+        for industrial data), and buffers to disk when the uplink goes away. No database, no UI, no login, and no way to
+        write to a machine. That's the feature: a box with nothing to click can't be clicked wrong.
       </p>
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
@@ -66,27 +67,38 @@ const v = latest.data.version;
   </section>
 
   <section class="block">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="label">What it is not</span>
-        <h2>Not a smaller Gateway with the options turned off.</h2>
-        <p class="lede">
-          It's a different binary. It never links the database, the web UI, the automation engine, the entity
-          registry, or AI agent access (MCP), and a test asks the compiler what actually got linked and fails the build if any of them
-          sneaks in. There's no "relay mode" buried in the Gateway, because a mode is one bad environment variable
-          away from a web server listening on a box nobody's watching.
+    <div class="wrap grid grid-2 split">
+      <div class="stack">
+        <span class="label">What it does</span>
+        <h2>It reads, forwards, and rides out a dead link.</h2>
+        <p class="muted">
+          It reads with every driver HotLoop has, forwards each reading as a Sparkplug B edge node, and when the link drops it
+          queues to one file on disk and replays in order, flagged historical, so the historian upstream gets the gap filled in.
+          Devices and tags come from one JSON file. A bad file is refused and the old one keeps running, and a file the Gateway
+          pushes applies the moment it lands. It can even find ESPHome, Zigbee2MQTT, Tasmota and Shelly devices on a broker,
+          read and forward only.
+        </p>
+        <p class="muted">
+          It has no write path at all. It can't take a write, serve a screen, or answer an AI agent, because every one of those
+          needs a signed-in person to pin the action on, and it has no users.
         </p>
       </div>
-      <div class="grid grid-3">
-        <article class="card reveal"><h3>Every driver</h3><p>OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, SNMP, BACnet/IP, and UniFi, from the same code the Gateway polls with.</p></article>
-        <article class="card reveal"><h3>Store-and-forward</h3><p>Sparkplug B births, sequence numbers, and deaths. When the link drops it queues to one file on disk and replays in order, flagged historical.</p></article>
-        <article class="card reveal"><h3>Configured by a file</h3><p>Devices and tags come from one JSON file. A bad file is refused and the old one keeps running. A pushed file applies the moment it lands.</p></article>
-        <article class="card reveal"><h3>Finds devices that announce themselves</h3><p>The relay listens to MQTT brokers for ESPHome, Zigbee2MQTT, Tasmota, and Shelly devices, read and forward only. It still can't write to a thing.</p></article>
-        <article class="card reveal"><h3>No write path</h3><p>It reads and forwards. It can't take a write, serve a screen or answer an AI agent, because it has no users to pin an action on.</p></article>
-        <article class="card reveal"><h3>Managed from the Gateway</h3><p>The Gateway's fleet API tracks every relay from its births and deaths, and sends a rebirth, a restart, or a new device file over the connection the relay dialed out on.</p></article>
-        <article class="card reveal"><h3>Honest about what's proven</h3><p>Run end to end against a real Mosquitto broker, Modbus TCP slaves, an HTTP endpoint, and an OPC UA test server. Not yet run on real EtherNet/IP or S7comm hardware.</p></article>
+      <div class="stack">
+        <span class="label">Where it fits</span>
+        <h2>Not a smaller Gateway with the options turned off.</h2>
+        <p class="muted">
+          It is a different binary, and a test asks the compiler what got linked and fails the build if the database, the web UI,
+          the automation engine, the entity registry or AI agent access sneaks in. A "relay mode" buried in the Gateway would be one
+          bad environment variable away from a web server listening on a box nobody's watching. It sits beside
+          {' '}<a href="/iot/">IoT</a>, <a href="/edge/">Edge</a> and the <a href="/gateway/">Gateway</a> on the same tag, and the
+          Gateway's fleet API tracks every relay from its births and deaths and can send it a rebirth, a restart or a new device file
+          over the connection the relay dialed out on.
+        </p>
       </div>
-      <CardDetail>
+    </div>
+    <div class="wrap">
+      <h3>What each piece does</h3>
+      <CardDetail label="The detail on each piece">
         <div><h4>Every driver</h4><p>OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, SNMP, BACnet/IP, and UniFi. The same code the Gateway polls with, down to the reconnect and back-off, so a bug fixed there is fixed here.</p></div>
         <div><h4>Store-and-forward</h4><p>Births, sequence numbers, and deaths, the way Sparkplug B says. When the link drops it queues to one file on disk and replays in order, flagged historical, when it's back. The historian upstream gets the gap filled instead of a hole.</p></div>
         <div><h4>Configured by a file</h4><p>Devices and tags come from one JSON file, and a file the Gateway pushes is read at start. A bad file is refused and the old one keeps running. A pushed file also applies the moment it lands: new devices connect, removed ones let go, changed ones reconnect, and the ones nobody touched keep their sessions. The Sparkplug session stays up with no death certificate, and a removed metric goes out once as null so the Gateway stops showing its last good value forever.</p></div>
@@ -149,6 +161,20 @@ curl localhost:8081/status</code></pre>
             isolated OT network that's a legit setup, not a mistake.
           </p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">Proven, and not</span>
+        <h2>What was run, so you don't find out at commissioning.</h2>
+        <p class="lede">
+          It was run end to end against a real Mosquitto broker, Modbus TCP slaves, an HTTP endpoint and an OPC UA test server,
+          with live config reload proven the same way. Discovery is proven against recordings of real devices. It has not been run
+          on real EtherNet/IP or S7comm hardware.
+        </p>
       </div>
     </div>
   </section>
