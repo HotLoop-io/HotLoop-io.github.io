@@ -27,10 +27,14 @@ const { features } = Astro.props;
 </ul>
 
 <style>
-  .features { list-style: none; padding: 0; display: grid; gap: var(--hl-s4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
-  .features .card { padding: var(--hl-s5); }
-  .head { justify-content: space-between; align-items: start; margin-bottom: var(--hl-s2); flex-wrap: nowrap; }
+  /* A list a person reads down, not a wall of cards: the name and where it stands on the left,
+     the one sentence beside it, and the longer text behind a toggle. */
+  .features { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; border-top: 1px solid var(--hl-border); }
+  .features .card { background: none; border: 0; border-bottom: 1px solid var(--hl-border); border-radius: 0; box-shadow: none; padding: var(--hl-s4) 0; display: grid; grid-template-columns: minmax(180px, 1fr) minmax(0, 2.4fr); gap: var(--hl-s2) var(--hl-s6); align-items: start; }
+  .head { flex-direction: column; align-items: flex-start; gap: var(--hl-s1); margin: 0; }
   .head h3 { font-size: var(--hl-fs-md); margin: 0; }
   .head .chip { flex-shrink: 0; }
-  @media (max-width: 400px) { .head { flex-wrap: wrap; } }
+  .features .card p { margin: 0; color: var(--hl-ink-soft); }
+  .features .card > :global(*:not(.head):not(p)) { grid-column: 2; }
+  @media (max-width: 720px) { .features .card { grid-template-columns: 1fr; } .features .card > :global(*:not(.head):not(p)) { grid-column: 1; } }
 </style>

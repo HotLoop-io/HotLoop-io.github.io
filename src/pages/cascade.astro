@@ -2,47 +2,30 @@
 import Base from '../layouts/Base.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
-import CardDetail from '../components/CardDetail.astro';
 import { CASCADE } from '../lib/products';
 
 const podmanCmd = `podman pull ghcr.io/hotloop-io/hotloop-cascade:${CASCADE}`;
 const helmCmd = `helm install cascade oci://ghcr.io/hotloop-io/charts/hotloop-cascade --version ${CASCADE}`;
 
-const wontDo: [string, string, string?][] = [
-  ['It won\'t write to your equipment.', 'Cascade reads and subscribes. Anything that moves a valve or changes a setpoint goes through HotLoop\'s write gate, so every write is audited.',
-    'Cascade reads and subscribes. Anything that moves a valve or changes a setpoint goes through HotLoop\'s write gate, so the gate\'s audit sees every write no matter which workflow started it. A workflow engine with a side door onto the PLC is how an audit trail stops being honest.'],
-  ['It won\'t run JavaScript in your fields.', 'Field expressions use HotLoop\'s small automation language. JavaScript lives only in the Code step, a separate jailed process.',
-    'Field expressions use the same small language HotLoop\'s automations use. It can\'t touch the OS, the network or the filesystem, and it always terminates. JavaScript lives in one place, the Code step, which runs in a separate jailed process with no secrets, no network, and no filesystem.'],
-  ['It won\'t gate anything.', 'SSO, enforced MFA, roles, audit, version history, scoped API keys, and HA workers are for everyone. There is no license check in the code.',
-    'SSO, enforced MFA, roles, audit, version history, scoped API keys, and HA workers are for everyone. There is no license check anywhere in the code, so there is nothing to pull out from under you later.'],
+// The page reads top to bottom: what it does for you, how it does it, who gets to use it,
+// what it refuses to do, how to install it, and what is not built yet.
+const refuses: [string, string][] = [
+  ['It won\'t write to your equipment.', 'Cascade reads and subscribes. Anything that moves a valve or changes a setpoint goes through HotLoop\'s write gate, so the gate\'s audit sees every write no matter which workflow started it.'],
+  ['It won\'t run JavaScript in your fields.', 'Field expressions use HotLoop\'s small automation language, which can\'t touch the OS, the network, or the filesystem. JavaScript lives in one place, the Code step, in a separate jailed process with no network and no files.'],
+  ['It won\'t gate anything.', 'SSO, enforced MFA, roles, audit, version history, scoped API keys, and HA workers are in the one binary for everyone. There is no license check in the code.'],
   ['It won\'t phone home.', 'No license server and no cloud dependency. Telemetry is opt-in, off by default, and documented down to the field when it lands.'],
 ];
 
-const built: [string, string, string?][] = [
-  ['Durable executions', 'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database.',
-    'Every step is checkpointed. If an API is down or the box reboots halfway through, the job finishes, because a retry is a row in the database and not a goroutine praying nobody pulls the plug.'],
-  ['Triggers', 'A HotLoop alarm or tag reading, a webhook, a schedule, an MQTT burst, a file that shows up, a new email in an IMAP mailbox, or a new row in EmberOps becomes a batch of items.'],
-  ['Steps that call real systems', 'HTTP, PostgreSQL, email, files, EmberOps, ntfy, Discord, and Gotify, with an OAuth2 credential vault sealed by a key outside the database.',
-    'HTTP, PostgreSQL, email, files (CSV, Excel, and a PDF\'s text), EmberOps, and the notifiers: ntfy, Discord and Gotify. A credential vault with OAuth2 holds the secrets, sealed with a key that lives outside the database.'],
-  ['Steps that talk to HotLoop', 'Read tags and alarms, acknowledge, call a service, run a script, apply a recipe. Every command goes through the gateway\'s write gate.',
-    'Read tags and alarms, acknowledge an alarm, call a service, run a script, apply a recipe, and trigger an automation on a HotLoop gateway. Every command goes through the gateway\'s write gate, with a reason in its audit trail, so Cascade has no side door to a device.'],
-  ['People and governance', 'Users with enforced MFA, OIDC sign-in, projects and roles, an audit log, and version history on every workflow.'],
-  ['Watching it', 'Prometheus metrics, and every execution is one OpenTelemetry trace (a step-by-step timeline) with a span per step. With no endpoint named, nothing is sent.'],
-  ['Bringing a workflow in', 'It converts a workflow exported as JSON from another tool. What it is sure of comes across, and the rest comes across switched off.',
-    'It converts a workflow exported as JSON from another tool. What it can be sure of comes across, and everything else comes across switched off with its original settings in the notes. It never guesses what a JavaScript expression meant, and it never brings credentials.'],
-];
-
 const planned: [string, string][] = [
-  ['0.2.0', 'SAML, LDAP and AD, SCIM, custom roles, external secrets, log streaming, variables, folders, insights, and redaction policies.'],
-  ['0.3.0', 'Git source control and environments, the multi-main HA scheduler with trigger leases, retention, backup, and restore.'],
-  ['0.4.0', 'The rest of the connector list, a published connector spec, a plugin SDK, and forms with human approval steps that work from a phone.'],
-  ['0.5.0', 'LLM and agent steps, an MCP client and server (so AI agents can use it), and a builder that uses your own model. Bring your own key or run it local.'],
+  ['Environments and scale', 'Git source control and environments, protected instances, rate limits, retention, and backup and restore. Many mains against one database already work.'],
+  ['Connectors and people', 'A published connector spec, a plugin SDK, and forms with human approval steps that work from a phone.'],
+  ['AI and MCP', 'LLM and agent steps, an MCP client and server that ship on with read and write, and a builder that uses your own model. None of it exists yet.'],
 ];
 ---
 
 <Base
   title="HotLoop Cascade: workflows that survive a reboot"
-  description="HotLoop Cascade connects the plant to webhooks, MQTT, EmberOps, and notifications, with every step checkpointed. Version 0.1.2 is out. Free for home and lab."
+  description={`HotLoop Cascade turns an alarm, a webhook, a schedule, or MQTT into a checkpointed workflow that survives a reboot. Version ${CASCADE} is out. Free for home and lab.`}
   ogAlt="HotLoop Cascade, durable workflows for the plant."
 >
   <JsonLd
@@ -53,7 +36,7 @@ const planned: [string, string][] = [
       name: 'HotLoop Cascade',
       url: 'https://hotloop.io/cascade/',
       description:
-        'A workflow engine in one static Go binary where every step is checkpointed, on SQLite for a Raspberry Pi or Postgres for a cluster, with ntfy, Discord, Gotify, webhook, email, and EmberOps steps.',
+        'A workflow engine in one static Go binary where every step is checkpointed, on SQLite for a Raspberry Pi or Postgres for a cluster, with a new editor, SSO, roles, and external secrets.',
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Linux',
       license: 'https://hotloop.io/license/',
@@ -62,96 +45,98 @@ const planned: [string, string][] = [
       publisher: { '@id': 'https://hotloop.io/#organization' },
     }}
   />
+
   <section class="page-hero">
     <div class="wrap stack">
       <div class="cluster"><span class="label">HotLoop Cascade</span><span class="chip ok">Released, {CASCADE}</span></div>
       <h1>The plant talking to everything else, without losing the job.</h1>
       <p class="lede">
-        An alarm, a webhook, a schedule, a new row, or a burst of MQTT sensor messages becomes a batch of items, and the items run
-        through steps that call real systems with real credentials. If an API is down or the box reboots halfway
-        through, the job still finishes, because every step is checkpointed. The consequence: the maintenance
-        ticket still gets created after the network comes back.
+        An alarm trips at 2 a.m. and the maintenance ticket has to exist by morning, even though the network was down for
+        ten minutes. Cascade is the engine that makes that true. An alarm, a webhook, a schedule, a new row, or a burst of
+        MQTT becomes a batch of items, the items run through steps that call real systems with real credentials, and every
+        step is checkpointed. Pull the plug halfway through and the job finishes when the box comes back.
       </p>
-      <div class="notice info">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
-        <div>
-          <strong>Cascade {CASCADE} is out. 0.1.1 was the first release.</strong>
-          <p>
-            The image and the chart are public and pull with no login, so there is nothing to sign up for before you
-            try it. The repository is private. {CASCADE} is the same code as 0.1.1, built and tested on Podman only.
-            There was a 0.1.0 tag before that and it never published anything, because its chart test failed on a
-            hosted runner.
-          </p>
-        </div>
-      </div>
       <div class="cluster">
         <a class="btn primary" href="#install">Install it</a>
         <a class="btn" href="/releases/cascade/">Release notes</a>
-        <a class="btn" href="https://docs.hotloop.io/products/">Docs</a>
+        <a class="btn" href="https://docs.hotloop.io/cascade/overview/">Docs</a>
         <a class="btn" href="/products/">See the rest of the lineup</a>
       </div>
       <FamilyLine id="cascade" />
     </div>
   </section>
 
-  <section class="block" id="install">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="label">Install it</span>
-        <h2>Pull {CASCADE} with Podman, or install the chart with Helm.</h2>
-        <p class="lede">
-          The image is <code>ghcr.io/hotloop-io/hotloop-cascade</code>, for amd64 and arm64, with the tags
-          <code>{CASCADE}</code>, <code>0.1</code>, <code>0</code>, <code>latest</code>, and <code>stable</code>. The chart
-          is <code>hotloop-cascade</code> {CASCADE} in the same registry. Both are public, and the source repository is private.
+  <section class="block">
+    <div class="wrap grid grid-2 split">
+      <div class="stack">
+        <span class="label">What it does</span>
+        <h2>A retry is a row in the database, so nothing is waiting on luck.</h2>
+        <p class="muted">
+          A step that fails is retried from where it stopped. A webhook that arrives while Cascade is down is in a durable
+          inbox when it comes up. A schedule fires each slot exactly once, no matter how many copies of Cascade are looking.
+          You build all of that by drawing a workflow, not by writing it, and a run is drawn the way it ran, step by step,
+          so a failure is something you look at, not something you reconstruct from a log. What starts a workflow: a HotLoop alarm or tag reading, a webhook, a schedule, an MQTT burst, a file that shows up, or a new email in an IMAP mailbox.
         </p>
       </div>
-      <div class="grid grid-2">
-        <article class="card reveal">
-          <h3>Podman</h3>
-          <pre><code>{podmanCmd}</code></pre>
-          <p class="muted">
-            The <a href="https://docs.hotloop.io/cascade/quadlet/">Quadlet units</a> follow <code>:stable</code>, and
-            Podman's auto-update timer moves them to each new release. An update that doesn't come up healthy is rolled back to the
-            image that was running.
-          </p>
-        </article>
-        <article class="card reveal">
-          <h3>k3s with Helm</h3>
-          <pre><code>{helmCmd}</code></pre>
-          <p class="muted">
-            One pod on SQLite by default. Split into server and workers on PostgreSQL with <code>--set split=true</code>.
-          </p>
-        </article>
+      <div class="stack">
+        <span class="label">What it talks to</span>
+        <h2>Real systems, with credentials that don't leak.</h2>
+        <p class="muted">
+          HTTP, PostgreSQL and the other databases, email, files, MQTT, and the notifiers: ntfy, Discord, and Gotify. HotLoop
+          steps read tags and alarms, acknowledge an alarm, call a service, run a script, or apply a recipe, and every command
+          crosses HotLoop's write gate with a reason in its audit trail. Credentials, OAuth2 included, sit in a vault sealed by a key outside the database. A workflow exported as
+          JSON from another tool comes across with what Cascade is sure of, and the rest comes across switched off.
+        </p>
       </div>
-      <p class="muted note">
-        Migrations only go forward. A rollback puts the old image back and does not un-migrate your database, so take
-        a backup before you turn updates on. Lose the key that seals stored credentials and every stored credential is
-        unreadable, so keep a copy somewhere that isn't the box. The steps are in the
-        <a href="https://docs.hotloop.io/products/">docs</a> and the <a href="/releases/cascade/">release notes</a>.
-      </p>
+    </div>
+  </section>
+
+  <section class="block" id="editor">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">The editor</span>
+        <h2>Everything Cascade can do is a screen, on a box with no internet.</h2>
+        <p class="lede">
+          The editor is built into the binary and fetches nothing from anywhere. Workflows live in projects and folders that
+          nest as deep as the plant does: area, line, cell. These are the repository's own screenshots, of a demo plant
+          with a week of real runs.
+        </p>
+      </div>
+      <div class="shots">
+        <figure>
+          <img class="shot light" src="/cascade/workflows.png" width="1440" height="1101" loading="lazy" alt="Cascade workflows, in folders" />
+          <img class="shot dark" src="/cascade/workflows-dark.png" width="1440" height="1101" loading="lazy" alt="Cascade workflows, in folders, in dark" />
+          <figcaption>Workflows in folders. A person moves one from its own row.</figcaption>
+        </figure>
+        <figure>
+          <img class="shot light" src="/cascade/run.png" width="1440" height="1492" loading="lazy" alt="A failed run, drawn as it ran, with how every step did" />
+          <img class="shot dark" src="/cascade/run-dark.png" width="1440" height="1492" loading="lazy" alt="A failed run, in dark" />
+          <figcaption>A failed run, drawn as it ran. Retry it from the step that failed, and the steps before it keep what they did, so a write that already happened doesn't happen twice.</figcaption>
+        </figure>
+      </div>
     </div>
   </section>
 
   <section class="block">
     <div class="wrap grid grid-2 split">
       <div class="stack">
-        <span class="label">Why it exists</span>
-        <h2>A queue that is the database, so there is nothing else to babysit.</h2>
+        <span class="label">Who gets in</span>
+        <h2>It signs in the way your plant already does.</h2>
         <p class="muted">
-          Cascade is one static Go binary. It runs on SQLite on a Raspberry Pi, or on Postgres with as many workers as
-          you want on k3s, and Postgres is the queue too, so there is no separate Redis queue service on the plant cluster to patch and watch.
-          Nothing on the box is a second thing that can fail on its own schedule.
+          Passwords with enforced MFA, passkeys, OIDC, SAML, and LDAP or Active Directory, with roles from groups. SCIM lets
+          your identity provider make and switch off accounts without anyone touching a screen. Roles are yours to define.
+          Credentials can live in OpenBao or HashiCorp Vault, so a password rotates where you already rotate it. The audit
+          log and finished runs can stream to syslog or OTLP. Since 1.0.1, a database blink no longer signs everyone out.
         </p>
       </div>
       <div class="stack">
         <span class="label">How it runs</span>
         <h2>Podman with Quadlet, or k3s with Helm.</h2>
         <p class="muted">
-          One file and a volume is Cascade on SQLite. The Postgres shape is a server, a worker and the database on a
-          network of their own. Both start at boot, restart on failure, and run read-only, non-root, with every
-          capability dropped. On k3s the chart can split it into API, webhook and worker pods that scale separately.
-          The key that seals stored credentials survives an uninstall, because a key that leaves with the release takes
-          every credential with it.
+          One file and a volume is Cascade on SQLite on a Raspberry Pi. On Postgres, it is a server, a worker, and the
+          database, and Postgres is the queue too, so there is no Redis to patch. Both start at boot, restart on failure,
+          and run read-only, non-root, with every capability dropped. On k3s the chart can split it into API, webhook, and
+          worker pods that scale separately. Prometheus metrics come with it, and every execution is one OpenTelemetry trace with a span per step, so a stuck job shows up on a graph. With no endpoint named, nothing is sent.
         </p>
       </div>
     </div>
@@ -164,31 +149,46 @@ const planned: [string, string][] = [
         <h2>Four refusals, and each one is on purpose.</h2>
       </div>
       <div class="grid grid-2">
-        {wontDo.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+        {refuses.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
       </div>
-      <CardDetail>
-        {wontDo.filter((r) => r[2]).map(([h, , l]) => <div><h4>{h}</h4><p>{l}</p></div>)}
-      </CardDetail>
     </div>
   </section>
 
-  <section class="block">
+  <section class="block" id="install">
     <div class="wrap">
       <div class="section-head">
-        <span class="label">What is built</span>
-        <h2>What {CASCADE} ships.</h2>
+        <span class="label">Install it</span>
+        <h2>Pull {CASCADE} with Podman, or install the chart with Helm.</h2>
         <p class="lede">
-          Every item here is built and was tried against real services, never mocks: Postgres, a headless browser,
-          Mosquitto, a HotLoop Gateway, ntfy, Gotify, a mail server, and EmberOps. The one exception is Discord, which
-          has only been tried against a stand-in that answers as its documentation says, not the real thing.
+          The image is <code>ghcr.io/hotloop-io/hotloop-cascade</code> for amd64 and arm64, tagged <code>{CASCADE}</code>,
+          <code>1.0</code>, <code>1</code>, <code>latest</code>, and <code>stable</code>. The chart is <code>hotloop-cascade</code>
+          in the same registry. Both are public and pull with no login. The source repository is private.
         </p>
       </div>
-      <div class="grid grid-3">
-        {built.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+      <div class="grid grid-2">
+        <article class="card reveal">
+          <h3>Podman</h3>
+          <pre><code>{podmanCmd}</code></pre>
+          <p class="muted">
+            The <a href="https://docs.hotloop.io/cascade/quadlet/">Quadlet units</a> follow <code>:stable</code>, and
+            Podman's auto-update timer moves them to each release. An update that doesn't come up healthy is rolled back.
+          </p>
+        </article>
+        <article class="card reveal">
+          <h3>k3s with Helm</h3>
+          <pre><code>{helmCmd}</code></pre>
+          <p class="muted">
+            One pod on SQLite by default. Split into server and workers on PostgreSQL with <code>--set split=true</code>.
+          </p>
+        </article>
       </div>
-      <CardDetail>
-        {built.filter((r) => r[2]).map(([h, , l]) => <div><h4>{h}</h4><p>{l}</p></div>)}
-      </CardDetail>
+      <p class="muted note">
+        Migrations only go forward. A rollback puts the old image back and does not un-migrate your database, so take a
+        backup before you turn updates on. Lose the key that seals stored credentials and every stored credential is
+        unreadable, so keep a copy somewhere that isn't the box. If you are coming from 0.1.2, read the
+        <a href="/releases/cascade/#cascade-1.0.0">1.0.0 notes</a> first: the EmberOps steps are gone, and a workflow that
+        uses one won't start until you replace it. The full steps are in the <a href="https://docs.hotloop.io/cascade/running/">docs</a>.
+      </p>
     </div>
   </section>
 
@@ -196,17 +196,21 @@ const planned: [string, string][] = [
     <div class="wrap">
       <div class="section-head">
         <span class="label">Not built yet</span>
-        <h2>The plan after {CASCADE}.</h2>
-        <p class="lede">Here is where Cascade goes next, in the order the work is in, and no phase is a paid tier. None of this exists today.</p>
+        <h2>What comes after {CASCADE}.</h2>
+        <p class="lede">
+          1.0.0 is the engine, the identity and governance work, and the new editor. It is not a promise about the workflow
+          file format or the API yet. No phase below is a paid tier, and none of it exists today.
+        </p>
       </div>
       <div class="table-wrap">
         <table class="data stack">
-          <thead><tr><th>Version</th><th>What it adds</th></tr></thead>
+          <thead><tr><th>Phase</th><th>What it adds</th></tr></thead>
           <tbody>
-            {planned.map(([v, w]) => <tr><td class="mono">{v}</td><td data-label="What it adds">{w}</td></tr>)}
+            {planned.map(([v, w]) => <tr><td>{v}</td><td data-label="What it adds">{w}</td></tr>)}
           </tbody>
         </table>
       </div>
+      <p class="muted note">The details, in the order the work is in, are on the <a href="https://docs.hotloop.io/cascade/roadmap/">Cascade roadmap</a>.</p>
     </div>
   </section>
 
@@ -231,10 +235,22 @@ const planned: [string, string][] = [
 <style>
   .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
   .page-hero h1 { max-width: 20ch; }
-  .page-hero .notice { max-width: 68ch; }
   .split { align-items: start; gap: var(--hl-s8); }
   .note { max-width: 72ch; margin-top: var(--hl-s5); }
   pre { overflow-x: auto; }
   .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
   .cta .stack { max-width: 62ch; }
+  .shots { display: grid; gap: var(--hl-s7); }
+  .shots figure { display: grid; gap: var(--hl-s3); margin: 0; }
+  .shots figcaption { color: var(--hl-ink-soft); max-width: 70ch; }
+  .shot { width: 100%; height: auto; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); }
+  .shot.dark { display: none; }
+</style>
+<style is:global>
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .shot.light { display: none; }
+    :root:not([data-theme="light"]) .shot.dark { display: block; }
+  }
+  :root[data-theme="dark"] .shot.light { display: none; }
+  :root[data-theme="dark"] .shot.dark { display: block; }
 </style>

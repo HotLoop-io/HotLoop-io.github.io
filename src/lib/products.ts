@@ -150,10 +150,10 @@ export const GATEWAY_FEATURES: Feature[] = [
 ];
 
 // Cascade is its own product and is not one of the four from the shared codebase,
-// so it lives beside PRODUCTS. 0.1.1 was its first release. A 0.1.0 tag exists and
-// never published anything. The repository is private, the image and chart are public.
-// Change it here when the next release ships.
-export const CASCADE = '0.1.2';
+// so it lives beside PRODUCTS. 0.1.1 was its first release, 1.0.0 the editor and identity
+// release. A 0.1.0 tag exists and never published anything. The repository is private, the
+// image and chart are public. Change it here when the next release ships.
+export const CASCADE = '1.0.2';
 
 // HotLoop Transmitter is its own release line: a CODESYS library (HotLoop-io/hotloop-transmitter)
 // that publishes PLC values as OPC UA PubSub. 1.0.0 shipped on 2026-11-04. The repository is private,
