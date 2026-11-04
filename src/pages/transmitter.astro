@@ -28,14 +28,16 @@ pub();`;
 // The story reads top to bottom: the problem, what it does, where it fits, how it installs, what was proven,
 // and then the reference material (what is in it, what it refuses, what comes after).
 const proof: [string, string][] = [
-  ['Built', 'The library compiled with 0 errors and 0 warnings in the CODESYS 3.5.22.30 development system, and the example application built against it for a CODESYS Control for Linux SL device.'],
+  ['Built', 'The library compiled with 0 errors and 0 warnings in the CODESYS 3.5.22.30 development system, and the example application built against it for a CODESYS Control for Linux SL device. The same holds for 1.1.0.'],
   ['Run on', 'The CODESYS Control for Linux SL 4.22.0.0 runtime in a container, in demo mode, with a 20 ms task. Two publishers, one in each encoding, seventeen fields each, on The Beast.'],
   ['Read by a decoder written from the spec', 'Every field equalled the PLC\'s own value, in both encodings, with no gap in the message sequence numbers.'],
   ['Read by open62541 1.4.9, a stack that is not ours', 'In the Variant encoding all 15 values checked equal, strings and arrays included. In RawData the 11 numeric scalars equal. That stack\'s RawData reader cannot read a longer string or any array at all.'],
-  ['Read by HotLoop core', 'HotLoop\'s UADP subscriber, from HotLoop core\'s main branch (it is not in a core release yet, and the next one carries it), read both publishers live and checked 21 values equal, including the string, the TIME, both arrays and two counters that moved between reads. It refused nothing.'],
+  ['Read by HotLoop core', 'HotLoop\'s UADP subscriber, from HotLoop core\'s main branch (it is not in a core release yet, and the next one carries it), read both publishers live and checked 21 values equal, including the string, the TIME, both arrays and two counters that moved between reads. It refused nothing, and in 1.1.0 every reading carried the publisher\'s timestamp as its time.'],
   ['Read by a second Go decoder', 'All 111 messages of each capture decoded, and every checked value was correct, in both encodings.'],
-  ['What it costs the scan', 'About 10.6 microseconds added to a 20 ms cycle on average, which is 0.05 percent. A cycle that sends takes 10 to 100 microseconds. The longest send in the measured window was 14.3 ms, all of it in the operating system\'s send call, on a container on a busy 64-thread host. If a stall like that matters to your control logic, publish from its own lower priority task.'],
-  ['Not run', 'A physical controller, any other runtime or CPU, multicast, a runtime that loses and regains its network, and the end of the two hour demo window. A small ARM controller can be ten to a hundred times slower than the host these numbers came from, so measure it on the target with the block\'s own timing outputs.'],
+  ['Timestamps (1.1.0)', 'Every message carries both timestamps, the same instant, never going backwards, within the whole-second tolerance of the clock the capture ran on. Over an 11 second capture the stamp moved 11 seconds. open62541 1.4.9 read the timestamps of all 113 messages of each writer with its own header decoders. The container shares the host\'s clock, so this shows the stamp is the PLC clock\'s reading, and does not test a controller whose clock is wrong.'],
+  ['The package (1.1.0)', 'It installs through the CODESYS PackageManagerCLI, the library appears in the System repository, and the example builds against it as the Installer put it there, 0 errors and 0 warnings. It has not been run through the IDE\'s own Package Manager window.'],
+  ['What it costs the scan', 'In 1.1.0 with timestamps on, about 9.6 microseconds added to a 20 ms cycle on average. A cycle that sends takes 10 to 100 microseconds, and the longest cycle in that run was 81 microseconds, with three publish slots skipped and no send refused. In the 1.0.0 run one send took 14.3 ms in the operating system\'s send call, on a container on a busy 64-thread host. If a stall like that matters to your control logic, publish from its own lower priority task.'],
+  ['Not run', 'A physical controller, any other runtime or CPU, a controller whose real-time clock is wrong, multicast, a runtime that loses and regains its network, and the end of the two hour demo window. A small ARM controller can be ten to a hundred times slower than the host these numbers came from, so measure it on the target with the block\'s own timing outputs.'],
 ];
 
 const wontDo: [string, string][] = [
@@ -50,12 +52,13 @@ const built: [string, string][] = [
   ['The types a PLC uses', 'BOOL, SINT, USINT, INT, UINT, DINT, UDINT, LINT, ULINT, REAL, LREAL, STRING and TIME, plus arrays of any of them but STRING.'],
   ['Two encodings', 'Variant, which any subscriber reads without a layout, and RawData, which is smaller and needs the receiver to know the layout.'],
   ['Unicast or multicast', 'A dotted address, a port, and for multicast a TTL and the interface to send from. Publisher id, writer group, dataset writer and the interval are inputs of the block.'],
+  ['A timestamp on every message', 'From 1.1.0 the NetworkMessage and the DataSetMessage each carry the PLC clock\'s reading, in whole seconds, so a subscriber knows when a value was sampled and does not guess from when it arrived. Set bTimestamp to FALSE and the block sends exactly the 1.0.0 bytes. It needs the SysTimeRtc component, which Control for Linux SL 4.22.0.0 has.'],
   ['Counters that tell the truth', 'Messages sent, sends refused, publish slots skipped, the size of the last message, and the time the block spent in its last call and its longest.'],
   ['Nothing to license', 'It is Structured Text over SysSocket, which every CODESYS runtime with sockets has. No other library, no configurator.'],
 ];
 
 const planned: [string, string][] = [
-  ['Next', 'Timestamps, several DataSetMessages in one NetworkMessage, delta frames and keep-alives, WSTRING, and a per-field status.'],
+  ['Next', 'Sub-second timestamps, several DataSetMessages in one NetworkMessage, delta frames and keep-alives, WSTRING, and a per-field status.'],
   ['Not planned', 'Message security, chunked messages, the subscriber side, and an MQTT transport.'],
 ];
 ---
@@ -172,19 +175,20 @@ const planned: [string, string][] = [
           {R
             ? `Download the library below and install it in the CODESYS IDE. This is version ${TRANSMITTER.version}.`
             : 'There is no file to download today, so these are the steps for when there is.'}
-          You need a CODESYS development system, 3.5 SP22 or later, and a runtime whose target has the SysSocket component, which
+          You need a CODESYS development system, 3.5 SP22 or later, and a runtime whose target has the SysSocket and SysTimeRtc components, which
           the CODESYS Control runtimes for Linux SL have.
         </p>
       </div>
       {R && (
         <div class="cluster">
           <a class="btn primary" href={`${base}${libFile}`}>Download {libFile}</a>
+          <a class="btn" href={`${base}HotLoopTransmitter-${TRANSMITTER.version}.package`}>The CODESYS package</a>
           <a class="btn" href={`${base}HotLoopTransmitter-${TRANSMITTER.version}.compiled-library`}>The compiled library</a>
           <a class="btn" href={`${base}SHA256SUMS`}>SHA256SUMS</a>
         </div>
       )}
       <ol class="steps">
-        <li>Install <code>{libFile}</code> with Tools, Library Repository, Install.</li>
+        <li>Install <code>{libFile}</code> with Tools, Library Repository, Install, or install the <code>.package</code> with the CODESYS Installer.</li>
         <li>Open the application's Library Manager, Add Library, and pick HotLoop Transmitter. SysSocket and its interface libraries come along as dependencies.</li>
         <li>Declare an <code>HLTX.FB_HLTX_Publisher</code>, add your fields, and call it every cycle, as in the example above.</li>
         <li>Download to the controller. The destination has to be reachable from its network, and for multicast the switches have to carry the group.</li>
