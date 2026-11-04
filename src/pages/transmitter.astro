@@ -5,6 +5,8 @@ import FamilyLine from '../components/FamilyLine.astro';
 import { TRANSMITTER } from '../lib/products';
 
 const R = TRANSMITTER.released;
+const base = `${TRANSMITTER.downloads}${TRANSMITTER.version}/`;
+const libFile = `HotLoopTransmitter-${TRANSMITTER.version}.library`;
 
 const snippet = `PROGRAM PLC_PRG
 VAR
@@ -26,13 +28,14 @@ pub();`;
 // The story reads top to bottom: the problem, what it does, where it fits, how it installs, what was proven,
 // and then the reference material (what is in it, what it refuses, what comes after).
 const proof: [string, string][] = [
-  ['Built', 'The library compiled with 0 errors and 0 warnings in the CODESYS 3.5 SP22 development system, and the example application built against it for a CODESYS Control for Linux SL device.'],
-  ['Run on', 'The CODESYS Control for Linux SL 4.22.0.0 runtime in a container, in demo mode, with a 20 ms task. Two publishers, one in each encoding, seventeen fields each.'],
-  ['Read by a decoder written from the spec', 'Every field equalled the PLC\'s own value, in both encodings, with no gap in the message sequence numbers over about 118 messages each.'],
+  ['Built', 'The library compiled with 0 errors and 0 warnings in the CODESYS 3.5.22.30 development system, and the example application built against it for a CODESYS Control for Linux SL device.'],
+  ['Run on', 'The CODESYS Control for Linux SL 4.22.0.0 runtime in a container, in demo mode, with a 20 ms task. Two publishers, one in each encoding, seventeen fields each, on The Beast.'],
+  ['Read by a decoder written from the spec', 'Every field equalled the PLC\'s own value, in both encodings, with no gap in the message sequence numbers.'],
   ['Read by open62541 1.4.9, a stack that is not ours', 'In the Variant encoding all 15 values checked equal, strings and arrays included. In RawData the 11 numeric scalars equal. That stack\'s RawData reader cannot read a longer string or any array at all.'],
-  ['Where two readers disagree', 'A second decoder, written separately, refuses this library\'s RawData arrays, because it expects them without the element count. The library follows what the OPC Foundation\'s own reference stack does, and Variant has no such question and is the default.'],
-  ['What it costs the scan', 'About 11.5 microseconds added to a 20 ms cycle on average, which is 0.06 percent. A cycle that sends takes 10 to 100 microseconds. The longest send in the measured window was 3.65 ms, all of it in the operating system\'s send call. That was a container on a busy 64-thread host, not a controller.'],
-  ['Not run', 'A physical controller. A small ARM controller can be ten to a hundred times slower than the host these numbers came from, so measure it on the target with the block\'s own timing outputs.'],
+  ['Read by HotLoop core', 'HotLoop\'s UADP subscriber (the code that ships in HotLoop core 4.19.2) read both publishers live and checked 21 values equal, including the string, the TIME, both arrays and two counters that moved between reads. It refused nothing.'],
+  ['Read by a second Go decoder', 'All 111 messages of each capture decoded, and every checked value was correct, in both encodings.'],
+  ['What it costs the scan', 'About 10.6 microseconds added to a 20 ms cycle on average, which is 0.05 percent. A cycle that sends takes 10 to 100 microseconds. The longest send in the measured window was 14.3 ms, all of it in the operating system\'s send call, on a container on a busy 64-thread host. If a stall like that matters to your control logic, publish from its own lower priority task.'],
+  ['Not run', 'A physical controller, any other runtime or CPU, multicast, a runtime that loses and regains its network, and the end of the two hour demo window. A small ARM controller can be ten to a hundred times slower than the host these numbers came from, so measure it on the target with the block\'s own timing outputs.'],
 ];
 
 const wontDo: [string, string][] = [
@@ -75,7 +78,7 @@ const planned: [string, string][] = [
       applicationCategory: 'DeveloperApplication',
       operatingSystem: 'CODESYS runtimes',
       license: 'https://hotloop.io/license/',
-      ...(R ? { softwareVersion: TRANSMITTER.version } : {}),
+      ...(R ? { softwareVersion: TRANSMITTER.version, downloadUrl: `${TRANSMITTER.downloads}${TRANSMITTER.version}/HotLoopTransmitter-${TRANSMITTER.version}.library` } : {}),
       publisher: { '@id': 'https://hotloop.io/#organization' },
     }}
   />
@@ -168,14 +171,21 @@ const planned: [string, string][] = [
         <h2>One library file in the CODESYS library repository.</h2>
         <p class="lede">
           {R
-            ? 'Download the library from the release and install it in the CODESYS IDE.'
+            ? `Download the library below and install it in the CODESYS IDE. This is version ${TRANSMITTER.version}.`
             : 'There is no file to download today, so these are the steps for when there is.'}
           You need a CODESYS development system, 3.5 SP22 or later, and a runtime whose target has the SysSocket component, which
           the CODESYS Control runtimes for Linux SL have.
         </p>
       </div>
+      {R && (
+        <div class="cluster">
+          <a class="btn primary" href={`${base}${libFile}`}>Download {libFile}</a>
+          <a class="btn" href={`${base}HotLoopTransmitter-${TRANSMITTER.version}.compiled-library`}>The compiled library</a>
+          <a class="btn" href={`${base}SHA256SUMS`}>SHA256SUMS</a>
+        </div>
+      )}
       <ol class="steps">
-        <li>Install <code>HotLoopTransmitter-&lt;version&gt;.library</code> with Tools, Library Repository, Install.</li>
+        <li>Install <code>{libFile}</code> with Tools, Library Repository, Install.</li>
         <li>Open the application's Library Manager, Add Library, and pick HotLoop Transmitter. SysSocket and its interface libraries come along as dependencies.</li>
         <li>Declare an <code>HLTX.FB_HLTX_Publisher</code>, add your fields, and call it every cycle, as in the example above.</li>
         <li>Download to the controller. The destination has to be reachable from its network, and for multicast the switches have to carry the group.</li>
@@ -213,7 +223,7 @@ const planned: [string, string][] = [
     <div class="wrap">
       <div class="section-head">
         <span class="label">What is built</span>
-        <h2>What is in the first version.</h2>
+        <h2>{R ? `What ${TRANSMITTER.version} ships.` : 'What is in the first version.'}</h2>
       </div>
       <div class="grid grid-3">
         {built.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}

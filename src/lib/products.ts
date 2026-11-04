@@ -174,11 +174,15 @@ if (CODESYS.released && !CODESYS.version) {
   throw new Error('HotLoop for CODESYS is marked released with no version.');
 }
 
-// HotLoop Transmitter is the eighth product and its own release line: a CODESYS library
-// (HotLoop-io/hotloop-transmitter) that publishes PLC values as OPC UA PubSub. There is no
-// tag and no release yet. When one ships, set `released` and `version` here and in the release
-// note (src/content/releases/transmitter/).
-export const TRANSMITTER = { released: false, version: '1.0.0' };
+// HotLoop Transmitter is its own release line: a CODESYS library (HotLoop-io/hotloop-transmitter)
+// that publishes PLC values as OPC UA PubSub. 1.0.0 shipped on 2026-11-04. The repository is private,
+// so the files are served from hotloop.io/hotloop-transmitter/<version>/ the way the charts are
+// (that repository's gh-pages branch). Change `version` here and in the release note when the next one ships.
+export const TRANSMITTER = {
+  released: true,
+  version: '1.0.0',
+  downloads: 'https://hotloop.io/hotloop-transmitter/',
+};
 if (TRANSMITTER.released && !TRANSMITTER.version) {
   throw new Error('HotLoop Transmitter is marked released with no version.');
 }

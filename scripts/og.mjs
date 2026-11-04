@@ -136,7 +136,7 @@ const pages = [
   ['flow', 'HotLoop Flow', "Node-RED's idea, with a runtime that does not fall over. Free for home and lab, free for business through EmberNet.", 'Product'],
   ['codesys', 'HotLoop for CODESYS', 'The screens and alarms for a CODESYS PLC, beside the runtime. Not released yet.', 'Product'],
   ['cascade', 'HotLoop Cascade', 'The plant talking to everything else, with every step checkpointed. Released, 1.0.2: a new editor, SAML, LDAP, SCIM, and roles.', 'Product'],
-  ['transmitter', 'HotLoop Transmitter', 'OPC UA PubSub from inside the PLC, in Structured Text. Being built, not released.', 'Product'],
+  ['transmitter', 'HotLoop Transmitter', 'OPC UA PubSub from inside the PLC, in Structured Text. 1.0.0 is out.', 'Product'],
   ['integrations', 'What it speaks, and how far each one has been proven.', `${nativeCount} Gateway protocols and ${nodeCount} Flow nodes. ${certified === 0 ? 'None are certified, and we say so.' : `${certified} certified.`}`, 'Integrations'],
   ['license', 'Which license applies to you?', 'One license for every HotLoop product: free for home and lab, free for business through EmberNet.', 'License'],
   ['terms', 'HotLoop Terms of Service', 'What you can do with HotLoop, what we do for you, and what happens when something goes wrong.', 'Terms'],
@@ -145,7 +145,7 @@ const pages = [
   ['releases-flow', 'Flow release notes', 'Every Flow release, from the first one to the current one.', 'Releases'],
   ['releases-cascade', 'Cascade release notes', 'Cascade 1.0.2 back to 0.1.1, and why the 0.1.0 tag never published anything.', 'Releases'],
   ['releases-codesys', 'HotLoop for CODESYS release notes', 'What is in the first version, and that nothing of it is published yet.', 'Releases'],
-  ['releases-transmitter', 'Transmitter release notes', 'There is no Transmitter release yet. What the first one will contain.', 'Releases'],
+  ['releases-transmitter', 'Transmitter release notes', 'Transmitter 1.0.0, the first release: what is in it and what was run.', 'Releases'],
   ['404', 'That loop did not close.', 'The page you were looking for is not here.', 'Error 404'],
   ...protocols.map((p) => [`integrations-${p.id}`, p.name, p.summary, 'Integration']),
 ];

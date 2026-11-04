@@ -44,9 +44,9 @@ const title = filter === 'all' ? 'Release notes' : `${NAME[filter as keyof typeo
 const coreFirst = all.filter((r) => r.data.product === 'core').at(-1)?.data.version;
 const seo = {
   all: {
-    title: 'HotLoop release notes: core, Flow, Cascade, CODESYS',
+    title: 'HotLoop release notes: core, Flow, Cascade, CODESYS, Transmitter',
     description:
-      'What changed in HotLoop core, Flow, Cascade, and HotLoop for CODESYS, version by version, and which versions have actually been published.',
+      'What changed in HotLoop core, Flow, Cascade, HotLoop for CODESYS, and Transmitter, version by version, and which versions have actually been published.',
   },
   core: {
     title: 'HotLoop core release notes and version history',
@@ -69,7 +69,7 @@ const seo = {
   },
   transmitter: {
     title: 'HotLoop Transmitter release notes and version history',
-    description: 'HotLoop Transmitter release notes. There is no release yet; this page lists what the first one will contain.',
+    description: 'HotLoop Transmitter release notes, starting with 1.0.0, the first release: what is in it, what was run, and what was not.',
   },
 }[filter as 'all' | 'core' | 'flow' | 'cascade' | 'codesys' | 'transmitter'];
 ---

@@ -34,7 +34,7 @@ const built: [string, string, string?][] = [
     'It lists what the application exports as the types it has: a STRING is a string, a TIME is milliseconds, an enumeration is an integer. An array lists its first 32 elements, and any element can still be addressed by its symbol. It cuts every request to the limits the runtime publishes, because a 4.22.0.0 runtime refuses more than 100 at a time. It is verified live against a runtime in a container, and not on a physical controller.'],
   ['The chart', 'A wrapper around HotLoop Edge with defaults for a runtime on a node: SQLite, one replica, and the parts you do not need beside a PLC switched off.'],
   ['The provisioner', 'One static Go binary that applies a profile to HotLoop and keeps it right every five minutes: the device, the variables, the alarms, and one screen.',
-    'The profile is one JSON file in a Secret the installer provides, never part of the chart or the image, so both are generic. A variable the PLC gained since is added, one it lost reads bad with the server\'s reason, and the screen and alarms are replaced only when the profile\'s revision is higher, so a change a person made survives until a newer profile is shipped on purpose.'],
+    'The profile is one JSON file in a Secret the installer provides, never part of the chart or the image, so both are generic. A variable the PLC gained since is added, one it lost reads bad with the server\'s reason, and the screen and alarms are replaced only when the profile\'s revision is higher, so a change a person made survives until a newer profile is shipped on purpose. A profile can also list devices of any protocol HotLoop speaks, an OPC UA PubSub listener for one, so a listener comes back configured with no PLC needed.'],
   ['EmberNet sign-in', 'From HotLoop 4.19 the Edge chart signs people in from the EmberCORE dashboard\'s signed assertion, and this chart inherits it.',
     'In a lab cluster a good assertion signed a person in as an operator or an admin, and a wrong app, a wrong tenant, an expired one, a wrong issuer, or a tampered one was refused. Local sign-in still works for the provisioner.'],
 ];
@@ -200,9 +200,10 @@ const proven: [string, string][] = [
       </div>
       <p class="muted note">
         The steps, the profile's shape, and the sign-in are on the <a href="https://docs.hotloop.io/codesys/install/">install page</a>
-        in the docs. {!R ? <strong>Not released yet, so the Helm commands above will not work today.</strong> : null}
-        {' '}The chart repository answers and lists no chart, so <code>helm repo add</code> succeeds and <code>helm install</code> finds nothing
-        to install. The commands are what the chart will take, and they have not been run against a published chart.
+        in the docs.
+        {R
+          ? <> The commands above install chart {CODESYS.version}. The lab run behind this page used a build of HotLoop Edge from main and the chart from its repository, not a published chart, and an install from the real App Store page has not been run.</>
+          : <> <strong>Not released yet, so the Helm commands above will not work today.</strong> The chart repository answers and lists no chart, so <code>helm repo add</code> succeeds and <code>helm install</code> finds nothing to install. The commands are what the chart will take, and they have not been run against a published chart.</>}
       </p>
     </div>
   </section>
