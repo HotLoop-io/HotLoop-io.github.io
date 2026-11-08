@@ -32,7 +32,7 @@ const proof: [string, string][] = [
   ['Run on', 'The CODESYS Control for Linux SL 4.22.0.0 runtime in a container, in demo mode, with a 20 ms task. Two publishers, one in each encoding, seventeen fields each, on The Beast.'],
   ['Read by a decoder written from the spec', 'Every field equalled the PLC\'s own value, in both encodings, with no gap in the message sequence numbers.'],
   ['Read by open62541 1.4.9, a stack that is not ours', 'In the Variant encoding all 15 values checked equal, strings and arrays included. In RawData the 11 numeric scalars equal. That stack\'s RawData reader cannot read a longer string or any array at all.'],
-  ['Read by HotLoop core', 'HotLoop\'s UADP subscriber, from HotLoop core\'s main branch (it is not in a core release yet, and the next one carries it), read both publishers live and checked 21 values equal, including the string, the TIME, both arrays and two counters that moved between reads. It refused nothing, and in 1.1.0 every reading carried the publisher\'s timestamp as its time.'],
+  ['Read by HotLoop core', 'HotLoop\'s UADP subscriber, from HotLoop core\'s main branch (it is in HotLoop core 4.19.4 and every release after it), read both publishers live and checked 21 values equal, including the string, the TIME, both arrays and two counters that moved between reads. It refused nothing, and in 1.1.0 every reading carried the publisher\'s timestamp as its time.'],
   ['Read by a second Go decoder', 'All 111 messages of each capture decoded, and every checked value was correct, in both encodings.'],
   ['Timestamps (1.1.0)', 'Every message carries both timestamps, the same instant, never going backwards, within the whole-second tolerance of the clock the capture ran on. Over an 11 second capture the stamp moved 11 seconds. open62541 1.4.9 read the timestamps of all 113 messages of each writer with its own header decoders. The container shares the host\'s clock, so this shows the stamp is the PLC clock\'s reading, and does not test a controller whose clock is wrong.'],
   ['The package (1.1.0)', 'It installs through the CODESYS PackageManagerCLI, the library appears in the System repository, and the example builds against it as the Installer put it there, 0 errors and 0 warnings. It has not been run through the IDE\'s own Package Manager window.'],
@@ -160,7 +160,7 @@ const planned: [string, string][] = [
         <h2>It publishes. The other end is somebody else's.</h2>
         <p class="muted">
           Transmitter only publishes: the subscriber side is not part of it. It sits on its own release line beside
-          the rest of the <a href="/products/">lineup</a>. HotLoop core's subscriber reads it, from core's main branch, which is not in a core release yet. It is under the same HotLoop license as every product.
+          the rest of the <a href="/products/">lineup</a>. HotLoop core's subscriber reads it, and it ships in HotLoop core 4.19.4 and every release after it. It is under the same HotLoop license as every product.
         </p>
       </div>
     </div>

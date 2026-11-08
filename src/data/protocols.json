@@ -302,10 +302,97 @@
     ]
   },
   {
+    "id": "codesys",
+    "name": "CODESYS",
+    "aka": [
+      "CODESYS Control",
+      "CODESYS runtime",
+      "IEC 61131-3 symbols"
+    ],
+    "order": 11,
+    "verification": "live",
+    "verifiedAgainst": [
+      "A real CODESYS Control for Linux SL 4.22.0.0 runtime in a container in the lab, running HotLoop's own lab program, built from source with the CODESYS ScriptEngine, and a second program of over a hundred thousand variables, read in 2.4 seconds. Reads and writes."
+    ],
+    "notVerifiedHeading": "Verified live against a runtime in a container. Not run on a physical controller.",
+    "notVerifiedNote": "This has not been run on a physical controller, on a runtime with user management on or a certificate-secured endpoint, or on a download made from the IDE while the runtime stays up. The runtime it was proven against is CODESYS's own, in a container, which is the real software and not a physical PLC's hardware, scan load or firmware.",
+    "summary": "A CODESYS PLC, read and written by the names its programmer gave the variables, through the runtime's own OPC UA server.",
+    "vendors": [],
+    "addressExamples": [
+      {
+        "expr": "Application.GVL_Line.rTemp",
+        "means": "A variable of a variable list, by its IEC symbol. The application name is optional."
+      },
+      {
+        "expr": "GVL.motors[2].speed",
+        "means": "A field of an element of an array of structures."
+      }
+    ],
+    "trap": "A PLC with no Symbol Configuration publishes nothing a client can read. The program has to export the variables you want, with Support OPC UA features on, and a variable is writable from HotLoop only when its symbol is readwrite. HotLoop's setup message says to add one.",
+    "configKeys": [
+      "device",
+      "application",
+      "arrayElements",
+      "securityPolicy",
+      "securityMode",
+      "username",
+      "password",
+      "samplingIntervalMs",
+      "browseMaxNodes",
+      "browseRoot"
+    ],
+    "body": [
+      "CODESYS documents one way for a third party to read a controller's variables, and it is the runtime's own OPC UA server, so that is what this driver uses. It is the OPC UA driver with what a CODESYS PLC needs on top, and it does not speak the CODESYS Gateway's channel protocol, which is not documented for third parties.",
+      "Discovery lists what the application exports, with the types and the access the programmer gave them, and walks into arrays and structures. A STRING, BYTE or TIME is followed up to the standard type it is a kind of, so it is typed and written as that.",
+      "A restart or a download drops the session. Every tag reads bad with the reason, and HotLoop reconnects by itself and reads the symbols as they are now. Requests are cut to the runtime's published OperationLimits, which every OPC UA device now gets."
+    ]
+  },
+  {
+    "id": "opcua-pubsub",
+    "name": "OPC UA PubSub (UADP)",
+    "aka": [
+      "UADP",
+      "OPC 10000-14",
+      "PubSub"
+    ],
+    "order": 12,
+    "verification": "live",
+    "verifiedAgainst": [
+      "open62541 1.5.10, an independent OPC UA stack, in both directions over multicast: its publisher read by HotLoop in Variant and DataValue encodings, key and delta frames, and in RawData for the one message its RawData publisher sends before it stops, and HotLoop's publisher read by its subscriber in Variant and DataValue."
+    ],
+    "notVerifiedHeading": "Verified live against open62541, both ways. Not against a CODESYS, Siemens, or Beckhoff publisher.",
+    "notVerifiedNote": "This has not been run against a CODESYS, Siemens or Beckhoff publisher, over a router, or with message security, which is unsupported. A datagram with security, chunking, discovery, events or structure fields is refused by name, counted by reason, and never guessed at.",
+    "summary": "A publisher sends DataSets as UDP datagrams to whoever listens, unicast or multicast. HotLoop subscribes as a device and publishes as a setting.",
+    "vendors": [],
+    "addressExamples": [
+      {
+        "expr": "1000/3",
+        "means": "Field 3, counting from 0, of the DataSet that writer 1000 publishes. UADP carries no field names, so the position is what a datagram can say."
+      },
+      {
+        "expr": "1000/3[17]",
+        "means": "The eighteenth value of the array that is that field."
+      }
+    ],
+    "trap": "A machine with more than one network card has to say which one joins the multicast group, or the join fails with no such device. Set interface on the device, by name or by one of its IPv4 addresses.",
+    "configKeys": [
+      "publisherId",
+      "writerGroupId",
+      "interface",
+      "timeoutMs",
+      "dataSets"
+    ],
+    "body": [
+      "A lost message, a gap in the sequence numbers, marks that writer's tags uncertain until its next key frame, because a delta may have gone with it. A writer silent for timeoutMs reads bad with that said, and a field the publisher marks Bad or Uncertain is that.",
+      "Edge and the Gateway can also publish the tags a layout names as UADP, off until HOTLOOP_UADP_PUBLISH_ENABLED is set. A bad tag goes out as its status, never as its last value.",
+      "The subscriber is read-only. HotLoop Transmitter is the publisher that runs inside a CODESYS PLC, and this is the driver that listens to it."
+    ]
+  },
+  {
     "id": "gateway-mode",
     "name": "Everything else",
     "aka": ["PROFINET", "EtherCAT", "HART", "DNP3", "FINS", "MELSEC/SLMP", "CANopen", "FANUC FOCAS"],
-    "order": 11,
+    "order": 13,
     "verification": "gateway-mode",
     "verifiedAgainst": [],
     "summary": "Eight protocols with no driver, by choice, reached through the gateway a site already has.",
