@@ -2,9 +2,11 @@
 import Base from '../layouts/Base.astro';
 import JsonLd from '../components/JsonLd.astro';
 import FamilyLine from '../components/FamilyLine.astro';
+import { getCollection } from 'astro:content';
 import { TRANSMITTER } from '../lib/products';
+import { latestPublished } from '../lib/released';
 
-const R = TRANSMITTER.released;
+const R = !!latestPublished(await getCollection('releases'), 'transmitter');
 const base = `${TRANSMITTER.downloads}${TRANSMITTER.version}/`;
 const libFile = `HotLoopTransmitter-${TRANSMITTER.version}.library`;
 

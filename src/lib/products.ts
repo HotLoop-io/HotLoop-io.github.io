@@ -13,12 +13,7 @@
 export type Status = 'released' | 'unverified' | 'main' | 'building' | 'planned';
 
 // The one published version. Change it here when the next release ships.
-export const CURRENT = '4.19.8';
-
-// The last release built for every architecture. 4.19.8 is amd64 only, so the arm images on
-// :stable are this one's until the next release, which is a bump that builds them all. Change
-// it here when that bump ships, and drop the amd64-only sentences with it.
-export const LAST_MULTIARCH = '4.19.5';
+export const CURRENT = '4.19.10';
 
 export const STATUS: Record<Status, { label: string; chip: 'ok' | 'info' | 'warn' | 'none' }> = {
   released: { label: `In ${CURRENT}`, chip: 'ok' },
@@ -171,10 +166,6 @@ export const CASCADE = '1.0.2';
 // so the files are served from hotloop.io/hotloop-transmitter/<version>/ the way the charts are
 // (that repository's gh-pages branch). Change `version` here and in the release note when the next one ships.
 export const TRANSMITTER = {
-  released: true,
   version: '1.1.0',
   downloads: 'https://hotloop.io/hotloop-transmitter/',
 };
-if (TRANSMITTER.released && !TRANSMITTER.version) {
-  throw new Error('HotLoop Transmitter is marked released with no version.');
-}

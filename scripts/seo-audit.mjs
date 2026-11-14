@@ -61,6 +61,43 @@ const warn = (route, msg) => warnings.push(`${route}  ${msg}`);
   for (const f of [join(root, 'scripts', 'og.mjs')]) if (existsSync(f)) for (const h of scan('scripts/og.mjs', readFileSync(f, 'utf8'))) err('forbidden', h);
 }
 
+// A release line with published notes must read as released, at its newest published version.
+// The release notes in src/content/releases are the one source: the home page chips, the
+// Transmitter page and the version constants in src/lib/products.ts all have to agree with them.
+// This is the check that would have failed on the home page saying "not released yet" for every
+// line while all four were shipped.
+{
+  const root = join(dist, '..');
+  const dir = join(root, 'src', 'content', 'releases');
+  const newest = {};
+  for (const product of readdirSync(dir)) {
+    for (const f of readdirSync(join(dir, product))) {
+      if (!f.endsWith('.md')) continue;
+      const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(readFileSync(join(dir, product, f), 'utf8'))?.[1] ?? '';
+      const version = /^version:\s*"?([\d.]+)"?/m.exec(fm)?.[1];
+      const published = /^published:\s*true/m.test(fm);
+      if (!version || !published) continue;
+      const cur = newest[product];
+      if (!cur || version.localeCompare(cur, undefined, { numeric: true }) > 0) newest[product] = version;
+    }
+  }
+  const LABEL = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade', transmitter: 'Transmitter' };
+  const home = existsSync(join(dist, 'index.html')) ? readFileSync(join(dist, 'index.html'), 'utf8').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ') : '';
+  for (const [product, label] of Object.entries(LABEL)) {
+    const v = newest[product];
+    if (!v) { err('/', `${label} has no published release note, so the lineup cannot show it as released`); continue; }
+    if (!home.includes(`${label} line, ${v}`)) err('/', `${label} has published notes (newest ${v}) but the home page does not show "${label} line, ${v}"`);
+    if (home.includes(`${label} line, not released yet`)) err('/', `the home page says "${label} line, not released yet" and the notes say ${v} is published`);
+  }
+  const tx = join(dist, 'transmitter', 'index.html');
+  if (newest.transmitter && existsSync(tx) && /not released yet/i.test(readFileSync(tx, 'utf8'))) err('/transmitter/', `says "not released yet" and the notes say ${newest.transmitter} is published`);
+  const consts = readFileSync(join(root, 'src', 'lib', 'products.ts'), 'utf8');
+  const pin = (name, re, want) => { const got = re.exec(consts)?.[1]; if (got !== want) err('src/lib/products.ts', `${name} is ${got} and the newest published note is ${want}`); };
+  pin('CURRENT', /export const CURRENT = '([\d.]+)'/, newest.core);
+  pin('CASCADE', /export const CASCADE = '([\d.]+)'/, newest.cascade);
+  pin('TRANSMITTER.version', /export const TRANSMITTER = \{[^}]*?version: '([\d.]+)'/, newest.transmitter);
+}
+
 const titles = new Map();
 const descs = new Map();
 const idsByRoute = new Map();

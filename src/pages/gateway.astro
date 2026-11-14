@@ -9,7 +9,7 @@ import FeatureList from '../components/FeatureList.astro';
 import WriteGate from '../components/WriteGate.astro';
 import BadNotZero from '../components/BadNotZero.astro';
 import { TIERS } from '../lib/tiers';
-import { CURRENT, GATEWAY_FEATURES, LAST_MULTIARCH, product } from '../lib/products';
+import { CURRENT, GATEWAY_FEATURES, product } from '../lib/products';
 
 const protocols = (await getCollection('protocols')).sort((a, b) => a.data.order - b.data.order);
 const native = protocols.filter((p) => p.data.verification !== 'gateway-mode');
@@ -275,7 +275,7 @@ kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
             first day with HotLoop should end with a press doing something they didn't ask for.
           </p>
           <p class="muted">
-            The image is <code>{gw.image}:{latest.data.version}</code>, amd64 alone this release (the arm64 image on <code>:stable</code> is {LAST_MULTIARCH}'s, the last build of every architecture, until the next release builds both again), about 37 MB on amd64 and 35 MB on arm64, and it pulls
+            The image is <code>{gw.image}:{latest.data.version}</code>, amd64 and arm64, about 37 MB on amd64 and 35 MB on arm64, and it pulls
             anonymously. The database is a setting, not an image: TimescaleDB by default, with plain PostgreSQL and
             SQLite as <code>database.type</code> choices in the same image.
           </p>
