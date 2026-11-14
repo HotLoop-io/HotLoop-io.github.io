@@ -4,7 +4,7 @@ import Base from '../layouts/Base.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import CardDetail from '../components/CardDetail.astro';
-import { LAST_MULTIARCH, product } from '../lib/products';
+import { product } from '../lib/products';
 
 const p = product('edge-relay');
 const latest = (await getCollection('releases'))
@@ -51,7 +51,7 @@ const v = latest.data.version;
         <div>
           <strong>Edge Relay {v} is out, released in lockstep with the Gateway.</strong>
           <p>
-            The image is <code>{p.image}:{v}</code> for amd64 alone this release. The arm64 and arm/v7 images on <code>:stable</code> are {LAST_MULTIARCH}'s, the last build of every architecture (about 15 MB), until the next release builds them all again, and it pulls with no login. The
+            The image is <code>{p.image}:{v}</code> for amd64, arm64, and arm/v7, about 15 MB, and it pulls with no login. The
             chart is <code>{p.chart}</code> from <code>https://hotloop.io/hotloop</code>, and there is a Quadlet unit
             for a box that isn't in a cluster.
           </p>

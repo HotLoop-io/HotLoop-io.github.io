@@ -4,14 +4,14 @@ import CardDetail from '../components/CardDetail.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import FeatureList from '../components/FeatureList.astro';
-import { CURRENT, LAST_MULTIARCH, IOT_FEATURES, STATUS, product } from '../lib/products';
+import { CURRENT, IOT_FEATURES, STATUS, product } from '../lib/products';
 
 const p = product('iot');
 ---
 
 <Base
   title="HotLoop IoT: the automation base, built in Go for OT"
-  description="HotLoop IoT is the automation base for the plant floor, written in Go, with MQTT discovery. 4.19.8 is out. Free for home and lab."
+  description="HotLoop IoT is the automation base for the plant floor, written in Go, with MQTT discovery. 4.19.10 is out. Free for home and lab."
   ogAlt="HotLoop IoT, the automation base, built in Go for OT."
 >
   <JsonLd
@@ -46,7 +46,7 @@ const p = product('iot');
         <div>
           <strong>HotLoop IoT {CURRENT} is out. IoT first shipped in 4.18.10, and it ships beside the Gateway, Edge, and the Edge Relay from the same tag, every release.</strong>
           <p>
-            The image is <code>{p.image}:{CURRENT}</code> for amd64 alone this release. The arm64 and arm/v7 images on <code>:stable</code> are {LAST_MULTIARCH}'s, the last build of every architecture (about 29 MB on arm), until the next release builds them all again, and it pulls
+            The image is <code>{p.image}:{CURRENT}</code> for amd64, arm64, and arm/v7, about 29 MB on arm, and it pulls
             with no login. The chart is <code>{p.chart}</code> from <code>https://hotloop.io/hotloop</code>. MQTT
             discovery was the condition for shipping it, and it's in: IoT finds your Shelly, ESPHome, Tasmota, and
             Zigbee2MQTT gear by itself instead of making you type topics.

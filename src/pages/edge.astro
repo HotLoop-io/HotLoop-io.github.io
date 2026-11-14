@@ -4,14 +4,14 @@ import CardDetail from '../components/CardDetail.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import FeatureList from '../components/FeatureList.astro';
-import { CURRENT, LAST_MULTIARCH, EDGE_FEATURES, STATUS, product } from '../lib/products';
+import { CURRENT, EDGE_FEATURES, STATUS, product } from '../lib/products';
 
 const p = product('edge');
 ---
 
 <Base
   title="HotLoop Edge: store-and-forward and an OPC UA server"
-  description="HotLoop Edge is IoT plus the machine layer: store-and-forward that survives a dead WAN, and an OPC UA server for your SCADA. 4.19.8 is out."
+  description="HotLoop Edge is IoT plus the machine layer: store-and-forward that survives a dead WAN, and an OPC UA server for your SCADA. 4.19.10 is out."
   ogAlt="HotLoop Edge, IoT plus the machine layer."
 >
   <JsonLd
@@ -47,7 +47,7 @@ const p = product('edge');
         <div>
           <strong>HotLoop Edge {CURRENT} is out. Edge first shipped in 4.18.10, and it ships beside IoT, the Gateway, and the Edge Relay from the same tag, every release.</strong>
           <p>
-            The image is <code>{p.image}:{CURRENT}</code> for amd64 alone this release. The arm64 and arm/v7 images on <code>:stable</code> are {LAST_MULTIARCH}'s, the last build of every architecture (about 34 MB on arm), until the next release builds them all again, and it pulls with no
+            The image is <code>{p.image}:{CURRENT}</code> for amd64, arm64, and arm/v7, about 34 MB on arm, and it pulls with no
             login. The chart is <code>{p.chart}</code> from <code>https://hotloop.io/hotloop</code>. If the box only has
             to poll and forward, the <a href="/edge-relay/">Edge Relay</a> is the smaller one.
           </p>

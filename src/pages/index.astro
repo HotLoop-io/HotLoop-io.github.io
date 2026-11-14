@@ -5,6 +5,7 @@ import LoopInstrument from '../components/LoopInstrument.astro';
 import CardDetail from '../components/CardDetail.astro';
 import { TIERS, TIER_ORDER } from '../lib/tiers';
 import { LINES, FAMILY_SENTENCE } from '../lib/family';
+import { latestPublished } from '../lib/released';
 
 const protocols = await getCollection('protocols');
 const nodes = await getCollection('nodes');
@@ -139,7 +140,7 @@ const fmt = (d: Date) =>
       <div class="lines">
         {LINES.map((l) => (
           <div class="line">
-            <p class="line-head">{l.released ? <span class="chip ok">{l.label} line, {l.id === 'flow' ? fl.data.version : l.version}</span> : <span class="chip warn">{l.label} line, not released yet</span>}</p>
+            <p class="line-head">{latestPublished(releases, l.id) ? <span class="chip ok">{l.label} line, {latestPublished(releases, l.id)!.data.version}</span> : <span class="chip warn">{l.label} line, not released yet</span>}</p>
             <div class="grid grid-4 lineup">
               {l.members.map((m) => (
                 <a class="card mini reveal" href={m.href}>
