@@ -66,7 +66,10 @@ for (const line of readFileSync(src, 'utf8').split(/\r?\n/)) {
   const [, type, rawLevel, rawNotes] = m;
   const level = rawLevel === 'hotloop-flow-only' ? 'flow-only' : rawLevel;
   const notes = rawNotes === '—' ? '' : house(rebrand(rawNotes));
-  const id = type.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  // Underscores stay in the id (Dashboard's ui_base is a different node from Dashboard 2's ui-base),
+  // and a type with a space in it (Flow's own `modbus read`) keeps the plain slug it has always had, and the
+  // community node's hyphenated type (`modbus-read`) gets -contrib.
+  const id = type.toLowerCase().replace(/[^a-z0-9_]+/g, '-').replace(/^-|-$/g, '');
 
   rows.push({ id, type, category, level, notes });
 }
@@ -77,6 +80,10 @@ const leftover = rows.filter((r) => r.notes.includes('—'));
 if (leftover.length) {
   console.error(`em-dashes survived the house-style pass in: ${leftover.map((r) => r.type).join(', ')}`);
   process.exit(1);
+}
+
+for (const r of rows) {
+  if (!r.type.includes(' ') && rows.some((o) => o !== r && o.id === r.id && o.type.includes(' '))) r.id += '-contrib';
 }
 
 const ids = new Set(rows.map((r) => r.id));
