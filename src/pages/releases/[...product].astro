@@ -2,13 +2,14 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 
-// One file serves /releases/, /releases/core/, /releases/flow/, /releases/cascade/ and /releases/transmitter/.
+// One file serves /releases/, /releases/core/, /releases/flow/, /releases/cascade/, /releases/codesys/ and /releases/transmitter/.
 export function getStaticPaths() {
   return [
     { params: { product: undefined }, props: { filter: 'all' } },
     { params: { product: 'core' }, props: { filter: 'core' } },
     { params: { product: 'flow' }, props: { filter: 'flow' } },
     { params: { product: 'cascade' }, props: { filter: 'cascade' } },
+    { params: { product: 'codesys' }, props: { filter: 'codesys' } },
     { params: { product: 'transmitter' }, props: { filter: 'transmitter' } },
   ];
 }
@@ -17,7 +18,7 @@ const { filter } = Astro.props;
 const all = (await getCollection('releases')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
 const releases = filter === 'all' ? all : all.filter((r) => r.data.product === filter);
 
-const NAME = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade', transmitter: 'HotLoop Transmitter' } as const;
+const NAME = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade', codesys: 'HotLoop for CODESYS', transmitter: 'HotLoop Transmitter' } as const;
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 
 const unpublished = all.filter((r) => r.data.product === 'core' && !r.data.published);
@@ -43,9 +44,9 @@ const title = filter === 'all' ? 'Release notes' : `${NAME[filter as keyof typeo
 const coreFirst = all.filter((r) => r.data.product === 'core').at(-1)?.data.version;
 const seo = {
   all: {
-    title: 'HotLoop release notes: core, Flow, Cascade, Transmitter',
+    title: 'HotLoop release notes: all eight products',
     description:
-      'What changed in HotLoop core, Flow, Cascade, and Transmitter, version by version, and which versions have actually been published.',
+      'What changed in HotLoop core, Flow, Cascade, HotLoop for CODESYS, and Transmitter, version by version, and which versions have actually been published.',
   },
   core: {
     title: 'HotLoop core release notes and version history',
@@ -61,11 +62,15 @@ const seo = {
     description:
       'HotLoop Cascade release notes, from 0.1.1, the first release, to 1.0.2, and why the 0.1.0 tag never published anything.',
   },
+  codesys: {
+    title: 'HotLoop for CODESYS release notes and version history',
+    description: 'HotLoop for CODESYS release notes, from chart 0.3.0, the first one published, to 0.3.1: what is in each, what was run, and what was not.',
+  },
   transmitter: {
     title: 'HotLoop Transmitter release notes and version history',
     description: 'HotLoop Transmitter release notes, starting with 1.0.0, the first release: what is in it, what was run, and what was not.',
   },
-}[filter as 'all' | 'core' | 'flow' | 'cascade' | 'transmitter'];
+}[filter as 'all' | 'core' | 'flow' | 'cascade' | 'codesys' | 'transmitter'];
 ---
 
 <Base
@@ -82,6 +87,7 @@ const seo = {
         <a class="pill" href="/releases/core/" aria-current={filter === 'core' ? 'page' : undefined}>HotLoop core</a>
         <a class="pill" href="/releases/flow/" aria-current={filter === 'flow' ? 'page' : undefined}>Flow</a>
         <a class="pill" href="/releases/cascade/" aria-current={filter === 'cascade' ? 'page' : undefined}>Cascade</a>
+        <a class="pill" href="/releases/codesys/" aria-current={filter === 'codesys' ? 'page' : undefined}>HotLoop for CODESYS</a>
         <a class="pill" href="/releases/transmitter/" aria-current={filter === 'transmitter' ? 'page' : undefined}>Transmitter</a>
         <a class="pill rss" href="/releases/rss.xml">RSS</a>
       </nav>

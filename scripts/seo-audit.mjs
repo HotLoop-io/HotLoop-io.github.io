@@ -81,7 +81,7 @@ const warn = (route, msg) => warnings.push(`${route}  ${msg}`);
       if (!cur || version.localeCompare(cur, undefined, { numeric: true }) > 0) newest[product] = version;
     }
   }
-  const LABEL = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade', transmitter: 'Transmitter' };
+  const LABEL = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade', codesys: 'HotLoop for CODESYS', transmitter: 'Transmitter' };
   const home = existsSync(join(dist, 'index.html')) ? readFileSync(join(dist, 'index.html'), 'utf8').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ') : '';
   for (const [product, label] of Object.entries(LABEL)) {
     const v = newest[product];
@@ -95,6 +95,7 @@ const warn = (route, msg) => warnings.push(`${route}  ${msg}`);
   const pin = (name, re, want) => { const got = re.exec(consts)?.[1]; if (got !== want) err('src/lib/products.ts', `${name} is ${got} and the newest published note is ${want}`); };
   pin('CURRENT', /export const CURRENT = '([\d.]+)'/, newest.core);
   pin('CASCADE', /export const CASCADE = '([\d.]+)'/, newest.cascade);
+  pin('CODESYS.version', /export const CODESYS = \{[^}]*?version: '([\d.]+)'/, newest.codesys);
   pin('TRANSMITTER.version', /export const TRANSMITTER = \{[^}]*?version: '([\d.]+)'/, newest.transmitter);
 }
 

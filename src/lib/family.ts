@@ -1,10 +1,10 @@
-// The lineup as one family: seven products on four release lines. Every page that
+// The lineup as one family: eight products on five release lines. Every page that
 // introduces the lineup reads from here, so the sentence and the links match
 // everywhere. The docs site (HotLoop-io/docs) says the same thing in its landing.
-import { CURRENT, CASCADE, TRANSMITTER } from './products';
+import { CURRENT, CASCADE, TRANSMITTER, CODESYS } from './products';
 
 export const FAMILY_SENTENCE =
-  'HotLoop is seven products for the plant floor: four that grow with a site (IoT, Edge, Gateway, Edge Relay), plus Flow for wiring, Cascade for workflows, and Transmitter for putting a PLC\'s values on the wire.';
+  'HotLoop is eight products for the plant floor: four that grow with a site (IoT, Edge, Gateway, Edge Relay), plus Flow for wiring, Cascade for workflows, HotLoop for CODESYS for the PLC\'s own screen, and Transmitter for putting a PLC\'s values on the wire.';
 
 const DOCS = 'https://docs.hotloop.io';
 
@@ -56,6 +56,15 @@ export const LINES = [
     blurb: 'Its own release line, running next to HotLoop.',
     members: [
       { id: 'cascade', name: 'HotLoop Cascade', href: '/cascade/', tagline: 'The plant talking to everything else.', docs: `${DOCS}/cascade/overview/`, install: `${DOCS}/cascade/running/`, releases: '/releases/cascade/', roadmap: `${DOCS}/cascade/roadmap/` },
+    ],
+  },
+  {
+    id: 'codesys',
+    label: 'HotLoop for CODESYS',
+    version: CODESYS.version,
+    blurb: 'Its own release line, running next to HotLoop.',
+    members: [
+      { id: 'codesys', name: 'HotLoop for CODESYS', href: '/codesys/', tagline: 'Screens and alarms for a CODESYS PLC, beside the runtime.', docs: `${DOCS}/codesys/overview/`, install: `${DOCS}/codesys/install/`, releases: '/releases/codesys/', roadmap: `${DOCS}/codesys/roadmap/` },
     ],
   },
   {

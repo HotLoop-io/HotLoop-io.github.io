@@ -169,3 +169,17 @@ export const TRANSMITTER = {
   version: '1.1.0',
   downloads: 'https://hotloop.io/hotloop-transmitter/',
 };
+
+// HotLoop for CODESYS is its own release line: a chart and a provisioner
+// (HotLoop-io/hotloop-codesys) around HotLoop Edge, for a CODESYS runtime on the same node.
+// 0.3.1 is the newest chart in the index at hotloop.io/hotloop-codesys/ (published 2026-11-05),
+// and it wraps HotLoop 4.19.4. The repository is private, the chart index and the provisioner
+// image are public. The EmberCORE App Store lists it for staff. Change `version` here and in
+// the release note (src/content/releases/codesys/) when the next chart ships.
+export const CODESYS = {
+  version: '0.3.1',
+  needsCore: '4.19.4',
+  chart: 'hotloop-codesys',
+  chartRepo: 'https://hotloop.io/hotloop-codesys/',
+  image: 'ghcr.io/hotloop-io/hotloop-provision',
+};
