@@ -410,9 +410,11 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
         <span class="label">What changed lately</span>
         <h2>The detail is in the release notes, and it is one click away.</h2>
         <p class="lede">
-          {latest.data.version} is 4.19.4's changes plus a Logbook fix and tag pickers that search the whole plant: agents write
-          behind the same gate as the screen, scaled tags land right, a CODESYS runtime is read by symbol name, and Kafka
-          and OPC UA PubSub are in, so read the 4.19.4 notes before you touch a running plant. 4.18.11 moved the database
+          {latest.data.version} is the multi-arch build of 4.19.8, with the same code. 4.19.8 is 4.19.4's changes plus a Logbook fix
+          and tag pickers that search the whole plant, and every chart now mounts the node's USB and Bluetooth, which makes the pod
+          root unless you switch it off. 4.19.4 is where agents write behind the same gate as the screen, scaled tags land right,
+          a CODESYS runtime is read by symbol name, and Kafka and OPC UA PubSub came in, so read the 4.19.4 and 4.19.8 notes before
+          you touch a running plant. 4.18.11 moved the database
           to PostgreSQL 17 with an upgrade that runs itself. 4.18.10 was the four-product split, MQTT and network discovery, historian targets
           and boxes that update themselves, and 4.17.0 was recipes, scripts, blueprints, helpers, the logbook and UniFi,
           read-only. Each has its own page with what it buys you and what it costs.
