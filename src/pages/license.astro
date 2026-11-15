@@ -33,16 +33,16 @@ const products: [string, string][] = [
 
 <Base
   title="HotLoop license: one license for every product"
-  description="Every HotLoop product is under the Business Source License 1.1. Free for home, lab, schools, nonprofits, and government, and for business through EmberNet."
+  description="Every HotLoop product is under the EmberNet Source License 1.0. Free for home, lab, schools, nonprofits and government, and unrestricted through EmberNet."
   ogAlt="HotLoop licensing, in plain language."
 >
   <section class="page-hero">
     <div class="wrap stack">
       <span class="label">License</span>
-      <h1>One license. Eight products. No keys.</h1>
+      <p class="hero-title">One license. Eight products. No keys.</p>
       <p class="lede">
-        Every HotLoop product is under HotLoop's own Business Source License 1.1, with HotLoop LLC as the licensor.
-        Home and lab use is free. Business use is free when you run it through EmberNet. That's the whole deal, and
+        Every HotLoop product is under HotLoop's own EmberNet Source License 1.0, with HotLoop LLC as the licensor.
+        Home and lab use is free. Business use is unrestricted when you run it through EmberNet. That's the whole deal, and
         it's the one we should have shipped from the start. Know which side you're on before you build a plant on a
         guess.
       </p>
@@ -66,7 +66,7 @@ const products: [string, string][] = [
           </tr>
           <tr>
             <td>Business use</td>
-            <td data-label="Cost"><span class="chip info">Free, through EmberNet</span></td>
+            <td data-label="Cost"><span class="chip info">Unrestricted, through EmberNet</span></td>
             <td data-label="How to get it">Run it through <a href="https://embernet.ai">EmberNet</a>, HotLoop's free business-use channel</td>
           </tr>
         </tbody>
@@ -81,13 +81,13 @@ const products: [string, string][] = [
       {products.map(([n, h]) => <li><a href={h}>{n}</a></li>)}
     </ul>
 
-    <h2>What the Business Source License means here</h2>
+    <h2>What the EmberNet Source License means here</h2>
     <p>
       There are no license keys and nothing unlocks at runtime. Which product you run is which image you pulled. It
       is source-available, not OSI-approved open source, and we won't pretend otherwise.
     </p>
     <p>
-      Each version converts to GPL-3.0 or later four years after it is released. A release from today is a GPL-3.0 release in
+      Each version converts to AGPL-3.0 or later four years after it is released. A release from today is an AGPL-3.0 release in
       2030, so what you build on HotLoop doesn't depend on HotLoop staying in business.
     </p>
 
@@ -141,6 +141,9 @@ const products: [string, string][] = [
 
 <style>
   .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s6); }
+  /* The license text opens with its own h1, which is the page's one h1, so the hero title is a paragraph. */
+  .hero-title { font-family: var(--hl-font-display, inherit); font-weight: 800; font-size: var(--hl-fs-3xl); line-height: var(--hl-lh-tight); letter-spacing: var(--hl-ls-tight); text-wrap: balance; margin: 0; }
+  .legal :global(h1) { font-size: var(--hl-fs-xl); margin-bottom: var(--hl-s3); }
   .body { max-width: 860px; padding-bottom: var(--hl-s8); }
   .body h2 { font-size: var(--hl-fs-xl); margin-top: var(--hl-s7); }
   td.cost { width: 1%; white-space: nowrap; }
