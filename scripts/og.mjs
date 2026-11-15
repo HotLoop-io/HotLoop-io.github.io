@@ -138,7 +138,7 @@ const pages = [
   ['codesys', 'HotLoop for CODESYS', 'The screens and alarms for a CODESYS PLC, beside the runtime. Chart 0.3.1 is out.', 'Product'],
   ['transmitter', 'HotLoop Transmitter', 'OPC UA PubSub from inside the PLC, in Structured Text. 1.1.0 is out.', 'Product'],
   ['integrations', 'What it speaks, and how far each one has been proven.', `${nativeCount} Gateway protocols and ${nodeCount} Flow nodes. ${certified === 0 ? 'None are certified, and we say so.' : `${certified} certified.`}`, 'Integrations'],
-  ['license', 'Which license applies to you?', 'One license for every HotLoop product: free for home and lab, free for business through EmberNet.', 'License'],
+  ['license', 'Which license applies to you?', 'One license for every HotLoop product: free for home and lab, unrestricted for business through EmberNet.', 'License'],
   ['terms', 'HotLoop Terms of Service', 'What you can do with HotLoop, what we do for you, and what happens when something goes wrong.', 'Terms'],
   ['releases', 'Release notes', 'What changed in HotLoop core, Flow, Cascade, HotLoop for CODESYS, and Transmitter, including which versions are actually published.', 'Releases'],
   ['releases-core', 'HotLoop core release notes', 'IoT, Edge, Gateway, and Edge Relay on one version. Which versions are published, and which are only merged. Every entry says which.', 'Releases'],
