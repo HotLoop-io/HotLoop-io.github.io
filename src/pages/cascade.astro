@@ -19,7 +19,7 @@ const refuses: [string, string][] = [
 const planned: [string, string][] = [
   ['Environments and scale', 'Git source control and environments, protected instances, rate limits, retention, and backup and restore. Many mains against one database already work.'],
   ['Connectors and people', 'A published connector spec, a plugin SDK, and forms with human approval steps that work from a phone.'],
-  ['AI and MCP', 'LLM and agent steps, an MCP client and server that ship on with read and write, and a builder that uses your own model. None of it exists yet.'],
+  ['AI steps', 'LLM and agent steps, and a builder that uses your own model. None of it exists yet. The MCP server is built and ships in 1.1.0.'],
 ];
 ---
 
@@ -126,7 +126,7 @@ const planned: [string, string][] = [
           Passwords with enforced MFA, passkeys, OIDC, SAML, and LDAP or Active Directory, with roles from groups. SCIM lets
           your identity provider make and switch off accounts without anyone touching a screen. Roles are yours to define.
           Credentials can live in OpenBao or HashiCorp Vault, so a password rotates where you already rotate it. The audit
-          log and finished runs can stream to syslog or OTLP. Since 1.0.1, a database blink no longer signs everyone out.
+          log and finished runs can stream to syslog or OTLP. Since 1.0.1, a database blink no longer signs everyone out. Since 1.1.0 an agent can sign in with an API key through the MCP server and do what that key's holder could do, reading and writing, with the reason for every change in the audit log.
         </p>
       </div>
       <div class="stack">
@@ -160,8 +160,9 @@ const planned: [string, string][] = [
         <span class="label">Install it</span>
         <h2>Pull {CASCADE} with Podman, or install the chart with Helm.</h2>
         <p class="lede">
-          The image is <code>ghcr.io/hotloop-io/hotloop-cascade</code> for amd64 and arm64, tagged <code>{CASCADE}</code>,
-          <code>1.0</code>, <code>1</code>, <code>latest</code>, and <code>stable</code>. The chart is <code>hotloop-cascade</code>
+          The image is <code>ghcr.io/hotloop-io/hotloop-cascade</code>, tagged <code>{CASCADE}</code>,
+          <code>1.1</code>, <code>1</code>, <code>latest</code>, and <code>stable</code>. 1.1.0 is amd64 only, and the arm64 image comes in the release
+          after it, so <code>stable</code>, <code>latest</code> and the short tags keep the arm64 image they already had until then. The chart is <code>hotloop-cascade</code>
           in the same registry. Both are public and pull with no login. The source repository is private.
         </p>
       </div>
@@ -198,7 +199,7 @@ const planned: [string, string][] = [
         <span class="label">Not built yet</span>
         <h2>What comes after {CASCADE}.</h2>
         <p class="lede">
-          1.0.0 is the engine, the identity and governance work, and the new editor. It is not a promise about the workflow
+          1.0.0 is the engine, the identity and governance work, and the new editor, and 1.1.0 adds the MCP server and the screens the editor was missing. It is not a promise about the workflow
           file format or the API yet. No phase below is a paid tier, and none of it exists today.
         </p>
       </div>
