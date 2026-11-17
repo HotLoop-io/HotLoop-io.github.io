@@ -14,7 +14,7 @@
 export type Status = 'released' | 'unverified' | 'main' | 'building' | 'planned';
 
 // The one published version. Change it here when the next release ships.
-export const CURRENT = '4.19.10';
+export const CURRENT = '4.21.1';
 
 export const STATUS: Record<Status, { label: string; chip: 'ok' | 'info' | 'warn' | 'none' }> = {
   released: { label: `In ${CURRENT}`, chip: 'ok' },

@@ -142,7 +142,7 @@ const gw = product('gateway');
         <span class="label">Built for agents</span>
         <h2>MCP in both directions.</h2>
         <p class="muted">
-          27 tools and 4 resources, over streamable HTTP and stdio, up from 16 in 4.16.0. An
+          133 tools, over streamable HTTP and stdio, up from 16 in 4.16.0. From 4.20.0 an agent can change configuration as well as read it, behind a switch, the permission of the route it calls, and a required reason. An
           agent reads the plant in entities, the infeed pump rather than register 40001, and it can only act through
           the gate. So you can ask it why line 3 is slow and let it read everything, knowing it can only touch what
           you armed, and every write it makes comes with a reason in the log.
@@ -409,7 +409,7 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
         <span class="label">What changed lately</span>
         <h2>The detail is in the release notes, and it is one click away.</h2>
         <p class="lede">
-          {latest.data.version} is the multi-arch build of 4.19.8, with the same code. 4.19.8 is 4.19.4's changes plus a Logbook fix
+          {latest.data.version} is the multi-arch build of 4.21.0, with the same code. 4.21.0 added X.509 sign-in to the OPC UA server and turned the deprecated security policies off by default, 4.20.0 made the new web UI the default and let an agent change everything it can read through MCP, and 4.19.8 is 4.19.4's changes plus a Logbook fix
           and tag pickers that search the whole plant, and every chart now mounts the node's USB and Bluetooth, which makes the pod
           root unless you switch it off. 4.19.4 is where agents write behind the same gate as the screen, scaled tags land right,
           a CODESYS runtime is read by symbol name, and Kafka and OPC UA PubSub came in, so read the 4.19.4 and 4.19.8 notes before
