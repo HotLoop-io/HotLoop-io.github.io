@@ -1,0 +1,25 @@
+name: Site is current
+
+# Fails when a release is live and hotloop.io still says an older one. The run goes red and
+# GitHub emails the owner, so a release that skipped this repo is found in hours, not weeks.
+# It reads the public chart indexes served from hotloop.io, so it needs no token.
+on:
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  fresh:
+    name: Live release against the site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - run: node scripts/release-fresh.mjs
