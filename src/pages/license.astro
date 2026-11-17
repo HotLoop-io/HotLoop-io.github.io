@@ -32,18 +32,19 @@ const products: [string, string][] = [
 ---
 
 <Base
-  title="HotLoop license: one license for every product"
-  description="Every HotLoop product is under the EmberNet Source License 1.0. Free for home, lab, schools, nonprofits and government, and unrestricted through EmberNet."
+  title="HotLoop license: free to use, every product"
+  description="Every HotLoop product is free to use. Free for home, lab, schools, nonprofits and government, and free for business through EmberNet."
   ogAlt="HotLoop licensing, in plain language."
 >
   <section class="page-hero">
     <div class="wrap stack">
       <span class="label">License</span>
-      <p class="hero-title">One license. Eight products. No keys.</p>
+      <p class="hero-title">Free to use. Eight products. No keys.</p>
       <p class="lede">
-        Every HotLoop product is under HotLoop's own EmberNet Source License 1.0, with HotLoop LLC as the licensor.
-        Home and lab use is free. Business use is unrestricted when you run it through EmberNet. That's the whole deal, and
-        it's the one we should have shipped from the start. Know which side you're on before you build a plant on a
+        Seven HotLoop products are under HotLoop's own HotLoop Free Use License 1.0, and HotLoop Flow is under the
+EmberNet Source License 1.0, with HotLoop LLC as the licensor of both.
+Home and lab use is free. Business use is free when you run it through EmberNet. That's the whole deal, and
+it's the one we should have shipped from the start. Know which side you're on before you build a plant on a
         guess.
       </p>
     </div>
@@ -66,7 +67,7 @@ const products: [string, string][] = [
           </tr>
           <tr>
             <td>Business use</td>
-            <td data-label="Cost"><span class="chip info">Unrestricted, through EmberNet</span></td>
+            <td data-label="Cost"><span class="chip info">Free, through EmberNet</span></td>
             <td data-label="How to get it">Run it through <a href="https://embernet.ai">EmberNet</a>, HotLoop's free business-use channel</td>
           </tr>
         </tbody>
@@ -75,20 +76,25 @@ const products: [string, string][] = [
 
     <h2>It covers the whole lineup</h2>
     <p>
-      The same license applies to every product, so there is no second set of terms to read when you add one.
+      Each product is under exactly one of two licenses. HotLoop Flow is under the EmberNet Source License 1.0, and every other
+      product is under the HotLoop Free Use License 1.0, so there are only two sets of terms to read. Each product moves
+      to the HotLoop Free Use License at its next release, and a version you already have stays under the license it came with.
     </p>
     <ul class="products">
       {products.map(([n, h]) => <li><a href={h}>{n}</a></li>)}
     </ul>
 
-    <h2>What the EmberNet Source License means here</h2>
+    <h2>What the licenses mean here</h2>
     <p>
-      There are no license keys and nothing unlocks at runtime. Which product you run is which image you pulled. It
-      is source-available, not OSI-approved open source, and we won't pretend otherwise.
+      There are no license keys and nothing unlocks at runtime. Which product you run is which image you pulled. The HotLoop
+      Free Use License is free to use and it is not open source: you get the binaries, images and charts we publish, not the
+      source, and you may not modify or redistribute them. It never converts to an open source license. Hosting HotLoop for your
+      customers is allowed only through EmberNet, and outside EmberNet it needs a commercial license from
+      {' '}<a href="mailto:sales@fireballz.ai">sales@fireballz.ai</a>.
     </p>
     <p>
-      Each version converts to AGPL-3.0 or later four years after it is released. A release from today is an AGPL-3.0 release in
-      2030, so what you build on HotLoop doesn't depend on HotLoop staying in business.
+      HotLoop Flow is source-available under the EmberNet Source License 1.0, not OSI-approved open source, and we won't
+      pretend otherwise. Each Flow version converts to AGPL-3.0 or later four years after it is released.
     </p>
 
     <h2>A few real situations</h2>
@@ -98,7 +104,7 @@ const products: [string, string][] = [
         <thead><tr><th>Situation</th><th>Cost</th></tr></thead>
         <tbody>
           {situations.map(([s, free]) => (
-            <tr><td>{s}</td><td class="cost">{free ? <span class="chip ok">Free</span> : <span class="chip info">Through EmberNet</span>}</td></tr>
+            <tr><td>{s}</td><td class="cost">{free ? <span class="chip ok">Free</span> : <span class="chip info">Free, through EmberNet</span>}</td></tr>
           ))}
         </tbody>
       </table>
@@ -112,7 +118,7 @@ const products: [string, string][] = [
     <h2 id="business">Using HotLoop in a business</h2>
     <p>Two ways in, and you can take both.</p>
     <p>
-      <strong>Do it yourself on EmberNet.</strong> EmberNet is the free channel business use of HotLoop goes through.
+      <strong>Do it yourself on EmberNet.</strong> EmberNet is the free channel business use of HotLoop goes through, and the only way to host HotLoop for your customers.
       Sign up for <a href="https://embernet.ai">EmberNet</a> and run HotLoop there at no cost.
     </p>
     <p>
