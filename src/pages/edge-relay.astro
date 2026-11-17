@@ -104,7 +104,7 @@ const v = latest.data.version;
         <div><h4>Configured by a file</h4><p>Devices and tags come from one JSON file, and a file the Gateway pushes is read at start. A bad file is refused and the old one keeps running. A pushed file also applies the moment it lands: new devices connect, removed ones let go, changed ones reconnect, and the ones nobody touched keep their sessions. The Sparkplug session stays up with no death certificate, and a removed metric goes out once as null so the Gateway stops showing its last good value forever.</p></div>
         <div><h4>No write path</h4><p>It reads and forwards. It can't take a write, serve a screen or answer an AI agent, because every one of those needs a signed-in person to pin the action on, and it has no users at all.</p></div>
         <div><h4>Managed from the Gateway</h4><p>The Gateway's fleet API (no screen yet) tracks every relay you register from its births and deaths, and sends a rebirth, a restart, or a new device file over the connection the relay already dialed out on. Every birth also carries the relay's version and image digest, so the fleet list shows what each one runs, and an admin can approve an update a relay is holding. A pushed file lands on the relay's volume and wins over the chart's devices from 4.17.0 on; a 4.16.0 relay dropped it on the floor. Commands need no way in to the edge box, and nobody drives out to it.</p></div>
-        <div><h4>Honest about what's proven</h4><p>Run end to end against a real Mosquitto broker, polling an HTTP endpoint, Modbus TCP slaves, and an OPC UA test server, with live config reload proven the same way. Discovery is proven against recordings of real devices, not a bench of them. It hasn't been run against real EtherNet/IP or S7comm hardware or a certified Sparkplug host yet. Until it has, this card stays here.</p></div>
+        <div><h4>Honest about what's proven</h4><p>Run end to end against a real Mosquitto broker, polling an HTTP endpoint, Modbus TCP slaves, and an OPC UA test server, with live config reload proven the same way. Discovery is proven against recordings of real devices, not a bench of them. It has been run on bare metal (2026-11-17). It has not met a certified Sparkplug host yet. Until it has, this card stays here.</p></div>
       </CardDetail>
     </div>
   </section>
@@ -172,8 +172,8 @@ curl localhost:8081/status</code></pre>
         <h2>What was run, so you don't find out at commissioning.</h2>
         <p class="lede">
           It was run end to end against a real Mosquitto broker, Modbus TCP slaves, an HTTP endpoint and an OPC UA test server,
-          with live config reload proven the same way. Discovery is proven against recordings of real devices. It has not been run
-          on real EtherNet/IP or S7comm hardware.
+          with live config reload proven the same way. Discovery is proven against recordings of real devices. It has been run
+          on bare metal (2026-11-17).
         </p>
       </div>
     </div>

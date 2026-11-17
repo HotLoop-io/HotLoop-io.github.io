@@ -39,7 +39,7 @@ const proof: [string, string][] = [
   ['Timestamps (1.1.0)', 'Every message carries both timestamps, the same instant, never going backwards, within the whole-second tolerance of the clock the capture ran on. Over an 11 second capture the stamp moved 11 seconds. open62541 1.4.9 read the timestamps of all 113 messages of each writer with its own header decoders. The container shares the host\'s clock, so this shows the stamp is the PLC clock\'s reading, and does not test a controller whose clock is wrong.'],
   ['The package (1.1.0)', 'It installs through the CODESYS PackageManagerCLI, the library appears in the System repository, and the example builds against it as the Installer put it there, 0 errors and 0 warnings. It has not been run through the IDE\'s own Package Manager window.'],
   ['What it costs the scan', 'In 1.1.0 with timestamps on, about 9.6 microseconds added to a 20 ms cycle on average. A cycle that sends takes 10 to 100 microseconds, and the longest cycle in that run was 81 microseconds, with three publish slots skipped and no send refused. In the 1.0.0 run one send took 14.3 ms in the operating system\'s send call, on a container on a busy 64-thread host. If a stall like that matters to your control logic, publish from its own lower priority task.'],
-  ['Not run', 'A physical controller, any other runtime or CPU, a controller whose real-time clock is wrong, multicast, a runtime that loses and regains its network, and the end of the two hour demo window. A small ARM controller can be ten to a hundred times slower than the host these numbers came from, so measure it on the target with the block\'s own timing outputs.'],
+  ['Not run', 'Any other runtime or CPU, a controller whose real-time clock is wrong, multicast, a runtime that loses and regains its network, and the end of the two hour demo window. A small ARM controller can be ten to a hundred times slower than the host these numbers came from, so measure it on the target with the block\'s own timing outputs.'],
 ];
 
 const wontDo: [string, string][] = [
@@ -108,7 +108,7 @@ const planned: [string, string][] = [
             <strong>There is no release yet, and no file to download.</strong>
             <p>
               The library builds and runs on the CODESYS Control for Linux SL 4.22.0.0 runtime in a container, and what it sends was
-              read back by decoders that are not ours. It has not run on a physical controller. Nothing here is installable until a
+              read back by decoders that are not ours. It has been run on bare metal (2026-11-17). Nothing here is installable until a
               version is tagged, and this page says so until then.
             </p>
           </div>
