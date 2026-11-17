@@ -160,8 +160,9 @@ const planned: [string, string][] = [
         <span class="label">Install it</span>
         <h2>Pull {CASCADE} with Podman, or install the chart with Helm.</h2>
         <p class="lede">
-          The image is <code>ghcr.io/hotloop-io/hotloop-cascade</code> for amd64 and arm64, tagged <code>{CASCADE}</code>,
-          <code>1.1</code>, <code>1</code>, <code>latest</code>, and <code>stable</code>. 1.1.1 is 1.1.0 with the arm64 image added. The chart is <code>hotloop-cascade</code>
+          The image is <code>ghcr.io/hotloop-io/hotloop-cascade</code>, tagged <code>{CASCADE}</code>,
+          <code>1.2</code>, <code>1</code>, <code>latest</code>, and <code>stable</code>. 1.2.0 is amd64 only, so <code>stable</code>
+          keeps the arm64 image it already has, which is 1.1.1. The chart is <code>hotloop-cascade</code>
           in the same registry. Both are public and pull with no login. The source repository is private.
         </p>
       </div>
