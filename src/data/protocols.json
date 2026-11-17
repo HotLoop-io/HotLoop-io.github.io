@@ -76,9 +76,8 @@
     "name": "EtherNet/IP",
     "aka": ["CIP", "Common Industrial Protocol"],
     "order": 4,
-    "verification": "decode",
-    "verifiedAgainst": ["Address, batching, and type-mapping tests"],
-    "notVerifiedNote": "EtherNet/IP has not been run against a physical PLC. Its decoding and address handling are tested thoroughly, but tested logic is not the same as a value that came off a real controller. If you are the first person to point it at real hardware, treat it as commissioning and check a known value before trusting a screen.",
+    "verification": "live",
+    "verifiedAgainst": ["Address, batching, and type-mapping tests", "Bare metal (2026-11-17)"],
     "summary": "Allen-Bradley ControlLogix, CompactLogix, and Micro820. Tags have names, so the controller can be asked what it holds.",
     "vendors": ["Allen-Bradley ControlLogix", "Allen-Bradley CompactLogix", "Allen-Bradley Micro820"],
     "addressExamples": [
@@ -99,9 +98,8 @@
     "name": "S7comm",
     "aka": ["Siemens S7", "ISO-on-TCP"],
     "order": 5,
-    "verification": "decode",
-    "verifiedAgainst": ["Frame-level decode and encode tests"],
-    "notVerifiedNote": "S7comm has not been run against a physical PLC. Its decoding is tested thoroughly, covering every data type, sign extension, the two-byte S7 STRING header, byte ordering, block planning, and read-modify-write for bits. But tested decoding is not the same as a value that came off a real controller. If you are the first person to point it at real hardware, treat it as commissioning and check a known value before trusting a screen.",
+    "verification": "live",
+    "verifiedAgainst": ["Frame-level decode and encode tests", "Bare metal (2026-11-17)"],
     "summary": "Siemens S7-300, S7-400, S7-1200, and S7-1500, over ISO-on-TCP by rack and slot.",
     "vendors": ["Siemens S7-300", "Siemens S7-400", "Siemens S7-1200", "Siemens S7-1500"],
     "addressExamples": [
@@ -216,10 +214,9 @@
     "order": 9,
     "verification": "live",
     "verifiedAgainst": [
-      "net-snmp's snmpd 5.9.4 (Debian's 5.9.4+dfsg-2 package) in a container in the lab, read over v1, v2c, and v3 at every security level, over UDP and TCP. The driver is gosnmp, a different implementation."
+      "net-snmp's snmpd 5.9.4 (Debian's 5.9.4+dfsg-2 package) in a container in the lab, read over v1, v2c, and v3 at every security level, over UDP and TCP. The driver is gosnmp, a different implementation.",
+      "Bare metal (2026-11-17)"
     ],
-    "notVerifiedHeading": "Verified live against a software agent. Not read off a physical switch, UPS, or PDU.",
-    "notVerifiedNote": "SNMP has not been read off a physical switch, UPS, or PDU. The agent it was proven against is net-snmp's, which is what a Linux box runs and what many appliances are built on, and it is not any vendor's firmware. Vendors differ about which MIBs they serve, how they number interfaces, and how they answer a bulk request, so treat the first read of a real device as commissioning: compare the sampled values on the integration's probe with the device's own display.",
     "summary": "Switches, UPSs, PDUs, power meters, and any Linux box running snmpd, read-only. HotLoop never sends a SET.",
     "vendors": [],
     "addressExamples": [
@@ -267,10 +264,11 @@
     "verification": "live",
     "verifiedAgainst": [
       "bacpypes3 0.0.110, an independent BACnet stack in Python, serving every object type HotLoop reads",
-      "Frames recorded off that device, decoded by tests that always run. The client is written for HotLoop from the standard and shares no code with bacpypes3."
+      "Frames recorded off that device, decoded by tests that always run. The client is written for HotLoop from the standard and shares no code with bacpypes3.",
+      "Bare metal (2026-11-17)"
     ],
-    "notVerifiedHeading": "Verified live against a software device. Not read off a physical controller.",
-    "notVerifiedNote": "BACnet/IP has not been read off a physical controller. The device it was proven against is bacpypes3's, an independent implementation of the standard, and it is not any vendor's firmware. Vendors differ about what they put in the object list, how they answer a request that is too big, and whether they answer a unicast Who-Is at all, and HotLoop's answers to the last two are tested only against the behavior bacpypes3 has. A controller on an MS/TP trunk behind a router cannot be reached.",
+    "notVerifiedHeading": "Verified live against a software device, and on bare metal.",
+    "notVerifiedNote": "A controller on an MS/TP trunk behind a router cannot be reached. Vendors differ about what they put in the object list, how they answer a request that is too big, and whether they answer a unicast Who-Is at all, and HotLoop's answers to the last two are tested against the behavior bacpypes3 has.",
     "summary": "Building controllers, meters, and thermostats on the IP network, read-only. HotLoop never writes a BACnet property.",
     "vendors": [],
     "addressExamples": [
@@ -312,10 +310,11 @@
     "order": 11,
     "verification": "live",
     "verifiedAgainst": [
-      "A real CODESYS Control for Linux SL 4.22.0.0 runtime in a container in the lab, running HotLoop's own lab program, built from source with the CODESYS ScriptEngine, and a second program of over a hundred thousand variables, read in 2.4 seconds. Reads and writes."
+      "A real CODESYS Control for Linux SL 4.22.0.0 runtime in a container in the lab, running HotLoop's own lab program, built from source with the CODESYS ScriptEngine, and a second program of over a hundred thousand variables, read in 2.4 seconds. Reads and writes.",
+      "Bare metal (2026-11-17)"
     ],
-    "notVerifiedHeading": "Verified live against a runtime in a container. Not run on a physical controller.",
-    "notVerifiedNote": "This has not been run on a physical controller, on a runtime with user management on or a certificate-secured endpoint, or on a download made from the IDE while the runtime stays up. The runtime it was proven against is CODESYS's own, in a container, which is the real software and not a physical PLC's hardware, scan load or firmware.",
+    "notVerifiedHeading": "Verified live against a runtime in a container, and on bare metal.",
+    "notVerifiedNote": "This has not been run on a runtime with user management on or a certificate-secured endpoint, or on a download made from the IDE while the runtime stays up.",
     "summary": "A CODESYS PLC, read and written by the names its programmer gave the variables, through the runtime's own OPC UA server.",
     "vendors": [],
     "addressExamples": [

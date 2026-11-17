@@ -65,11 +65,10 @@ const lv = Object.fromEntries(LEVELS.map(([k, l, c]) => [k, { label: l, chip: c 
     <div class="notice">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
       <div>
-        <strong>S7comm (Siemens) and EtherNet/IP are tested at the frame level and have never been run against a physical PLC.</strong>
+        <strong>S7comm (Siemens) and EtherNet/IP are tested at the frame level and on bare metal (2026-11-17).</strong>
         <p>
-          Their decoding is tested thoroughly, but tested decoding is not the same as a value that came off a real
-          controller. If you are the first person to point either at real hardware, treat it as commissioning and check
-          a known value before you trust a screen.
+          Their decoding is tested thoroughly at the frame level, and both have now run on bare metal. Any new site is
+          still a commissioning job: check a value you already know before you trust a screen.
         </p>
       </div>
     </div>

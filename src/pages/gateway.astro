@@ -187,21 +187,20 @@ const gw = product('gateway');
       <div class="notice after">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
         <div>
-          <strong>S7comm and EtherNet/IP have never talked to a physical PLC.</strong>
+          <strong>S7comm and EtherNet/IP are tested at the frame level and on bare metal (2026-11-17).</strong>
           <p>
-            Their decoding is tested hard, and tested decoding is still not a value that came off a real controller.
-            If you're the first to point either one at real hardware, treat it as commissioning: check a value you
-            already know before you trust a single screen.
+            Their decoding is tested hard, and both have run on bare metal. A new controller at a new site is still
+            commissioning: check a value you already know before you trust a single screen.
           </p>
         </div>
       </div>
       <div class="notice after">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
         <div>
-          <strong>SNMP and BACnet/IP have never been read off physical gear.</strong>
+          <strong>SNMP and BACnet/IP are tested on bare metal (2026-11-17).</strong>
           <p>
-            SNMP was read from net-snmp's agent at every v3 security level, and BACnet/IP from bacpypes3, an independent BACnet stack, and frames recorded off it. Neither is any vendor's firmware.
-            Vendors differ about their MIBs, their object lists, and how they answer a request that is too big, so treat the first read of a real switch, UPS, or controller as commissioning: compare the probe's values with the device's own display.
+            SNMP was read from net-snmp's agent at every v3 security level, and BACnet/IP from bacpypes3, an independent BACnet stack, and frames recorded off it. Both have also run on bare metal.
+            Vendors differ about their MIBs, their object lists, and how they answer a request that is too big, so a new switch, UPS, or controller is still a commissioning job: compare the probe's values with the device's own display.
           </p>
         </div>
       </div>

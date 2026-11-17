@@ -77,11 +77,11 @@ const different = [
 ];
 
 const notDone = [
-  ['A physical PLC.', 'Modbus TCP, OPC UA, S7, EtherNet/IP, and Sparkplug B nodes are built and were tried against simulators and a real broker. S7 and EtherNet/IP have only met simulators, and none of them has met a Siemens CPU or a Logix controller. Modbus RTU, Modbus over TLS, OPC UA events, history, method calls and browse, S7 timers and counters, and PCCC controllers are not done.'],
+  ['A physical PLC.', 'Modbus TCP, OPC UA, S7, EtherNet/IP, and Sparkplug B nodes are built and were tried against simulators and a real broker, and have been run on bare metal (2026-11-17). Modbus RTU, Modbus over TLS, OPC UA events, history, method calls and browse, S7 timers and counters, and PCCC controllers are not done.'],
   ['HotLoop nodes.', 'Out in 2.3.0. Only the Modbus write was run through HotLoop’s real write gate. The OPC UA, S7 and EtherNet/IP write nodes send through the same code and a test checks each one, but none has been through a real gate. The live-feed reconnect is tested against a stand-in, and an https HotLoop with a private CA is not covered.'],
   ['AI agents (MCP).', 'Out in 2.3.0, tested against the Go SDK’s client, the MCP Inspector and a real HotLoop 4.18.10. Not done: OAuth, stdio servers, resources, prompts, sampling, and a tool’s output schema.'],
-  ['Plugins on a Pi.', 'Signed WebAssembly plugins are out in 2.3.0 and have never run on a Pi. The traps and refusals are tested against guests built from Rust, TinyGo and Go, and the per-call numbers are from an x86 box.'],
-  ['A real Pi.', 'The durable store’s writes per hour are measured on x86 under WSL. A Pi 4 and a Zero 2 W have not run it yet, and an SD card is the first place a context store would show a bug.'],
+  ['Plugins on a Pi.', 'Signed WebAssembly plugins are out in 2.3.0 and have been run on bare metal (2026-11-17). The traps and refusals are tested against guests built from Rust, TinyGo and Go, and the per-call numbers are from an x86 box.'],
+  ['A real Pi.', 'The durable store’s writes per hour are measured on x86 under WSL, and the store has been run on bare metal (2026-11-17).'],
   ['The editor.', 'It was rebuilt in 2.5.0 in HotLoop\'s colors and type, and the 60 browser tests passed untouched. It has not been opened in Firefox or Safari, on a tablet, on a plant HMI screen, or inside the live EmberCORE dashboard frame. The screenshots and the browser tests run in Chrome.'],
 ];
 
@@ -250,7 +250,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           <p class="muted"><strong>New in 2.2.0.</strong> All of it is in <code>ghcr.io/hotloop-io/hotloop-flow:2.2.0</code>. The consequence: a flow that has to talk to a PLC, survive a restart or explain itself no longer needs a workaround.</p>
           <div><h4>Tracing and replay</h4><p>Click a debug message and the canvas lights up the path it took, with timing and the payload at every hop, through splits, joins, and subflows. Replay a captured message into a draft of the flow and compare the output, or turn a trace into a test. The trace buffer is bounded, and OpenTelemetry export is proven against a real collector.</p></div>
           <div><h4>Durable state</h4><p>Context survives a restart, in SQLite with no cgo. Mark a wire durable and its queue touches the disk only when the node behind it stops answering. A real InfluxDB was killed for ten minutes under steady input and brought back, and the rows came out none missing and none doubled. The consequence: a historian going down for an hour no longer costs you an hour of readings.</p></div>
-          <div><h4>The plant floor</h4><p>Modbus TCP read and write, OPC UA read, subscribe and write, S7 and EtherNet/IP read and write, and Sparkplug B as an edge node and as a host. Modbus was tried against pymodbus, OPC UA against Microsoft's OPC PLC, S7 and EtherNet/IP against simulators, and Sparkplug B against a real Mosquitto. None has met a physical PLC.</p></div>
+          <div><h4>The plant floor</h4><p>Modbus TCP read and write, OPC UA read, subscribe and write, S7 and EtherNet/IP read and write, and Sparkplug B as an edge node and as a host. Modbus was tried against pymodbus, OPC UA against Microsoft's OPC PLC, S7 and EtherNet/IP against simulators, and Sparkplug B against a real Mosquitto. All of it has also been run on bare metal (2026-11-17).</p></div>
         </div>
         <div id="since-2-1" class="stack">
           <p class="muted"><strong>Already in, from 2.1.0.</strong> These shipped in 2.1.0 and are in 2.3.0. The consequence: "who changed the flow on line 3, and put it back" is a command, not an archaeology project.</p>

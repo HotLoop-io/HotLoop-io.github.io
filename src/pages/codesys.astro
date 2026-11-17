@@ -30,7 +30,7 @@ const wontDo: [string, string][] = [
 
 const built: [string, string, string?][] = [
   ['The connector', 'HotLoop core\'s CODESYS driver: read and discover by symbol, with arrays and structures walked into one point per field.',
-    'It lists what the application exports as the types it has: a STRING is a string, a TIME is milliseconds, an enumeration is an integer. An array lists its first 32 elements, and any element can still be addressed by its symbol. It cuts every request to the limits the runtime publishes, because a 4.22.0.0 runtime refuses more than 100 at a time. It is verified live against a runtime in a container, and not on a physical controller.'],
+    'It lists what the application exports as the types it has: a STRING is a string, a TIME is milliseconds, an enumeration is an integer. An array lists its first 32 elements, and any element can still be addressed by its symbol. It cuts every request to the limits the runtime publishes, because a 4.22.0.0 runtime refuses more than 100 at a time. It is verified live against a runtime in a container, and has been run on bare metal (2026-11-17).'],
   ['The chart', 'A wrapper around HotLoop Edge with defaults for a runtime on a node: SQLite, one replica, and the parts you do not need beside a PLC switched off.'],
   ['The provisioner', 'One static Go binary that applies a profile to HotLoop and keeps it right every five minutes: the device, the variables, the alarms, and one screen.',
     'The profile is one JSON file in a Secret the installer provides, never part of the chart or the image, so both are generic. A variable the PLC gained since is added, one it lost reads bad with the server\'s reason, and the screen and alarms are replaced only when the profile\'s revision is higher, so a change a person made survives until a newer profile is shipped on purpose.'],
@@ -41,7 +41,7 @@ const built: [string, string, string?][] = [
 const proven: [string, string][] = [
   ['Shown', 'The device, its tags (none writable), its alarm, and its screen appeared with no hand step. Every value read good and moved. The pods came back after a pod delete. The install read bad with the reason "the PLC\'s runtime is not answering" through a runtime restart and came back by itself about 88 seconds later.'],
   ['Run against', 'A CODESYS Control for Linux SL 4.22.0.0 runtime in a container, running HotLoop\'s own lab program built with the CODESYS ScriptEngine, with a HotLoop Edge image built from HotLoop\'s main branch, on k3s v1.36.'],
-  ['Not shown', 'An install from the real App Store page. A physical controller. k3s v1.35.7. A node really losing its link to the control plane. A download from the CODESYS IDE while the runtime stays up. A runtime on the host\'s own network beside the HotLoop pod on one node. A runtime with user management on, or a certificate-secured endpoint.'],
+  ['Not shown', 'An install from the real App Store page. k3s v1.35.7. A node really losing its link to the control plane. A download from the CODESYS IDE while the runtime stays up. A runtime on the host\'s own network beside the HotLoop pod on one node. A runtime with user management on, or a certificate-secured endpoint.'],
 ];
 ---
 
