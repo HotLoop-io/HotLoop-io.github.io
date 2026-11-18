@@ -4,7 +4,7 @@
 import { CURRENT, CASCADE, TRANSMITTER, CODESYS } from './products';
 
 export const FAMILY_SENTENCE =
-  'HotLoop is eight products for the plant floor: four that grow with a site (IoT, Edge, Gateway, Edge Relay), plus Flow for wiring, Cascade for workflows, HotLoop for CODESYS for the PLC\'s own screen, and Transmitter for putting a PLC\'s values on the wire.';
+  'HotLoop is eight products for the plant floor: four that grow with a site (IoT, Edge, Gateway, and Edge Relay), plus Flow for wiring, Cascade for workflows, HotLoop for CODESYS for the PLC\'s own screen, and Transmitter for putting a PLC\'s values on the wire.';
 
 const DOCS = 'https://docs.hotloop.io';
 

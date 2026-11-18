@@ -9,6 +9,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { scrub, scan } from './sales-lens.mjs';
 
 const src = process.argv[2];
 if (!src) {
@@ -65,7 +66,8 @@ for (const line of readFileSync(src, 'utf8').split(/\r?\n/)) {
 
   const [, type, rawLevel, rawNotes] = m;
   const level = rawLevel === 'hotloop-flow-only' ? 'flow-only' : rawLevel;
-  const notes = rawNotes === '—' ? '' : house(rebrand(rawNotes));
+  // scrub() takes out routes, internal names and chart names, because the page sells, it does not document the build.
+  const notes = rawNotes === '—' ? '' : scrub(house(rebrand(rawNotes)));
   // Underscores stay in the id (Dashboard's ui_base is a different node from Dashboard 2's ui-base),
   // and a type with a space in it (Flow's own `modbus read`) keeps the plain slug it has always had, and the
   // community node's hyphenated type (`modbus-read`) gets -contrib.
@@ -79,6 +81,13 @@ for (const line of readFileSync(src, 'utf8').split(/\r?\n/)) {
 const leftover = rows.filter((r) => r.notes.includes('—'));
 if (leftover.length) {
   console.error(`em-dashes survived the house-style pass in: ${leftover.map((r) => r.type).join(', ')}`);
+  process.exit(1);
+}
+
+// And prove it: a pattern the scrub rules do not cover fails the import instead of reaching a page.
+const internal = rows.flatMap((r) => scan(r.type, r.notes));
+if (internal.length) {
+  console.error(`internal details survived the sales-lens pass:\n  ${internal.join('\n  ')}`);
   process.exit(1);
 }
 
