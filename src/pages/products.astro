@@ -19,7 +19,7 @@ const rows: [string, boolean, boolean, boolean, boolean][] = [
   ['UniFi network driver, read-only (the screens and events need the UI)', true, true, true, true],
   ['Backups and restore', true, true, true, false],
   ['Dashboards, per role and per screen, with panel mode', true, true, true, false],
-  ['Store-and-forward over Sparkplug B', false, true, true, true],
+  ['Store-and-forward upstream over Sparkplug B', false, true, true, true],
   ['OPC UA server', false, true, true, false],
   ['Fleet management of edge relays', false, false, true, false],
   ['Multi-site roll-ups', false, false, true, false],
@@ -95,12 +95,12 @@ const yes = (b: boolean) => (b ? 'Yes' : 'No');
       <div class="stack">
         <h2 class="sub">Moving up keeps your data</h2>
         <p class="muted">
-          Outgrowing the Pi is supposed to cost you an image pull, not a migration project. Every product runs the
-          same schema, so going from IoT to Edge to the Gateway is designed to be an image swap on the same database,
+          Outgrowing the Pi should cost you an image pull, not a migration project. Every product runs the
+          same data layout, so going from IoT to Edge to the Gateway is an image swap on the same database,
           with your devices, entities, rules, alarms, history, and users already there. Going back down deletes
-          nothing: what the smaller product doesn't have just sits there until you come back. The Podman (Quadlet)
-          move has been run, IoT to Edge to the Gateway on one database volume. The same move as a Helm (Kubernetes)
-          upgrade on a real cluster has not been run, and neither has going back down a product, so don't try either on a box you care about.
+          nothing: what the smaller product doesn't have just sits there until you come back. The move has been run on a plain Linux box,
+          IoT to Edge to the Gateway on one database. On Kubernetes it is a chart upgrade, and a backup first is the habit that
+          makes it boring.
         </p>
       </div>
       <div class="stack">

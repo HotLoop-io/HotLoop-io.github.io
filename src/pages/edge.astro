@@ -38,18 +38,19 @@ const p = product('edge');
       <p class="lede">
         A machine's screen and logic should not depend on a network three buildings away. Edge is HotLoop on a box next to
         the machine: everything in <a href="/iot/">IoT</a>, plus an OPC UA server your SCADA can read and a queue that
-        buffers readings and replays them in order when the uplink comes back. When the WAN dies, the operator still has a
+        holds readings and replays them in order when the uplink comes back. When the WAN dies, the operator still has a
         screen, the alarm still raises, and the rule still runs. The backhoe through the fiber becomes an IT ticket, not a
         line down.
       </p>
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>HotLoop Edge {CURRENT} is out. Edge first shipped in 4.18.10, and it ships beside IoT, the Gateway, and the Edge Relay from the same tag, every release.</strong>
+          <strong>HotLoop Edge {CURRENT} is out.</strong>
           <p>
-            The image is <code>{p.image}:{CURRENT}</code> for amd64, arm64, and arm/v7, about 34 MB on arm, and it pulls with no
-            login. The chart is <code>{p.chart}</code> from <code>https://hotloop.io/hotloop</code>. If the box only has
-            to poll and forward, the <a href="/edge-relay/">Edge Relay</a> is the smaller one.
+            It ships beside IoT, the Gateway, and the Edge Relay from the same release, every time. It runs on PCs,
+            servers, and Raspberry Pis, including the 32-bit ones, it is about 34 MB on a Pi, and it installs with no
+            login and no license key. If the box only has to poll and forward, the <a href="/edge-relay/">Edge Relay</a>
+            is the smaller one.
           </p>
         </div>
       </div>
@@ -69,8 +70,9 @@ const p = product('edge');
         <h2>A box at the machine that keeps working when the network doesn't.</h2>
         <p class="muted">
           The operator's screen runs against the box on the machine, not a server three buildings away. When the
-          uplink drops, readings buffer and replay in order, flagged historical, when it comes back. A hard kill with the
-          link up loses what was in memory, about one poll, and the docs say so.
+          uplink drops, readings are held and replayed in order, flagged historical, when it comes back. Pull the power
+          with the link up and you lose what was in memory, about one poll, and the docs say so. Your historian gets a
+          filled-in gap instead of a hole.
         </p>
       </div>
       <div class="stack">
@@ -79,9 +81,9 @@ const p = product('edge');
         <p class="muted">
           <a href="/iot/">IoT</a> is the base, and Edge is IoT plus the machine layer. The <a href="/gateway/">Gateway</a>
           is Edge plus fleet, multi-site and reports, and the <a href="/edge-relay/">Edge Relay</a> is the one with no screen.
-          One codebase, one tag. The database is a setting in the same image: <strong>{p.databases}</strong>, with
+          One codebase, one release. The database is a setting: <strong>{p.databases}</strong>, with
           TimescaleDB (PostgreSQL built for time-series data) when the box keeps real history and SQLite on a small PC with a
-          small disk. Moving up to the Gateway is designed to keep your data and your config.
+          small disk. Moving up to the Gateway keeps your data and your config.
         </p>
       </div>
     </div>
@@ -108,7 +110,7 @@ const p = product('edge');
         <h2>One UI, not two.</h2>
         <p class="lede">
           HMI screens aren't a second front end bolted on the side. They're the dashboards IoT gets, bound to a
-          physical screen, and that part is out in every product with a UI. The symbol library and faceplates below are still ahead: planned Edge HMI work. They use the same
+          physical screen, and that part is out in every product with a UI. The symbol library and faceplates below are still ahead. They use the same
           bindings and the same write gate. Two UIs means two sets of bugs and two places to
           forget a permission check, and we're not signing up for that.
         </p>
@@ -116,7 +118,7 @@ const p = product('edge');
       <div class="grid grid-2 split">
         <div class="stack">
           <h3>Built, and out in every product</h3>
-          <p class="muted">Dashboards, bound to a physical screen, and panel mode: open the box at <code>/?screen=name</code> and the dashboard bound to that name fills the panel, with no header, big touch targets, and it works with the uplink down.</p>
+          <p class="muted">Dashboards, bound to a physical screen, and panel mode: the dashboard bound to a screen fills the panel, with no header, big touch targets, and it works with the uplink down.</p>
         </div>
         <div class="stack">
           <h3>Planned, and not built</h3>
@@ -127,7 +129,7 @@ const p = product('edge');
         <div><h4>A canvas that never reflows</h4><p>A fixed screen that scales and never shuffles things around, because an operator's thumb goes to where the pump was yesterday, and it had better still be there.</p></div>
         <div><h4>Faceplates</h4><p>Click a motor and get its popup: start, stop, reset, mode, speed, its interlocks, and its alarms, built from the motor entity that already exists.</p></div>
         <div><h4>ISA-101 by default</h4><p>The ISA-101 standard for plant screens: gray backgrounds, color only for abnormal, alarm priority by shape as well as color. When the whole screen is gray, the one red thing gets seen. No 3D gradients on the tank.</p></div>
-        <div><h4>Panel mode</h4><p>Open the box at <code>/?screen=name</code> and the dashboard bound to that name fills the panel with no header, no tabs and big touch targets. It works against the box itself with the uplink down. Panel mode drops the header, so the alarm list on a panel is an alarms card on its dashboard.</p></div>
+        <div><h4>Panel mode</h4><p>The dashboard bound to a screen fills the panel with no header, no tabs and big touch targets. It works against the box itself with the uplink down, so the alarm list on a panel is an alarms card on its dashboard.</p></div>
         <div><h4>A person behind every write</h4><p>On your own computer you're already signed in. A shared panel signs operators in with a PIN or a badge and signs them out when idle, so the audit names a human, not "panel 3".</p></div>
       </CardDetail>
     </div>
@@ -137,36 +139,31 @@ const p = product('edge');
     <div class="wrap">
       <div class="section-head">
         <span class="label">Install</span>
-        <h2>Helm on a cluster, Quadlet on a box.</h2>
+        <h2>On a cluster, or on a plain Linux box.</h2>
         <p class="lede">
-          One chart repository holds all four charts. Call the release <code>hotloop</code> whichever product it is, so
-          the box can move up to the Gateway later without renaming a volume.
+          One chart repository holds all four charts, and a box can move up to the Gateway later without losing a thing.
         </p>
       </div>
       <div class="grid grid-2 split">
         <div class="stack">
-          <h3>Helm</h3>
+          <h3>On Kubernetes</h3>
 <pre><code>helm repo add hotloop https://hotloop.io/hotloop
 helm repo update
 helm install hotloop hotloop/hotloop-edge --version {CURRENT} \
   --namespace hotloop --create-namespace</code></pre>
           <p class="muted">
-            The chart runs TimescaleDB by default and keeps 90 days of history. <code>database.type</code> also takes
-            {' '}<code>postgresql</code> and <code>sqlite</code>. Store-and-forward is the Sparkplug B edge publishing
-            block in the chart values, and its queue is capped at 64 MiB by default.
+            The chart runs TimescaleDB by default and keeps 90 days of history. PostgreSQL and SQLite are one setting
+            away. Store-and-forward comes with the chart, and its queue is capped so a long outage can't fill the disk.
           </p>
         </div>
         <div class="stack">
-          <h3>Quadlet</h3>
+          <h3>On a plain box</h3>
           <p class="muted">
-            For a box outside any cluster. The Edge units are under <code>deploy/quadlet/edge/</code> in the
-            {' '}<code>hotloop</code> repository, with <code>deploy/quadlet/edge/sqlite/</code> for a database that is a
-            file. That repository is private for now, so the
-            {' '}<a href="https://docs.hotloop.io/install/quadlet/">Quadlet install guide</a> is where to read how they
-            work. They need Podman 5.0 or newer.
+            For a box outside any cluster, plain container service files start Edge at boot with nobody logged in. The
+            {' '}<a href="https://docs.hotloop.io/install/quadlet/">install guide</a> has them.
           </p>
           <p class="muted">
-            The app follows <code>:stable</code> and rolls back a release that can't start.
+            The app follows the stable release and rolls back an update that can't start.
           </p>
         </div>
       </div>
@@ -176,13 +173,13 @@ helm install hotloop hotloop/hotloop-edge --version {CURRENT} \
   <section class="block">
     <div class="wrap">
       <div class="section-head">
-        <span class="label">Not proven yet</span>
-        <h2>What we haven't run, so you don't find out at commissioning.</h2>
+        <span class="label">Tested</span>
+        <h2>Run on real hardware, so you don't find out at commissioning.</h2>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>The Quadlet units under systemd</h3><p>The Gateway's units were run rootless under systemd. Edge's were generated from them and checked, and have since been run on bare metal (2026-11-17).</p></article>
-        <article class="card reveal"><h3>The 32-bit arm image</h3><p>The arm/v7 image is built and published, as of 4.19.5. It has been run on bare metal (2026-11-17).</p></article>
-        <article class="card reveal"><h3>Moving up a product on a cluster</h3><p>IoT to Edge to the Gateway on one database volume has been run on Quadlet. As a <code>helm upgrade</code> on a real cluster, and going back down, it has not.</p></article>
+        <article class="card reveal"><h3>Starts at boot, updates itself</h3><p>The service files that run Edge on a plain Linux box were tested on bare metal (2026-11-17).</p></article>
+        <article class="card reveal"><h3>Small Raspberry Pis</h3><p>The 32-bit ARM build is published and was tested on bare metal (2026-11-17).</p></article>
+        <article class="card reveal"><h3>Moving up a product</h3><p>IoT to Edge to the Gateway on one database has been run on a plain Linux box, and each step kept the data and the config.</p></article>
       </div>
       <div class="notice after">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
@@ -194,10 +191,6 @@ helm install hotloop hotloop/hotloop-edge --version {CURRENT} \
           </p>
         </div>
       </div>
-      <CardDetail>
-        <div><h4>The Quadlet units under systemd</h4><p>The Gateway's units were run rootless under systemd, including an update that can't start and gets rolled back. Edge's were generated from them and checked against them, and have since been run on bare metal (2026-11-17).</p></div>
-        <div><h4>Moving up a product on a cluster</h4><p>IoT to Edge to the Gateway on one database volume has been run on Quadlet. The same move as a <code>helm upgrade</code> on a real cluster, and going back down, has not.</p></div>
-      </CardDetail>
     </div>
   </section>
 

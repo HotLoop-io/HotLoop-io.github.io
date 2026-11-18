@@ -24,7 +24,7 @@ export const TIERS: Record<Tier, { label: string; chip: 'ok' | 'warn' | 'info' |
   decode: {
     label: 'Decode tested',
     chip: 'warn',
-    blurb: 'A driver proven on the raw protocol messages (frames) and not yet on a real device. Nothing is in this tier today: S7comm and EtherNet/IP were, until they were tested on bare metal on 2026-11-17.',
+    blurb: 'A driver proven on the raw protocol messages and not yet on a real device. Nothing is in this tier today: S7comm and EtherNet/IP were here until they were tested on bare metal on 2026-11-17.',
   },
   'gateway-mode': {
     label: 'Gateway mode',

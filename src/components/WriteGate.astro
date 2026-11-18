@@ -1,18 +1,18 @@
 ---
-// The write gate, in the order internal/runtime/gate.go runs it: permission at
+// The write gate, in the order the Gateway runs it: permission at
 // the door, then the gate's own checks, then the audit row, then the wire. The
 // list is the page's content and renders with JavaScript off. The panel above
 // it is a simulation that lights the list up, and it says so.
 import { lead } from '../lib/lead';
 import CardMore from './CardMore.astro';
 const steps: [string, string, string][] = [
-  ['door', 'The caller may write.', 'A logged-in user needs values.write, and a viewer does not have it. An agent needs the MCP token, or it gets a 401. A write straight to a tag that fails this is a 403 before the gate hears a word. (A call through an entity hands this check to the gate instead, so that refusal is audited.)'],
-  ['writes', 'Writes are on.', 'Writes ship off. The switch is safety.allowWrites, and it has shipped off since 4.4.0, because a fresh install that can move machinery before anybody decided it should is a lawsuit with a web UI.'],
-  ['agents', 'Agent writes are on.', 'Agents get their own switch, safety.allowMcpWrites, checked only for an agent. It narrows the master switch. It can never open a door the master switch closed.'],
-  ['armed', 'The tag is armed.', 'Every tag is read-only until somebody marks it writable, one at a time, on purpose. A browse import of 4,000 tags arms none of them.'],
+  ['door', 'The caller may write.', 'A signed-in person needs the permission to write, and a viewer does not have it. An agent needs its token, or it is turned away. A viewer who tries is stopped at the door, and the day somebody hands the wrong role to the wrong person, the write still doesn\'t happen.'],
+  ['writes', 'Writes are on.', 'Writes ship off. There is one master switch, and it has always shipped off, because a fresh install that can move machinery before anybody decided it should is a lawsuit with a web UI.'],
+  ['agents', 'Agent writes are on.', 'Agents get their own switch, checked only for an agent. It narrows the master switch and can never open a door the master switch closed.'],
+  ['armed', 'The tag is armed.', 'Every tag is read-only until somebody marks it writable, one at a time, on purpose. Import 4,000 tags and none of them is armed.'],
   ['range', 'The value is in range.', 'Out of range is refused, never clamped. Somebody who typed 500 on a 0 to 250 setpoint made a mistake, and quietly sending 250 means they never find out.'],
-  ['check', 'The entity agrees.', "A call through an entity adds the entity's own rules: a number's step, a text's pattern, an entity somebody disabled. They're checked here, inside the gate, so that refusal is audited like any other. A write straight to a tag has none."],
-  ['device', 'The device is running.', "No running device, no write, and the refusal is audited. One that's up but mid-reconnect gets past this check. The audit row opens, and the write fails there with a 503, on the record as a failed attempt. The dry run checks the live session itself, so a recipe or a script finds out before anything moves."],
+  ['check', 'The entity agrees.', "A write through an entity adds the entity's own rules: a number's step, a text's pattern, an entity somebody disabled. They're checked here, so that refusal is audited like any other."],
+  ['device', 'The device is running.', "No running device, no write, and the refusal is audited. A dry run checks the live connection itself, so a recipe or a script finds out before anything moves."],
   ['audit', 'The audit row is written, then the value goes out.', 'In that order. A refusal is recorded as a refusal, and a write that hangs or crashes the process still left evidence that it was attempted.'],
 ];
 ---
@@ -29,12 +29,12 @@ const steps: [string, string, string][] = [
       <legend>Who's asking</legend>
       <input type="radio" name="wg-who" id="wg-op" value="operator" checked /><label for="wg-op">Operator</label>
       <input type="radio" name="wg-who" id="wg-view" value="viewer" /><label for="wg-view">Viewer</label>
-      <input type="radio" name="wg-who" id="wg-mcp" value="agent" /><label for="wg-mcp">AI agent (over MCP)</label>
+      <input type="radio" name="wg-who" id="wg-mcp" value="agent" /><label for="wg-mcp">AI agent</label>
     </fieldset>
 
     <div class="switches">
-      <label class="sw"><input type="checkbox" data-sw="writes" /><span><code>safety.allowWrites</code></span></label>
-      <label class="sw"><input type="checkbox" data-sw="agents" /><span><code>safety.allowMcpWrites</code></span></label>
+      <label class="sw"><input type="checkbox" data-sw="writes" /><span>Writes switched on</span></label>
+      <label class="sw"><input type="checkbox" data-sw="agents" /><span>Agent writes switched on</span></label>
       <label class="sw"><input type="checkbox" data-sw="armed" /><span>Tag marked writable</span></label>
       <label class="sw"><input type="checkbox" data-sw="device" checked /><span>Device running</span></label>
     </div>
@@ -52,8 +52,7 @@ const steps: [string, string, string][] = [
     </div>
 
     <p class="foot">
-      A simulation in your browser. The checks, their order and what they refuse are the Gateway's: the first from
-      its API, the rest straight out of <code>internal/runtime/gate.go</code>.
+      A simulation in your browser. The checks, their order, and what they refuse are the Gateway's own.
     </p>
   </section>
 
@@ -93,7 +92,7 @@ const steps: [string, string, string][] = [
   .who input:checked + label { background: var(--hl-ink); border-color: var(--hl-ink); color: var(--hl-bg); }
   .who input:focus-visible + label { outline: 2px solid var(--hl-focus); outline-offset: 2px; }
 
-  /* Wide enough that safety.allowMcpWrites never breaks mid-word. */
+  /* Wide enough that the switch labels never break mid-word. */
   .switches { display: grid; gap: var(--hl-s2); grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); }
   .sw { display: flex; gap: var(--hl-s2); align-items: center; padding: 0.55em 0.8em; border-radius: var(--hl-r-sm); background: var(--hl-sunken); font-size: var(--hl-fs-sm); cursor: pointer; }
   .sw input { accent-color: var(--hl-orange); width: 18px; height: 18px; flex: none; }
@@ -174,10 +173,10 @@ const steps: [string, string, string][] = [
         out[k] = ['fail', fail]; stop = fail; refusedAt = k;
       };
 
-      check('door', w !== 'viewer', w === 'agent' ? 'Agent holds the MCP token.' : 'Operator holds values.write.', '403. A viewer does not hold values.write.');
+      check('door', w !== 'viewer', w === 'agent' ? 'Agent holds its token.' : 'Operator may write.', 'Refused: a viewer may not write.');
       check('writes', sw('writes'), 'Master switch is on.', 'Refused: writes are disabled on this deployment.');
       if (w !== 'agent' && !stop) out.agents = ['skip', 'Not an agent. Not asked.'];
-      else check('agents', sw('agents'), 'Agent writes are on.', 'Refused: writes from MCP clients are disabled.');
+      else check('agents', sw('agents'), 'Agent writes are on.', 'Refused: writes from agents are disabled.');
       check('armed', sw('armed'), 'Tag is armed.', 'Refused: this tag is not marked writable.');
       check('range', Number.isFinite(v) && v >= MIN && v <= MAX, `${shown} is inside ${MIN}..${MAX}.`, Number.isFinite(v) ? `Refused: ${shown} is outside ${MIN}..${MAX}. Not clamped.` : `Refused: ${shown} is not a number.`);
       // The demo writes straight to a tag, so there are no entity rules to add.
@@ -185,7 +184,7 @@ const steps: [string, string, string][] = [
       else out.check = ['never', 'Never reached.'];
       check('device', sw('device'), 'press-01 is running.', 'Refused: the device is not connected.');
 
-      // The API's 403 never reaches the gate, so it never reaches the audit.
+      // A refusal at the door never reaches the gate, so it never reaches the audit.
       if (refusedAt === 'door') out.audit = ['never', 'The gate never heard about it, so there is nothing to audit.'];
       else out.audit = ['pass', stop ? 'Row written: refused.' : 'Row written, then sent.'];
       return { out, stop, refusedAt, w, shown };
@@ -195,8 +194,8 @@ const steps: [string, string, string][] = [
       if (refusedAt === 'door') return;
       const t = new Date();
       const hh = [t.getHours(), t.getMinutes(), t.getSeconds()].map((n) => String(n).padStart(2, '0')).join(':');
-      const actor = w === 'agent' ? 'mcp:plant-agent' : 'dana';
-      const source = w === 'agent' ? 'mcp' : 'ui';
+      const actor = w === 'agent' ? 'plant-agent' : 'dana';
+      const source = w === 'agent' ? 'agent' : 'screen';
       const row = document.createElement('li');
       const tag = document.createElement('span');
       tag.className = stop ? 'r-no' : 'r-ok';
@@ -224,7 +223,7 @@ const steps: [string, string, string][] = [
             verdict.textContent = `Written. ${shown} degC went to press-01, and the audit has who, from where, and the 210 it replaced.`;
           } else if (refusedAt === 'door') {
             verdict.className = 'verdict no';
-            verdict.textContent = 'Bounced at the door with a 403. The Board still shows a viewer the value. It just never offers them a Write button.';
+            verdict.textContent = 'Bounced at the door. The Board still shows a viewer the value. It just never offers them a Write button.';
           } else {
             verdict.className = 'verdict no';
             verdict.textContent = `${stop} The audit got a row anyway, because somebody hammering a tag they can't touch is exactly what an engineer wants to find next week.`;

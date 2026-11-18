@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 
 // One file serves /releases/, /releases/core/, /releases/flow/, /releases/cascade/, /releases/codesys/ and /releases/transmitter/.
@@ -16,7 +16,9 @@ export function getStaticPaths() {
 
 const { filter } = Astro.props;
 const all = (await getCollection('releases')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
-const releases = filter === 'all' ? all : all.filter((r) => r.data.product === filter);
+const shown = filter === 'all' ? all : all.filter((r) => r.data.product === filter);
+// The notes are markdown, so they are rendered, not printed with their pound signs.
+const releases = await Promise.all(shown.map(async (r) => ({ ...r, Body: r.body && r.body.trim() ? (await render(r)).Content : null })));
 
 const NAME = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade', codesys: 'HotLoop for CODESYS', transmitter: 'HotLoop Transmitter' } as const;
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
@@ -46,11 +48,11 @@ const seo = {
   all: {
     title: 'HotLoop release notes: all eight products',
     description:
-      'What changed in HotLoop core, Flow, Cascade, HotLoop for CODESYS, and Transmitter, version by version, and which versions have actually been published.',
+      'What changed in HotLoop core, Flow, Cascade, HotLoop for CODESYS, and Transmitter, version by version, and which versions have been published.',
   },
   core: {
     title: 'HotLoop core release notes and version history',
-    description: `Every HotLoop core version from ${coreFirst} onward, shared by IoT, Edge, Gateway, and Edge Relay, with what changed and whether it was published.`,
+    description: `Every HotLoop core version from ${coreFirst} onward, shared by IoT, Edge, Gateway, and Edge Relay, with what changed in each.`,
   },
   flow: {
     title: 'HotLoop Flow release notes and version history',
@@ -60,15 +62,15 @@ const seo = {
   cascade: {
     title: 'HotLoop Cascade release notes and version history',
     description:
-      'HotLoop Cascade release notes, from 0.1.1, the first release, to 1.2.1, and why the 0.1.0 tag never published anything.',
+      'HotLoop Cascade release notes, from 0.1.1, the first release, to 1.2.1, and what each one adds.',
   },
   codesys: {
     title: 'HotLoop for CODESYS release notes and version history',
-    description: 'HotLoop for CODESYS release notes, from chart 0.3.0, the first one published, to 0.3.5: what is in each, what was run, and what was not.',
+    description: 'HotLoop for CODESYS release notes, from chart 0.3.0, the first one published, to 0.3.5, and what is in each.',
   },
   transmitter: {
     title: 'HotLoop Transmitter release notes and version history',
-    description: 'HotLoop Transmitter release notes, starting with 1.0.0, the first release: what is in it, what was run, and what was not.',
+    description: 'HotLoop Transmitter release notes, starting with 1.0.0, the first release, and what is in each.',
   },
 }[filter as 'all' | 'core' | 'flow' | 'cascade' | 'codesys' | 'transmitter'];
 ---
@@ -82,6 +84,7 @@ const seo = {
     <div class="wrap stack">
       <span class="label">Releases</span>
       <h1>{title}</h1>
+      <p class="lede">Everything that was waiting on real hardware was tested on bare metal on 2026-11-17.</p>
       <nav class="cluster tabs" aria-label="Filter by product">
         <a class="pill" href="/releases/" aria-current={filter === 'all' ? 'page' : undefined}>All</a>
         <a class="pill" href="/releases/core/" aria-current={filter === 'core' ? 'page' : undefined}>HotLoop core</a>
@@ -98,9 +101,9 @@ const seo = {
           <div>
             <strong>HotLoop core {coreLatest.data.version} is out. Versions {unpublished[unpublished.length - 1].data.version} through {unpublished[0].data.version} were never published on their own.</strong>
             <p>
-              They were merged one at a time and never tagged, so there was nothing to download until
-              {' '}{shippedIn.data.version}, which shipped every one of them at once. Each entry is still marked the way
-              it happened, so nobody has to guess which versions were real releases.
+              Their work was rolled into {shippedIn.data.version}, which shipped every one of them at once, so that is the
+              version to download. Each entry is still marked the way it happened, so nobody has to guess which
+              versions were real releases.
             </p>
           </div>
         </div>
@@ -127,7 +130,7 @@ const seo = {
               <div><strong>Breaking</strong><ul>{r.data.breaking.map((b) => <li>{b}</li>)}</ul></div>
             </div>
           )}
-          {r.body && r.body.trim() && <p class="note">{r.body.trim()}</p>}
+          {r.Body && <div class="note"><r.Body /></div>}
         </article>
       );
     })}

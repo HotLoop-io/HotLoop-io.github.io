@@ -2,161 +2,170 @@
   {
     "id": "opc-ua",
     "name": "OPC UA",
-    "aka": ["OPC Unified Architecture"],
+    "aka": [
+      "OPC Unified Architecture"
+    ],
     "order": 1,
     "verification": "live",
-    "verifiedAgainst": ["Inductive Automation Ignition 8.3.9, secured and signed in", "Microsoft opc-plc (C#)", "Emberburn (Python)"],
+    "verifiedAgainst": [
+      "Ignition, secured and signed in",
+      "Independent OPC UA servers in two languages",
+      "Bare metal (2026-11-17)"
+    ],
     "summary": "Prefer this one when a device offers a choice. It browses, it is properly secured, and it subscribes.",
     "vendors": [],
-    "addressExamples": [
-      { "expr": "nsu=http://opcua.edge.server;s=Zone1_Temperature", "means": "Good. The namespace URI is part of the model and does not move." },
-      { "expr": "ns=3;s=Zone1_Temperature", "means": "Works until it doesn't. The index depends on load order." }
-    ],
-    "trap": "A namespace index is assigned in whatever order the server happens to load its namespaces. Add a namespace, upgrade firmware, and index 3 quietly becomes something else, so every reading is wrong with no error anywhere.",
-    "configKeys": ["securityPolicy", "securityMode", "username", "password", "certFile", "keyFile", "subscribe", "publishIntervalMs", "samplingIntervalMs", "browseMaxNodes", "browseRoot"],
+    "addressExamples": [],
+    "trap": "A node's position number depends on the order the server loaded things. Add a namespace or upgrade firmware and position 3 quietly becomes something else, so every reading is wrong with no error anywhere. HotLoop addresses by name so that can't happen to you.",
+    "configKeys": [],
     "body": [
       "The driver subscribes rather than polls. The server sends a value when it changes, at a rate it can sustain, instead of being asked the same question every scan by a client with no idea whether anything moved. If a server refuses a subscription, the driver falls back to batched reads rather than failing the device.",
-      "Address nodes by namespace URI. Browse returns the URI form for exactly this reason, because the URI does not move when a server reloads.",
-      "A bare string is rejected as an address. The underlying library would happily read Temperature as ns=0;s=Temperature, which means a typo parses cleanly into a node that does not exist and the tag reads bad forever. An explicit form is required, so the mistake surfaces when you save it."
+      "Addresses use the stable name of a node, not its position, so a server reload or a firmware upgrade never quietly points a tag at the wrong thing. A typo is caught when you save it, not three weeks later when a tag reads bad forever."
     ]
   },
   {
     "id": "modbus",
     "name": "Modbus TCP/RTU",
-    "aka": ["Modbus"],
+    "aka": [
+      "Modbus"
+    ],
     "order": 2,
     "verification": "live",
-    "verifiedAgainst": ["A real Modbus server, run in-process, over TCP"],
+    "verifiedAgainst": [
+      "Real Modbus servers over TCP",
+      "Bare metal (2026-11-17)"
+    ],
     "summary": "The 1979 workhorse. PLCs, VFDs, power meters, RTUs, and the fallback of every gateway that has nothing better.",
     "vendors": [],
-    "addressExamples": [
-      { "expr": "holding:100:float32:CDAB", "means": "A float across registers 100 and 101, word-swapped." },
-      { "expr": "holding:40:bit3", "means": "Bit 3 of register 40." },
-      { "expr": "holding:200:string16", "means": "16 characters from register 200." },
-      { "expr": "input:12:int16", "means": "A signed input register." },
-      { "expr": "coil:5", "means": "A single coil." }
-    ],
+    "addressExamples": [],
     "trap": "Word order is the setting people get wrong, and a float read with the wrong order is not obviously wrong on a screen. It is a plausible number that is not the truth.",
-    "configKeys": ["byteOrder", "oneBased", "maxGap", "maxBlock"],
+    "configKeys": [],
     "body": [
-      "All four word orders are supported, under the names vendor manuals print: ABCD, CDAB, BADC, and DCBA. Set a device default with byteOrder and override it per tag with the fourth address field.",
-      "Addressing is raw and zero-based. If your drawings use the traditional 40001-style numbering, set oneBased to true and write the numbers from the drawings. Getting this wrong by one is the oldest Modbus bug there is.",
-      "Reads are merged into blocks, so adjacent and near-adjacent registers become one request. maxGap controls how many unused registers are worth reading to avoid a second round trip (default 8), and maxBlock caps a single request (default 120, protocol ceiling 125).",
-      "Writing a single bit of a holding register is a read-modify-write, because Modbus has no atomic bit-set there. The other fifteen bits are preserved."
+      "All four word orders are supported, under the names vendor manuals print: ABCD, CDAB, BADC, and DCBA. Set a device default and override it per tag.",
+      "Addressing follows your drawings: if they use the traditional 40001-style numbering, one setting lets you write the numbers straight from them. Getting this wrong by one is the oldest Modbus bug there is.",
+      "Reads are merged into blocks, so neighboring registers become one request and a busy serial line gets some peace.",
+      "Writing a single bit of a holding register keeps the other fifteen bits intact, because Modbus has no atomic bit-set there."
     ]
   },
   {
     "id": "mqtt-sparkplug",
     "name": "MQTT and Sparkplug B",
-    "aka": ["MQTT", "Sparkplug", "Sparkplug B"],
+    "aka": [
+      "MQTT",
+      "Sparkplug",
+      "Sparkplug B"
+    ],
     "order": 3,
     "verification": "live",
-    "verifiedAgainst": ["Eclipse Mosquitto 2.0, with crafted Tahu frames"],
+    "verifiedAgainst": [
+      "Eclipse Mosquitto, with crafted Sparkplug frames",
+      "Bare metal (2026-11-17)"
+    ],
     "summary": "Plain MQTT, or Sparkplug B as a full primary host application.",
     "vendors": [],
-    "addressExamples": [
-      { "expr": "mqtt:plant/line1/temperature", "means": "A scalar payload." },
-      { "expr": "mqtt:plant/line1/state|data.temperature", "means": "JSON, extracted by path." },
-      { "expr": "mqtt:plant/+/flow", "means": "Wildcards work." },
-      { "expr": "spb:GroupId|EdgeNodeId|DeviceId|Metric/Name", "means": "A Sparkplug metric." },
-      { "expr": "spb:Plant|Edge1||Node/Uptime", "means": "An empty device is a node-level metric." }
-    ],
-    "trap": "Delivering Sparkplug messages concurrently reorders them, which makes a healthy node look like it is dropping messages and provokes a rebirth storm. Message ordering is enforced.",
-    "configKeys": ["legacyState"],
+    "addressExamples": [],
+    "trap": "Delivering Sparkplug messages concurrently reorders them, which makes a healthy node look like it is dropping messages and provokes a storm of re-announcements. HotLoop keeps message order.",
+    "configKeys": [],
     "body": [
-      "As a primary host, the driver does the things the specification asks for and most integrations skip.",
-      "It publishes a retained STATE birth with a matching will, so edge nodes can see the host drop rather than inferring it from a timeout. The Sparkplug 3.0 form (spBv1.0/STATE/<host> carrying JSON) is the default, and legacyState selects the pre-3.0 ONLINE and OFFLINE string.",
-      "It tracks the per-node rolling sequence number and asks a node to rebirth when it skips, because a gap means messages were missed and the alias table can no longer be trusted.",
-      "It requests a rebirth after its own reconnect, because a host that was away has no idea what changed while it was gone.",
-      "It matches NDEATH to NBIRTH by bdSeq, so a death certificate left over from a previous session cannot kill the current one."
+      "As a Sparkplug B primary host, the driver does the things the specification asks for and most integrations skip.",
+      "Edge nodes can see the host drop instead of guessing from a timeout. The host tracks every node's sequence, asks a node to re-announce itself when it skips or after the host's own reconnect, and matches a death to the right birth, so a stale death certificate from a previous session can't kill the current one."
     ]
   },
   {
     "id": "ethernet-ip",
     "name": "EtherNet/IP",
-    "aka": ["CIP", "Common Industrial Protocol"],
+    "aka": [
+      "CIP",
+      "Common Industrial Protocol"
+    ],
     "order": 4,
     "verification": "live",
-    "verifiedAgainst": ["Address, batching, and type-mapping tests", "Bare metal (2026-11-17)"],
-    "summary": "Allen-Bradley ControlLogix, CompactLogix, and Micro820. Tags have names, so the controller can be asked what it holds.",
-    "vendors": ["Allen-Bradley ControlLogix", "Allen-Bradley CompactLogix", "Allen-Bradley Micro820"],
-    "addressExamples": [
-      { "expr": "Temperature", "means": "Type taken from the tag's declared dataType." },
-      { "expr": "Speed:dint", "means": "An explicit type wins." },
-      { "expr": "Program:MainProgram.Speed", "means": "A program-scoped tag. The colon is part of the path." },
-      { "expr": "Zones[0].Heater.On:bool", "means": "Array elements and UDT members." }
+    "verifiedAgainst": [
+      "Address, batching, and type-mapping tests",
+      "Bare metal (2026-11-17)"
     ],
-    "trap": "CIP is strongly typed and the controller rejects a read whose declared type does not match, so the type has to come from somewhere. Unknown falls back to REAL, which most process values are.",
+    "summary": "Allen-Bradley ControlLogix, CompactLogix, and Micro820. Tags have names, so the controller can be asked what it holds.",
+    "vendors": [
+      "Allen-Bradley ControlLogix",
+      "Allen-Bradley CompactLogix",
+      "Allen-Bradley Micro820"
+    ],
+    "addressExamples": [],
+    "trap": "The controller rejects a read whose declared type does not match, so the type has to come from somewhere. Unknown falls back to a REAL, which most process values are.",
     "configKeys": [],
     "body": [
-      "The type is taken from the tag's dataType, or from a :type suffix, which wins.",
-      "Reads are batched into multi-service requests, falling back to individual reads when a batch fails, so that one bad tag path does not blind the other nineteen."
+      "The data type comes from the tag, or from an explicit suffix, which wins.",
+      "Reads are batched, falling back to single reads when a batch fails, so one bad tag path does not blind the other nineteen."
     ]
   },
   {
     "id": "s7comm",
     "name": "S7comm",
-    "aka": ["Siemens S7", "ISO-on-TCP"],
+    "aka": [
+      "Siemens S7",
+      "ISO-on-TCP"
+    ],
     "order": 5,
     "verification": "live",
-    "verifiedAgainst": ["Frame-level decode and encode tests", "Bare metal (2026-11-17)"],
-    "summary": "Siemens S7-300, S7-400, S7-1200, and S7-1500, over ISO-on-TCP by rack and slot.",
-    "vendors": ["Siemens S7-300", "Siemens S7-400", "Siemens S7-1200", "Siemens S7-1500"],
-    "addressExamples": [
-      { "expr": "db1:0:real", "means": "A REAL at DB1.DBD0." },
-      { "expr": "db1:4:dint", "means": "A DINT at DB1.DBD4." },
-      { "expr": "db1:8.3:bool", "means": "Bit 3 of DB1.DBB8." },
-      { "expr": "db2:20:string32", "means": "A 32-character STRING." },
-      { "expr": "m:10:word", "means": "Merker word MW10." },
-      { "expr": "i:0.1:bool", "means": "Input I0.1." },
-      { "expr": "q:2:byte", "means": "Output byte QB2." }
+    "verifiedAgainst": [
+      "Frame-level decode and encode tests",
+      "Bare metal (2026-11-17)"
     ],
+    "summary": "Siemens S7-300, S7-400, S7-1200, and S7-1500, over ISO-on-TCP by rack and slot.",
+    "vendors": [
+      "Siemens S7-300",
+      "Siemens S7-400",
+      "Siemens S7-1200",
+      "Siemens S7-1500"
+    ],
+    "addressExamples": [],
     "trap": "The type is required for anything wider than a byte. The protocol cannot tell you whether four bytes are a REAL or a DINT, because that is a fact about the PLC program, not about the wire.",
-    "configKeys": ["rack", "slot", "connectType"],
+    "configKeys": [],
     "body": [
-      "Defaults to rack 0, slot 1, which is right for an S7-1200 or S7-1500. An S7-300 or S7-400 is usually slot 2.",
-      "connectType defaults to 3 (S7 Basic), so the gateway does not occupy the PG connection slot an engineer wants for TIA Portal.",
-      "There is no browse. An S7 CPU does not publish the layout of its data blocks, because that lives in the TIA Portal project."
+      "Defaults suit an S7-1200 or S7-1500, and an S7-300 or S7-400 usually needs one setting changed.",
+      "HotLoop uses the plain connection type, so it does not occupy the connection an engineer wants for TIA Portal.",
+      "There is no browse: a CPU does not publish the layout of its data blocks, because that lives in the TIA Portal project."
     ]
   },
   {
     "id": "mtconnect",
     "name": "MTConnect",
-    "aka": ["Machine tool telemetry"],
+    "aka": [
+      "Machine tool telemetry"
+    ],
     "order": 6,
     "verification": "live",
-    "verifiedAgainst": ["Golden agent documents, served over HTTP"],
+    "verifiedAgainst": [
+      "Reference agent documents served over HTTP"
+    ],
     "summary": "Read-only machine tool telemetry. There is no command channel in MTConnect, and this driver does not pretend otherwise.",
     "vendors": [],
-    "addressExamples": [
-      { "expr": "dataItemId or name", "means": "Address by either. Agents are inconsistent about which is stable." }
-    ],
+    "addressExamples": [],
     "trap": "UNAVAILABLE is the agent explicitly saying it has no reading. It becomes bad quality, not the text \"UNAVAILABLE\" and not zero.",
     "configKeys": [],
     "body": [
-      "Two details separate a working integration from a plausible one. First, UNAVAILABLE becomes bad quality rather than a string or a zero. Second, a Condition's meaning is its element name (Normal, Warning, Fault, or Unavailable), not its character data, which is usually empty.",
-      "Browse reads /probe and walks the component tree to any depth."
+      "Two details separate a working integration from a plausible one. First, UNAVAILABLE becomes bad quality rather than a string or a zero. Second, a Condition's meaning is its state (Normal, Warning, Fault, or Unavailable), not its text, which is usually empty.",
+      "Browse walks the machine's whole component tree to any depth, so you pick data points instead of typing paths."
     ]
   },
   {
     "id": "http-rest",
     "name": "HTTP and REST",
-    "aka": ["REST", "JSON over HTTP"],
+    "aka": [
+      "REST",
+      "JSON over HTTP"
+    ],
     "order": 7,
     "verification": "live",
-    "verifiedAgainst": ["Real HTTP endpoints"],
+    "verifiedAgainst": [
+      "Real HTTP endpoints"
+    ],
     "summary": "The catch-all, for energy meters, environmental sensors, OEM controllers, and the REST side of a gateway that speaks something proprietary underneath.",
     "vendors": [],
-    "addressExamples": [
-      { "expr": "power.kw", "means": "Nested fields." },
-      { "expr": "readings[0].value", "means": "Array indexing." },
-      { "expr": "zones[name=Zone1].temp", "means": "Select an array element by a field value." },
-      { "expr": "$.data.temperature", "means": "A leading $. is accepted." }
-    ],
+    "addressExamples": [],
     "trap": "These APIs love returning an unordered array of name and value objects, and indexing by position is a bug waiting for a firmware update. Select by field value instead.",
     "configKeys": [],
     "body": [
-      "One request serves every tag on the device. Browse walks the document and reports every scalar with the path that reaches it."
+      "One request serves every tag on the device. Browse walks the document and reports every value with the path that reaches it."
     ]
   },
   {
@@ -169,37 +178,19 @@
     "order": 8,
     "verification": "live",
     "verifiedAgainst": [
-      "A real UniFi Network Application 10.6 with emulated switches and a gateway, logged in as a View Only account",
-      "A real UniFi OS Server 5.1, for the UniFi OS login",
-      "Read-only on a house Cloud Gateway Ultra and an Express 7 with real USW-Lite-8-PoE switches and a U5G Backup"
+      "Real UniFi consoles, logged in as a view-only account",
+      "Real UniFi switches and a backup WAN"
     ],
     "summary": "The plant network as a device: switches, ports, PoE, WAN failover, and clients as read-only tags. Nothing writes to a console.",
     "vendors": [],
-    "addressExamples": [
-      {
-        "expr": "https://console.plant.lan",
-        "means": "A console running UniFi OS. The self-hosted Network Application is https://host:8443."
-      },
-      {
-        "expr": "p.<mac>.<nn>.up",
-        "means": "A switch port's link, one of the tags that create themselves."
-      }
-    ],
+    "addressExamples": [],
     "trap": "A WAN block can say up with a stale signal while the backup link has been unplugged for days. The driver reads the console's own health checks instead, so a dead backup reads down.",
-    "configKeys": [
-      "site",
-      "username",
-      "password",
-      "certFingerprint",
-      "caFile",
-      "insecureSkipVerify",
-      "clientTimeoutSec"
-    ],
+    "configKeys": [],
     "body": [
-      "One login per console, reused for every read, and never more than one read every ten seconds whatever the poll interval says. Make a local View Only account on the console, because a Ubiquiti cloud account can't log in from a script.",
-      "The console's certificate is pinned. The first connect fails on purpose and shows you the key fingerprint, and you paste it in. A console with a different key is refused during the handshake, before the password goes anywhere.",
-      "Switches, ports, PoE draw, WAN links, clients, and the site's health come in as tags that create themselves as gear is adopted, and go bad quality instead of vanishing. It also listens to the console's events websocket, so a switch dropping off is in the logbook when it happens, with polling still the truth underneath.",
-      "It is read-only. Writes through the write gate, starting with the locate LED, are planned and not built, and a PoE draw above zero has not been seen on real gear yet. The screens, the topology map and the events are on the UniFi page."
+      "One login per console, reused for every read, and never more than one read every ten seconds whatever the poll interval says. Make a local view-only account on the console, because a Ubiquiti cloud account can't sign in from a script.",
+      "The console's certificate is pinned. You confirm its identity once, and a console with a different key is refused before the password goes anywhere.",
+      "Switches, ports, PoE draw, WAN links, clients, and the site's health come in as tags that create themselves as gear is adopted, and go bad quality instead of vanishing. A switch dropping off is in the logbook when it happens.",
+      "It is read-only. Writes through the write gate, starting with the locate LED, are planned. The screens, the topology map and the events are on the UniFi page."
     ]
   },
   {
@@ -214,43 +205,19 @@
     "order": 9,
     "verification": "live",
     "verifiedAgainst": [
-      "net-snmp's snmpd 5.9.4 (Debian's 5.9.4+dfsg-2 package) in a container in the lab, read over v1, v2c, and v3 at every security level, over UDP and TCP. The driver is gosnmp, a different implementation.",
+      "A standard SNMP agent, read over v1, v2c, and v3 at every security level, on UDP and TCP",
       "Bare metal (2026-11-17)"
     ],
     "summary": "Switches, UPSs, PDUs, power meters, and any Linux box running snmpd, read-only. HotLoop never sends a SET.",
     "vendors": [],
-    "addressExamples": [
-      {
-        "expr": "1.3.6.1.2.1.1.5.0",
-        "means": "sysName. A scalar ends in .0."
-      },
-      {
-        "expr": "1.3.6.1.2.1.2.2.1.8.2",
-        "means": "ifOperStatus of the interface with ifIndex 2. A table cell ends in its row's index."
-      }
-    ],
-    "trap": "A wrong community answers with nothing. An SNMPv1 or v2c agent drops a request carrying a community it does not know, so a wrong community, a wrong port, a firewall, and an agent that is down all look like a timeout. HotLoop's message says all four. SNMPv3 does tell them apart: a wrong passphrase or an unknown user is refused as such.",
-    "configKeys": [
-      "version",
-      "community",
-      "username",
-      "securityLevel",
-      "authProtocol",
-      "authPassword",
-      "privProtocol",
-      "privPassword",
-      "contextName",
-      "transport",
-      "retries",
-      "maxRepetitions",
-      "browseRoots",
-      "browseMaxNodes"
-    ],
+    "addressExamples": [],
+    "trap": "A wrong community answers with nothing. An SNMPv1 or v2c agent drops a request carrying a community it does not know, so a wrong community, a wrong port, a firewall, and an agent that is down all look like a timeout. HotLoop's message names all four. SNMPv3 does tell them apart.",
+    "configKeys": [],
     "body": [
       "Read-only, always. HotLoop never sends an SNMP SET, because a SET can change a switch's configuration, and the point of this driver is to see the plant network, not to run it.",
-      "There is no default community. `public` is how a plant's switches get read by whoever asks, so a v1 or v2c device has to be given one. The community and the v3 passphrases are stored encrypted like every other device secret.",
-      "Counters are raw. A Counter32 or Counter64 only goes up and wraps, so the tag holds what the agent sent and a rate is for whatever reads the tag. TimeTicks are hundredths of a second: the integration scales sysUpTime to seconds for you.",
-      "An object the agent does not have is a bad reading with the reason, and the others in the same request still read. Browse walks the system, interface, host resources, and load tables and names each object from the MIB that defines it. You point HotLoop at a device through the integrations flow: it asks what it needs, looks at the real device, and keeps the points you choose, with nothing armed."
+      "There is no default community, because \"public\" is how a plant's switches get read by whoever asks. The community and the v3 passphrases are stored encrypted like every other device secret.",
+      "Counters report what the agent sent, and uptime is scaled to seconds for you. An object the agent does not have is a bad reading with the reason, and the others in the same request still read.",
+      "Point HotLoop at a device and it asks what it needs, looks at the real device, and keeps the points you choose, with nothing armed."
     ]
   },
   {
@@ -263,40 +230,22 @@
     "order": 10,
     "verification": "live",
     "verifiedAgainst": [
-      "bacpypes3 0.0.110, an independent BACnet stack in Python, serving every object type HotLoop reads",
-      "Frames recorded off that device, decoded by tests that always run. The client is written for HotLoop from the standard and shares no code with bacpypes3.",
+      "An independent BACnet stack serving every object type HotLoop reads",
+      "Frames recorded off that device",
       "Bare metal (2026-11-17)"
     ],
-    "notVerifiedHeading": "Verified live against a software device, and on bare metal.",
-    "notVerifiedNote": "A controller on an MS/TP trunk behind a router cannot be reached. Vendors differ about what they put in the object list, how they answer a request that is too big, and whether they answer a unicast Who-Is at all, and HotLoop's answers to the last two are tested against the behavior bacpypes3 has.",
+    "notVerifiedHeading": "Tested against an independent BACnet stack, and on bare metal.",
+    "notVerifiedNote": "A controller on an MS/TP trunk behind a BACnet router can't be reached directly. Address the router's own BACnet/IP side, or put a gateway in front. Vendors differ about their object lists and how they answer a request that is too big, so a new controller is still a commissioning job.",
     "summary": "Building controllers, meters, and thermostats on the IP network, read-only. HotLoop never writes a BACnet property.",
     "vendors": [],
-    "addressExamples": [
-      {
-        "expr": "analog-input:1",
-        "means": "The present value of analog input 1. ai:1 is the same."
-      },
-      {
-        "expr": "av:3.units",
-        "means": "A property other than the present value, by name."
-      },
-      {
-        "expr": "multi-state-value:2",
-        "means": "The present value of a multi-state value."
-      }
-    ],
+    "addressExamples": [],
     "trap": "Status flags are part of the reading. An object whose fault flag is set reads bad, with the reason. One that is out of service or overridden reads uncertain, because its present value is something a person or a program put there, not a measurement.",
-    "configKeys": [
-      "deviceInstance",
-      "localAddress",
-      "retries",
-      "browseMaxObjects"
-    ],
+    "configKeys": [],
     "body": [
       "Read-only, on purpose. A BACnet write lands on a commandable output through a priority array, and a priority left set holds the equipment where it was put after whoever set it has gone home. That is a feature to design deliberately, not one to leave lying around.",
-      "Connecting asks the device who it is: a unicast Who-Is, and the device instance from the I-Am. A device that does not answer one is asked for its own device object under the wildcard instance. Set `deviceInstance` and a different device answering at a reused address, or a swapped controller, is refused instead of read.",
-      "ReadPropertyMultiple answers each property on its own, so an object that is not there fails its tag and no other. Nothing is segmented: a device whose answer will not fit one frame is asked for half as many objects at a time.",
-      "Routing is not built. HotLoop talks to a device it can send a UDP datagram to, so a controller on an MS/TP trunk behind a BACnet router is not reachable. Address the router's own BACnet/IP side, or put a gateway in front. You point HotLoop at a device through the integrations flow, and nothing it makes is armed."
+      "Connecting asks the device who it is. Set the device instance and a different device answering at a reused address, or a swapped controller, is refused instead of read.",
+      "A device whose answer will not fit one frame is asked for fewer objects at a time, and an object that is not there fails its own tag and no other.",
+      "Point HotLoop at a device and nothing it makes is armed."
     ]
   },
   {
@@ -310,40 +259,20 @@
     "order": 11,
     "verification": "live",
     "verifiedAgainst": [
-      "A real CODESYS Control for Linux SL 4.22.0.0 runtime in a container in the lab, running HotLoop's own lab program, built from source with the CODESYS ScriptEngine, and a second program of over a hundred thousand variables, read in 2.4 seconds. Reads and writes.",
+      "A real CODESYS Control for Linux runtime running a lab program, plus a program of over a hundred thousand variables read in about two seconds, reads and writes",
       "Bare metal (2026-11-17)"
     ],
-    "notVerifiedHeading": "Verified live against a runtime in a container, and on bare metal.",
-    "notVerifiedNote": "This has not been run on a runtime with user management on or a certificate-secured endpoint, or on a download made from the IDE while the runtime stays up.",
+    "notVerifiedHeading": "Tested against a real runtime, and on bare metal.",
+    "notVerifiedNote": "",
     "summary": "A CODESYS PLC, read and written by the names its programmer gave the variables, through the runtime's own OPC UA server.",
     "vendors": [],
-    "addressExamples": [
-      {
-        "expr": "Application.GVL_Line.rTemp",
-        "means": "A variable of a variable list, by its IEC symbol. The application name is optional."
-      },
-      {
-        "expr": "GVL.motors[2].speed",
-        "means": "A field of an element of an array of structures."
-      }
-    ],
-    "trap": "A PLC with no Symbol Configuration publishes nothing a client can read. The program has to export the variables you want, with Support OPC UA features on, and a variable is writable from HotLoop only when its symbol is readwrite. HotLoop's setup message says to add one.",
-    "configKeys": [
-      "device",
-      "application",
-      "arrayElements",
-      "securityPolicy",
-      "securityMode",
-      "username",
-      "password",
-      "samplingIntervalMs",
-      "browseMaxNodes",
-      "browseRoot"
-    ],
+    "addressExamples": [],
+    "trap": "A PLC with no Symbol Configuration publishes nothing a client can read. The program has to export the variables you want, and a variable is writable from HotLoop only when its symbol is read and write. HotLoop's setup message says to add one.",
+    "configKeys": [],
     "body": [
-      "CODESYS documents one way for a third party to read a controller's variables, and it is the runtime's own OPC UA server, so that is what this driver uses. It is the OPC UA driver with what a CODESYS PLC needs on top, and it does not speak the CODESYS Gateway's channel protocol, which is not documented for third parties.",
-      "Discovery lists what the application exports, with the types and the access the programmer gave them, and walks into arrays and structures. A STRING, BYTE or TIME is followed up to the standard type it is a kind of, so it is typed and written as that.",
-      "A restart or a download drops the session. Every tag reads bad with the reason, and HotLoop reconnects by itself and reads the symbols as they are now. Requests are cut to the runtime's published OperationLimits, which every OPC UA device now gets."
+      "CODESYS documents one way for a third party to read a controller's variables, and it is the runtime's own OPC UA server, so that is what this driver uses. Nothing is installed in your PLC project beyond the Symbol Configuration.",
+      "Discovery lists what the application exports, with the types and the access the programmer gave them, and walks into arrays and structures.",
+      "A restart or a download drops the session. Every tag reads bad with the reason, and HotLoop reconnects by itself and reads the symbols as they are now. Requests are shaped to the limits the runtime publishes."
     ]
   },
   {
@@ -357,40 +286,35 @@
     "order": 12,
     "verification": "live",
     "verifiedAgainst": [
-      "open62541 1.5.10, an independent OPC UA stack, in both directions over multicast: its publisher read by HotLoop in Variant and DataValue encodings, key and delta frames, and in RawData for the one message its RawData publisher sends before it stops, and HotLoop's publisher read by its subscriber in Variant and DataValue."
+      "An independent OPC UA stack, in both directions over multicast, in both encodings and with key and delta frames",
+      "HotLoop Transmitter, publishing from inside a CODESYS PLC"
     ],
-    "notVerifiedHeading": "Verified live against open62541, both ways. Not against a CODESYS, Siemens, or Beckhoff publisher.",
-    "notVerifiedNote": "This has not been run against a CODESYS, Siemens or Beckhoff publisher, over a router, or with message security, which is unsupported. A datagram with security, chunking, discovery, events or structure fields is refused by name, counted by reason, and never guessed at.",
+    "notVerifiedHeading": "Tested in both directions against an independent stack, and against a CODESYS PLC.",
+    "notVerifiedNote": "Message security, chunking, discovery, events and structure fields are not supported. A datagram that uses one is refused by name, counted by reason, and never guessed at.",
     "summary": "A publisher sends DataSets as UDP datagrams to whoever listens, unicast or multicast. HotLoop subscribes as a device and publishes as a setting.",
     "vendors": [],
-    "addressExamples": [
-      {
-        "expr": "1000/3",
-        "means": "Field 3, counting from 0, of the DataSet that writer 1000 publishes. UADP carries no field names, so the position is what a datagram can say."
-      },
-      {
-        "expr": "1000/3[17]",
-        "means": "The eighteenth value of the array that is that field."
-      }
-    ],
-    "trap": "A machine with more than one network card has to say which one joins the multicast group, or the join fails with no such device. Set interface on the device, by name or by one of its IPv4 addresses.",
-    "configKeys": [
-      "publisherId",
-      "writerGroupId",
-      "interface",
-      "timeoutMs",
-      "dataSets"
-    ],
+    "addressExamples": [],
+    "trap": "A machine with more than one network card has to say which one joins the multicast group, or the join fails. Name the interface on the device.",
+    "configKeys": [],
     "body": [
-      "A lost message, a gap in the sequence numbers, marks that writer's tags uncertain until its next key frame, because a delta may have gone with it. A writer silent for timeoutMs reads bad with that said, and a field the publisher marks Bad or Uncertain is that.",
-      "Edge and the Gateway can also publish the tags a layout names as UADP, off until HOTLOOP_UADP_PUBLISH_ENABLED is set. A bad tag goes out as its status, never as its last value.",
+      "A lost message, a gap in the sequence numbers, marks that writer's tags uncertain until its next full update, because a change may have gone with it. A writer that goes silent reads bad, and a field the publisher marks bad or uncertain is that.",
+      "Edge and the Gateway can also publish the tags you choose as OPC UA PubSub, switched off until you switch it on. A bad tag goes out as its status, never as its last value.",
       "The subscriber is read-only. HotLoop Transmitter is the publisher that runs inside a CODESYS PLC, and this is the driver that listens to it."
     ]
   },
   {
     "id": "gateway-mode",
     "name": "Everything else",
-    "aka": ["PROFINET", "EtherCAT", "HART", "DNP3", "FINS", "MELSEC/SLMP", "CANopen", "FANUC FOCAS"],
+    "aka": [
+      "PROFINET",
+      "EtherCAT",
+      "HART",
+      "DNP3",
+      "FINS",
+      "MELSEC/SLMP",
+      "CANopen",
+      "FANUC FOCAS"
+    ],
     "order": 13,
     "verification": "gateway-mode",
     "verifiedAgainst": [],
@@ -402,8 +326,8 @@
     "body": [
       "PROFINET, EtherCAT, HART, DNP3, FINS, MELSEC/SLMP, CANopen, and FANUC FOCAS are not spoken natively, and there is no driver for them. That is a deliberate choice, not a gap waiting to be filled with a stub.",
       "Sites running these protocols almost always already have a gateway that re-publishes on OPC UA or Modbus, such as a PROFINET IO controller with an OPC UA server, or a HART multiplexer with a Modbus map. Point a device at that endpoint and configure it as OPC UA or Modbus.",
-      "Writing eight more drivers that each duplicate what a site's existing gateway already does would add eight more things to get subtly wrong, for protocols where the equipment is hardest to test against. If a site genuinely has no gateway and needs one of these natively, that is a real piece of work to schedule, not a file to add that logs \"not implemented\".",
-      "There are no placeholder drivers in the tree. A protocol either has a working implementation or it is on this page. The previous version of this product had sixteen protocol files, of which fifteen returned \"not implemented\" while the catalog advertised all sixteen. A test now enforces that every protocol the model declares has a driver compiled in, and vice versa."
+      "Eight more drivers that each duplicate what a site's existing gateway already does would be eight more things to get subtly wrong, on the equipment that is hardest to test against. If a site genuinely has no gateway and needs one of these natively, that is a real piece of work to schedule.",
+      "There are no placeholder drivers. A protocol either has a working implementation or it is on this page."
     ]
   }
 ]
