@@ -22,6 +22,7 @@ const LINES = [
   { dir: 'core', index: '/hotloop/index.yaml', name: 'HotLoop core' },
   { dir: 'flow', index: '/hotloop-flow/index.yaml', name: 'Flow' },
   { dir: 'cascade', index: '/hotloop-cascade/index.yaml', name: 'Cascade' },
+  { dir: 'codesys', index: '/hotloop-codesys/index.yaml', name: 'HotLoop for CODESYS' },
 ];
 
 const cmp = (a, b) => a.localeCompare(b, undefined, { numeric: true });
@@ -40,6 +41,23 @@ for (const { dir, index, name } of LINES) {
   const mine = notes.at(-1);
   if (cmp(live, mine) > 0) failures.push(`${name}: ${live} is live and the newest note on this site is ${mine}. Add src/content/releases/${dir}/${live}.md and bump the version constant in src/lib/products.ts.`);
   else console.log(`${name}: ${mine} on the site, ${live} live`);
+}
+
+// HotLoop Transmitter has no chart and no index. Its files are served from
+// hotloop.io/hotloop-transmitter/<version>/, so a release is live when the next version's
+// checksum file answers. Ask for the next patch, minor and major after the newest note.
+{
+  const notes = readdirSync(resolve(root, 'src/content/releases/transmitter'))
+    .filter((f) => /^\d+\.\d+\.\d+\.md$/.test(f)).map((f) => f.replace(/\.md$/, '')).sort(cmp);
+  const mine = notes.at(-1);
+  const [a, b, c] = mine.split('.').map(Number);
+  const live = [];
+  for (const v of [`${a}.${b}.${c + 1}`, `${a}.${b + 1}.0`, `${a + 1}.0.0`]) {
+    const r = await fetch(`${BASE}/hotloop-transmitter/${v}/SHA256SUMS`, { method: 'HEAD' });
+    if (r.ok) live.push(v);
+  }
+  if (live.length) failures.push(`Transmitter: ${live.at(-1)} is live and the newest note on this site is ${mine}. Add src/content/releases/transmitter/${live.at(-1)}.md and bump TRANSMITTER.version in src/lib/products.ts.`);
+  else console.log(`Transmitter: ${mine} on the site, nothing newer live`);
 }
 
 if (failures.length) {
