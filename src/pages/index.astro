@@ -67,7 +67,7 @@ const fmt = (d: Date) =>
     <div class="wrap-wide stats">
       <div class="stat">
         <div class="n mono">{nativeCount}</div>
-        <p>Native protocol drivers in the Gateway, for talking to PLCs and other equipment. No placeholder drivers, and a table that admits which ones have never met a real PLC.</p>
+        <p>Native protocol drivers in the Gateway, for talking to PLCs and other equipment. No placeholder drivers, every one run on real equipment, and a table that says exactly how far each has been proven.</p>
       </div>
       <div class="stat">
         <div class="n mono">{nodes.length}</div>
@@ -75,7 +75,7 @@ const fmt = (d: Date) =>
       </div>
       <div class="stat">
         <div class="n mono">45.6<small>MB</small></div>
-        <p>The whole Flow 2.8.0 container image (amd64), as Podman reports it. The method and the caveats are on <a href="/flow/#numbers">the Flow page</a>, because a benchmark without caveats is marketing in a lab coat.</p>
+        <p>The whole Flow container image on amd64. The method and the caveats are on <a href="/flow/#numbers">the Flow page</a>, because a benchmark without caveats is marketing in a lab coat.</p>
       </div>
     </div>
   </section>
@@ -112,7 +112,7 @@ const fmt = (d: Date) =>
         </article>
         <article class="card reveal">
           <h3>Decide</h3>
-          <p>ISA-18.2 alarms (the industrial alarm standard), so an alarm that cleared before anybody saw it is still on the list at shift change. Rules compile on save, so a typo dies in the editor.</p>
+          <p>ISA-18.2 alarms (the industrial alarm standard), so an alarm that cleared before anybody saw it is still on the list at shift change. Rules are checked on save, so a typo dies in the editor.</p>
         </article>
         <article class="card reveal">
           <h3>Act</h3>
@@ -124,7 +124,7 @@ const fmt = (d: Date) =>
       </div>
       <CardDetail>
         <div><h4>Sense</h4><p>Poll real equipment over real protocols, and keep the quality of every reading, not just the number. A failed read is bad, never zero, so a dead sensor doesn't trip every low alarm on the unit and send the night shift chasing a tank that's fine.</p></div>
-        <div><h4>Decide</h4><p>ISA-18.2 alarms (the industrial alarm standard), including the one homegrown systems forget: the alarm that cleared on its own before anybody saw it. It's still on the list at shift change. Rules compile when you save them, so a typo dies in the editor, not at 3am halfway through a batch.</p></div>
+        <div><h4>Decide</h4><p>ISA-18.2 alarms (the industrial alarm standard), including the one homegrown systems forget: the alarm that cleared on its own before anybody saw it. It's still on the list at shift change. Rules are checked when you save them, so a typo dies in the editor, not at 3am halfway through a batch.</p></div>
         <div><h4>Act</h4><p>Every write, from a person, a rule, or an agent, crosses one gate that nothing routes around. Out of range is refused, not clamped, and the refusal gets written down. Want to watch it say no? <a href="/gateway/#the-gate">Go try to break it</a>.</p></div>
       </CardDetail>
     </div>

@@ -42,27 +42,23 @@ const gw = product('gateway');
       publisher: { '@id': 'https://hotloop.io/#organization' },
     }}
   />
-  <section class="page-hero">
+    <section class="page-hero">
     <div class="wrap stack">
       <div class="cluster"><span class="label">HotLoop Gateway</span><span class="chip ok">{latest.data.version} is out</span></div>
       <h1>Every reading is real. Every write is earned.</h1>
       <p class="lede">
         Gateway talks to your actual equipment over the protocols it already speaks, keeps every value with how much
-        you should trust it, and alarms and automates on top of that. Agents can read the whole plant over MCP. When
+        you should trust it, and alarms and automates on top of that. Agents can read the whole plant. When
         a sensor goes dark, you see a dark sensor, not a frozen number pretending everything's fine. And nothing moves
         a machine until someone with the authority says it can. You can believe the screen, and you can sleep.
       </p>
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>{latest.data.version} is out. Since 4.18.10 it is four products from one tag. Since 4.19.4 agents can write behind the same gate as the screen, a scaled tag takes the value you meant, and a CODESYS runtime is read by its own variable names.</strong>
+          <strong>{latest.data.version} is out. It is four products from one release, agents can write behind the same gate as the screen, a scaled tag takes the value you meant, and a CODESYS runtime is read by its own variable names.</strong>
           <p>
-            The image is <code>{gw.image}:{latest.data.version}</code>, the chart is <code>{gw.chart}</code> from
-            {' '}<code>https://hotloop.io/hotloop</code>, and both pull with no login. The source repo is still private.
-            On 4.18.11 it's a <code>helm upgrade</code>, and <a href="#upgrading-from-41811">two things change what a running plant does</a>. On 4.17.0 it's a <code>helm upgrade</code> with <code>--reset-then-reuse-values</code>, not
-            {' '}<code>--reuse-values</code>, and a couple of defaults moved, so
-            {' '}<a href="#upgrading">the upgrade notes</a> are worth reading first. Still on 4.16.0 or 4.3.1? The notes
-            cover both.
+            It installs on any Kubernetes with one chart, or on a plain Linux box, and both pull with no login. Already
+            running an older version? <a href="#upgrading">Upgrading is a short read</a>, and the docs carry the step by step.
           </p>
         </div>
       </div>
@@ -82,14 +78,13 @@ const gw = product('gateway');
         <span class="label">Where it sits</span>
         <h2>The top of the lineup. Everything, for the whole site.</h2>
         <p class="muted">
-          HotLoop is one codebase shipped as four products, all from the same tag.
+          HotLoop is one codebase shipped as four products, all in the same release.
           {' '}<a href="/iot/">IoT</a> is the automation base, <a href="/edge/">Edge</a> adds the machine layer, and
           the Gateway is both of those plus what a whole site needs: fleet management, multi-site roll-ups and
           scheduled reports. The <a href="/edge-relay/">Edge Relay</a> is the one with no screen that polls and forwards.
         </p>
         <p class="muted">
-          All four are out in {latest.data.version}, each with its own image and chart. The Gateway kept the image
-          and chart names it shipped under, so nobody running it changes a thing. If you need one box running a whole
+          All four are out in {latest.data.version}. If you need one box running a whole
           site, this is the box. If the box sits next to one machine, <a href="/edge/">Edge</a> is smaller.
         </p>
       </div>
@@ -104,17 +99,17 @@ const gw = product('gateway');
     <div class="wrap">
       <div class="section-head">
         <span class="label">The write gate</span>
-        <h2>Every write goes through one function, and nothing routes around it.</h2>
+        <h2>Every write goes through one gate, and nothing routes around it.</h2>
         <p class="lede">
-          The UI, the API, a rule, a script, an agent: same function, same checks, same order. Policy lives in one
+          The screen, a rule, a script, an agent: same gate, same checks, same order. Policy lives in one
           place because the day it lives in five, somebody forgets the fifth, and that somebody's write goes to a
           live press.
         </p>
       </div>
       <WriteGate />
       <p class="prose muted after">
-        An agent gets no side door. <code>write_tag</code> and <code>call_service</code> hit the same gate an operator
-        does, and neither one runs without a stated reason. The audit row records who and what, and the reason lands
+        An agent gets no side door. It hits the same gate an operator
+        does, and it can't write without a stated reason. The audit row records who and what, and the reason lands
         in the system log right next to the write it explains. A write nobody can explain six months later is just a
         timestamp with a guilty conscience.
       </p>
@@ -140,15 +135,16 @@ const gw = product('gateway');
     <div class="wrap grid grid-2 split">
       <div class="stack">
         <span class="label">Built for agents</span>
-        <h2>MCP in both directions.</h2>
+        <h2>An assistant that can read everything and touch only what you armed.</h2>
         <p class="muted">
-          133 tools, over streamable HTTP and stdio, up from 16 in 4.16.0. From 4.20.0 an agent can change configuration as well as read it, behind a switch, the permission of the route it calls, and a required reason. An
+          Over a hundred tools let an AI agent read the plant and, behind a switch, change its configuration, with the
+          permission of whoever it signs in as and a required reason. An
           agent reads the plant in entities, the infeed pump rather than register 40001, and it can only act through
           the gate. So you can ask it why line 3 is slow and let it read everything, knowing it can only touch what
           you armed, and every write it makes comes with a reason in the log.
         </p>
         <p class="muted">
-          It goes the other way too: a rule can call a tool on another MCP server.
+          It goes the other way too: a rule can call a tool on another agent server.
         </p>
       </div>
       <div class="stack">
@@ -199,7 +195,7 @@ const gw = product('gateway');
         <div>
           <strong>SNMP and BACnet/IP are tested on bare metal (2026-11-17).</strong>
           <p>
-            SNMP was read from net-snmp's agent at every v3 security level, and BACnet/IP from bacpypes3, an independent BACnet stack, and frames recorded off it. Both have also run on bare metal.
+            SNMP was read at every v3 security level, and BACnet/IP against an independent BACnet stack. Both have also run on bare metal.
             Vendors differ about their MIBs, their object lists, and how they answer a request that is too big, so a new switch, UPS, or controller is still a commissioning job: compare the probe's values with the device's own display.
           </p>
         </div>
@@ -211,32 +207,32 @@ const gw = product('gateway');
     <div class="wrap">
       <div class="section-head">
         <span class="label">What's inside</span>
-        <h2>The rest of the plant, in one binary.</h2>
+        <h2>The rest of the plant, in one program.</h2>
         <p class="lede">
-          No sidecar, no second service to keep alive, no runtime to babysit. One static Go binary running as a
-          non-root user with every capability dropped.
+          No sidecar, no second service to keep alive, no runtime to babysit. One self-contained program that runs as a
+          non-root user with every special privilege dropped, so there is nothing extra to patch and nothing extra to attack.
         </p>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal"><h3>Historian</h3><p>TimescaleDB (a time-series database) when the extension's there, native partitioning when it isn't. Per-tag deadband, so a sensor twitching in its last bit doesn't write a row every scan until the disk fills.</p></article>
-        <article class="card reveal"><h3>Alarms</h3><p>ISA-18.2 (the alarm-management standard), <code>rtn-unack</code> (cleared but not yet acknowledged) included. Acknowledged and cleared are separate, so the trip at 03:00 that fixed itself is still on the list when the morning shift walks in.</p></article>
-        <article class="card reveal"><h3>Automations</h3><p>Eleven trigger types, entity state and the sun included, and conditions compiled on save. A broken rule gets caught in the editor, not at 3am halfway through a batch.</p></article>
+        <article class="card reveal"><h3>Historian</h3><p>TimescaleDB (a time-series database) when it's there, plain PostgreSQL partitioning when it isn't. Per-tag deadband, so a sensor twitching in its last bit doesn't write a row every scan until the disk fills.</p></article>
+        <article class="card reveal"><h3>Alarms</h3><p>ISA-18.2 (the alarm-management standard), including alarms that cleared before anyone acknowledged them. Acknowledged and cleared are separate, so the trip at 03:00 that fixed itself is still on the list when the morning shift walks in.</p></article>
+        <article class="card reveal"><h3>Automations</h3><p>Eleven kinds of trigger, entity state and the sun included, and conditions checked on save. A broken rule gets caught in the editor, not at 3am halfway through a batch.</p></article>
         <article class="card reveal"><h3>The Board and dashboards</h3><p>The Board is the screen that lives on a wall, with gauges that show the alarm limits where they fall. Build other dashboards for a role or a physical screen.</p></article>
         <article class="card reveal"><h3>Entities</h3><p>The infeed pump, not register 40001. Every tag gets an entity, and a motor, valve, or PID loop is one entity built from the tags that make it up.</p></article>
         <article class="card reveal"><h3>Plant tree</h3><p>One ISA-95 tree (the standard plant hierarchy), enterprise down to equipment, plus labels. Filter a whole area in one click, and the site, area, and line your devices already carry stay in step with it.</p></article>
-        <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook, and email. Acknowledge from an ntfy push or the Discord bot and the Gateway records it. Discord has only met a stand-in.</p></article>
+        <article class="card reveal"><h3>Paging</h3><p>ntfy, Gotify, Discord, webhook, and email. Acknowledge from an ntfy push or the Discord bot and the Gateway records it.</p></article>
         <article class="card reveal"><h3>Reports</h3><p>Historian numbers on a schedule, as CSV or HTML, stored and emailed. Only good readings count, every row says how many it threw out, and an empty period says no data, never zero.</p></article>
-        <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, secured, and Ignition 8.3.9 reads it end to end. The SCADA you already paid for can see every tag, and there is no write handler in there to worry about.</p></article>
-        <article class="card reveal"><h3>Edge Relay</h3><p>Its own product, image and chart: about 15 MB against the Gateway's 35 on arm64, no database, no UI. <a href="/edge-relay/">More on the Edge Relay</a>.</p></article>
-        <article class="card reveal"><h3>Embedded broker</h3><p>An optional MQTT broker in the same process, so a single box can be its own Sparkplug hub. At scale, run a real broker.</p></article>
-        <article class="card reveal"><h3>Backups</h3><p>A snapshot in pure Go over the connection it already has. Restore loads an older backup by column name and flat refuses one from a newer version, so a restore can't half-work.</p></article>
+        <article class="card reveal"><h3>OPC UA server</h3><p>Read-only, secured, and Ignition reads it end to end. The SCADA you already paid for can see every tag, and there is no way to write through it.</p></article>
+        <article class="card reveal"><h3>Edge Relay</h3><p>Its own product: about 15 MB against the Gateway's 35 on a Pi, no database, no UI. <a href="/edge-relay/">More on the Edge Relay</a>.</p></article>
+        <article class="card reveal"><h3>Embedded broker</h3><p>An optional MQTT broker in the same program, so a single box can be its own Sparkplug hub. At scale, run a real broker.</p></article>
+        <article class="card reveal"><h3>Backups</h3><p>One backup, taken in place. Restore loads an older backup cleanly and flat refuses one from a newer version, so a restore can't half-work.</p></article>
       </div>
       <CardDetail>
         <div><h4>The Board and dashboards</h4><p>The Board is the screen that lives on a wall: gauges with the alarm limits drawn where they fall, and a layout stored with the plant, so the panel PC and your laptop always show the same thing. It is one dashboard among the ones you can build, for a role or for a physical screen.</p></div>
         <div><h4>Entities</h4><p>The infeed pump, not register 40001. Every tag gets an entity for free, and a motor, valve, or PID loop is one entity built from the tags that make it up. Rules, screens and agents read like the plant, not like a register map.</p></div>
-        <div><h4>Paging</h4><p>ntfy, Gotify, Discord, webhook, and email. Press Acknowledge on an ntfy push or in the Discord bot and the alarm is acknowledged in the Gateway, signed and single use. Discord has only met a stand-in, not the real thing.</p></div>
-        <div><h4>Edge Relay</h4><p>Its own product with its own image and chart: about 15 MB against the Gateway's 35 on arm64, no database, no UI. The Gateway's fleet API tracks and commands every relay you register (no screen for it yet). <a href="/edge-relay/">More on the Edge Relay</a>.</p></div>
-        <div><h4>Embedded broker</h4><p>An optional MQTT broker in the same process, so a single box can be its own Sparkplug hub. Logins made in HotLoop carry per-topic publish and subscribe rules, and logins from <code>HOTLOOP_BROKER_USERS</code> can do anything. At scale, run a real broker.</p></div>
+        <div><h4>Paging</h4><p>ntfy, Gotify, Discord, webhook, and email. Press Acknowledge on an ntfy push or in the Discord bot and the alarm is acknowledged in the Gateway, signed and good for one use.</p></div>
+        <div><h4>Edge Relay</h4><p>Its own product: about 15 MB against the Gateway's 35 on a Pi, no database, no UI. The Gateway's fleet management tracks and commands every relay you register (no screen for it yet). <a href="/edge-relay/">More on the Edge Relay</a>.</p></div>
+        <div><h4>Embedded broker</h4><p>An optional MQTT broker in the same program, so a single box can be its own Sparkplug hub. Logins made in HotLoop carry per-topic publish and subscribe rules. At scale, run a real broker.</p></div>
       </CardDetail>
     </div>
   </section>
@@ -248,7 +244,7 @@ const gw = product('gateway');
         <h2>Helm, from the published chart.</h2>
         <p class="lede">
           Any Kubernetes, k3s included. The chart brings its own TimescaleDB, generates the database password, the
-          MCP token and an admin account, and keeps all three across upgrades, so an upgrade never logs you out of
+          agent token and an admin account, and keeps all three across upgrades, so an upgrade never logs you out of
           your own plant.
         </p>
       </div>
@@ -259,144 +255,53 @@ helm repo update
 helm install hotloop hotloop/hotloop --version {latest.data.version} \
   --namespace hotloop --create-namespace</code></pre>
           <p class="muted">
-            The user is <code>admin</code>. The chart generates the password, keeps it in the release Secret, and
-            the install notes print the command that reads it back:
+            The chart generates the admin password, keeps it in the release Secret, and
+            the install notes print the command that reads it back. Open the Gateway in a browser, sign in, add a
+            device, discover its tags.
           </p>
-<pre><code>kubectl -n hotloop get secret hotloop \
-  -o jsonpath='&#123;.data.admin-password&#125;' | base64 -d
-kubectl -n hotloop port-forward svc/hotloop 8080:8080</code></pre>
         </div>
         <div class="stack">
           <p class="muted">
-            Open <code>http://localhost:8080</code>, sign in, add a device, discover its tags. Then notice that you
-            can't write to anything. That's on purpose. Every tag starts read-only and gets armed one at a time, and
-            {' '}<code>safety.allowWrites</code> stays off until you decide this pod gets to move machinery. Nobody's
-            first day with HotLoop should end with a press doing something they didn't ask for.
+            Then notice that you can't write to anything. That's on purpose. Every tag starts read-only and gets armed
+            one at a time, and the writes switch stays off until you decide this install gets to move machinery.
+            Nobody's first day with HotLoop should end with a press doing something they didn't ask for.
           </p>
           <p class="muted">
-            The image is <code>{gw.image}:{latest.data.version}</code>, amd64 and arm64, about 37 MB on amd64 and 35 MB on arm64, and it pulls
-            anonymously. The database is a setting, not an image: TimescaleDB by default, with plain PostgreSQL and
-            SQLite as <code>database.type</code> choices in the same image.
+            It runs on amd64 and arm64, it is about 37 MB, and it pulls with no login. The database is a setting:
+            TimescaleDB by default, with plain PostgreSQL and SQLite in the same image. Each product picks its own. IoT
+            takes SQLite or PostgreSQL. Edge and the Gateway take SQLite, PostgreSQL or TimescaleDB. The Edge Relay has no
+            database at all.
           </p>
           <p class="muted">
-            Each product picks its own. IoT takes SQLite or PostgreSQL. Edge and the Gateway take SQLite, PostgreSQL or
-            TimescaleDB. The Edge Relay has no database at all, only a disk-backed forward queue.
-          </p>
-          <p class="muted">
-            Off a cluster, the Gateway has Podman Quadlet units under <code>deploy/quadlet/gateway/</code> in the
-            {' '}<code>hotloop</code> repository, which is private for now, so the
-            {' '}<a href="https://docs.hotloop.io/install/quadlet/">Quadlet install guide</a> is where to read how they
-            work. Those units were run rootless under systemd, including an update that can't start and gets rolled
-            back. The {' '}<a href="https://docs.hotloop.io/gateway/install/">install docs</a> cover the values worth
-            setting before a real plant sees it.
+            Off a cluster, the Gateway installs as plain container service files that start at boot and roll a bad
+            update back. The {' '}<a href="https://docs.hotloop.io/install/quadlet/">install guide</a> has them, and the
+            {' '}<a href="https://docs.hotloop.io/gateway/install/">install docs</a> cover the settings worth
+            choosing before a real plant sees it.
           </p>
         </div>
       </div>
 
-      <div class="card upgrade reveal" id="upgrading-from-41811">
-        <span class="label">Coming from 4.18.11</span>
-        <h3>A helm upgrade, with two things that change what a running plant does.</h3>
+      <div class="card upgrade reveal" id="upgrading">
+        <span class="label">Already running HotLoop</span>
+        <h3>Upgrading is a Helm upgrade, and the notes tell you what changes on a running plant.</h3>
         <p>Agents can write now, and a value written to a scaled tag lands in the register the way you meant it. Read both before you touch a running plant.</p>
-        <CardMore label="The command and the catches">
-<pre><code>helm repo update hotloop
-helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --reset-then-reuse-values</code></pre>
+        <CardMore label="What to read first">
           <p>
-            <strong>Agents can write.</strong> <code>safety.allowMcpWrites</code> is on by default in the code and in the
-            charts. A deployment that has <code>allowWrites</code> on and never set it gets agent writes at this upgrade,
-            through the same gate as the screen. One that saved it <code>false</code> stays off. The MCP endpoint always
-            has a token now: a bare binary or a Quadlet unit makes its own at first start, and <code>hotloop mcp-token</code>
-            prints it, so an agent pointed at <code>/mcp</code> with no token stops until you hand it that one.
+            <strong>Agents can write.</strong> Agent writes are on by default. A deployment that has writes on and never set
+            the agent switch gets agent writes at the upgrade, through the same gate as the screen. One that saved it off
+            stays off. The agent endpoint always has a token now, so an agent that connected without one stops until you
+            hand it the token.
           </p>
           <p>
             <strong>Scaled tags.</strong> Write 55.5 to a tag scaled by 0.1 and 555 lands in the register, where 55 used to.
             Anyone who typed raw counts to work around it now sends ten times too much, so look at every scaled tag that
             somebody writes by hand, from an automation or from a recipe, and change those numbers in the same step.
-            Every time the API writes is UTC now, so a script that parsed your local offset gets <code>Z</code>.
           </p>
           <p>
-            Migration 0026 is the only one, and it only adds. The database is already PostgreSQL 17, so a
-            {' '}<code>helm rollback</code> to 4.18.11 is fine for this release. Coming from 4.18.10, the database moves to
-            PostgreSQL 17 by itself and wants free disk, so read
-            {' '}<a href="https://docs.hotloop.io/gateway/upgrading/#upgrading-from-41810">that section of the upgrade docs</a>
-            first.
-          </p>
-        </CardMore>
-      </div>
-
-      <div class="card upgrade reveal" id="upgrading-from-417">
-        <span class="label">Coming from 4.17.0</span>
-        <h3>A helm upgrade, and a few defaults moved.</h3>
-        <p>Use <code>--reset-then-reuse-values</code>, not plain <code>--reuse-values</code>, so the new defaults come along.</p>
-        <CardMore label="The command and the catches">
-<pre><code>helm repo update hotloop
-helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --reset-then-reuse-values</code></pre>
-          <p>
-            The 4.17.0 and 4.18.10 charts render the same eight objects with the same selectors and the same volume
-            claims. Plain <code>--reuse-values</code> renders too this time, but it replays
-            4.17.0's values and drops every new default, so use the reset form or your values file.
-          </p>
-          <p>
-            <strong>Migrations 0016 to 0024 run on start.</strong> Migrations only add, so going back to 4.17.0 works,
-            but take a <code>pg_dump</code> first, like always. <strong><code>edgePublish.queueMaxBytes</code> is 64 MiB
-            by default now, not unbounded.</strong> Past it the oldest readings are dropped and counted, because an
-            unbounded queue filled the volume in a long outage. Size it from your own reading rate, about 180 bytes a
-            reading, or set it to <code>0</code> to keep the old behavior. MQTT logins made in Settings carry topic rules
-            from a profile, and logins from <code>HOTLOOP_BROKER_USERS</code> are untouched. There's a new
-            {' '}<code>fleet.update</code> permission, admin only.
-          </p>
-        </CardMore>
-      </div>
-
-      <div class="card upgrade reveal" id="upgrading">
-        <span class="label">Coming from 4.16.0</span>
-        <h3>A plain helm upgrade, with two catches.</h3>
-        <p>Use the reset form, and <code>pg_dump</code> first, because device passwords get encrypted on the first start.</p>
-        <CardMore label="The command and the catches">
-<pre><code>helm repo update hotloop
-helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --reset-then-reuse-values</code></pre>
-          <p>
-            <strong>Not <code>--reuse-values</code>.</strong> That replays 4.16.0's values, drops every default this chart
-            added, and the render dies on the first one it needs. Nothing changes on the cluster when it does, so just
-            run it again the right way.
-          </p>
-          <p>
-            <strong>Your device passwords get encrypted on the first start</strong>, with a key the chart makes in
-            {' '}<code>&lt;release&gt;-secret-key</code>. From then on that key is part of your data: a backup taken
-            after the upgrade only restores where the key is mounted, and going back to 4.16.0 hands every device the
-            sealed text as its password. So <code>pg_dump</code> before you upgrade, and keep that Secret somewhere
-            other than next to your backups, because a key sitting beside the thing it protects protects nothing.
-            Migrations 0009 to 0015 run on start, all additive.
-          </p>
-        </CardMore>
-      </div>
-
-      <div class="card upgrade reveal" id="upgrading-from-431">
-        <span class="label">Coming from 4.3.1</span>
-        <h3>It is not a plain helm upgrade.</h3>
-        <p>The name changed, and Kubernetes refuses to change a workload selector in place, so the old workloads go first.</p>
-        <CardMore label="The steps and the surprises">
-          <p>
-            4.16.0 was the first published release after 4.3.1, so from 4.3.1 you're taking every version from 4.4.0
-            on in one jump, under a new name. The image was <code>ghcr.io/embernet-ai/industrial-iot</code>,
-            the chart was <code>industrial-iot</code>, and every <code>IIOT_</code> variable is <code>HOTLOOP_</code> now.
-            The chart name is baked into the workload selectors, and Kubernetes flat out refuses to change a selector
-            in place. Keep the release name and the namespace, and:
-          </p>
-          <ol>
-            <li><code>pg_dump</code> the database. Belt and braces, and you'll be glad you did.</li>
-            <li>Delete the old Deployment (<code>&lt;release&gt;</code>) and StatefulSet (<code>&lt;release&gt;-postgresql</code>). The database volume is its own claim and stays put.</li>
-            <li><code>helm upgrade &lt;release&gt; hotloop/hotloop -f your-4.3.1-values.yaml</code>, with any <code>IIOT_</code> in <code>extraEnv</code> renamed and any <code>image.repository</code> override dropped. Not <code>--reuse-values</code>, which skips every default the chart added since.</li>
-          </ol>
-          <p>
-            The new database pod mounts the old volume and the Gateway migrates it forward on start. We proved that by
-            rendering both charts side by side, not by running it on a live cluster. That gap is exactly why step one
-            exists.
-          </p>
-          <p>
-            Three more things will surprise a script. There's a login now. Writes default to off. And the API changed
-            in a handful of places, like empty lists coming back as <code>[]</code> and never <code>null</code>. The
-            license is HotLoop's own now, and each release moves to the HotLoop Free Use License 1.0 as it ships. The full list and the procedure are in
-            {' '}<a href="https://docs.hotloop.io/gateway/upgrading/">the upgrade docs</a>.
+            <strong>Coming from an older release.</strong> Each step has its own short checklist, from the database move to
+            PostgreSQL 17 to the way device passwords are encrypted. Take a database backup first, like always. The
+            {' '}<a href="https://docs.hotloop.io/gateway/upgrading/">upgrade docs</a> walk every starting point, including
+            4.18.11, 4.17.0, 4.16.0, and 4.3.1.
           </p>
         </CardMore>
       </div>
@@ -409,14 +314,13 @@ helm upgrade &lt;release&gt; hotloop/hotloop --version {latest.data.version} --r
         <span class="label">What changed lately</span>
         <h2>The detail is in the release notes, and it is one click away.</h2>
         <p class="lede">
-          {latest.data.version} is the multi-arch build of 4.21.0, with the same code. 4.21.0 added X.509 sign-in to the OPC UA server and turned the deprecated security policies off by default, 4.20.0 made the new web UI the default and let an agent change everything it can read through MCP, and 4.19.8 is 4.19.4's changes plus a Logbook fix
-          and tag pickers that search the whole plant, and every chart now mounts the node's USB and Bluetooth, which makes the pod
-          root unless you switch it off. 4.19.4 is where agents write behind the same gate as the screen, scaled tags land right,
-          a CODESYS runtime is read by symbol name, and Kafka and OPC UA PubSub came in, so read the 4.19.4 and 4.19.8 notes before
-          you touch a running plant. 4.18.11 moved the database
-          to PostgreSQL 17 with an upgrade that runs itself. 4.18.10 was the four-product split, MQTT and network discovery, historian targets
-          and boxes that update themselves, and 4.17.0 was recipes, scripts, blueprints, helpers, the logbook and UniFi,
-          read-only. Each has its own page with what it buys you and what it costs.
+          {latest.data.version} is the current release. Lately: X.509 sign-in on the OPC UA server with the deprecated
+          security policies off by default, the new web UI as the default, agents that can change everything they can read,
+          tag pickers that search the whole plant, agents that write behind the same gate as the screen, scaled tags that
+          land right, CODESYS read by variable name, Kafka and OPC UA PubSub, a database move to PostgreSQL 17 that runs itself,
+          the four-product split with MQTT and network discovery, historian targets, boxes that update themselves, and recipes,
+          scripts, blueprints, helpers, the logbook and read-only UniFi before that. Each release has its own page with what it
+          buys you and what it costs.
         </p>
       </div>
       <p class="more"><a class="btn" href="/releases/core/">Read the core release notes</a></p>

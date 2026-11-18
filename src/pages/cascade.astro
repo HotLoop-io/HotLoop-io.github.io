@@ -11,15 +11,15 @@ const helmCmd = `helm install cascade oci://ghcr.io/hotloop-io/charts/hotloop-ca
 // what it refuses to do, how to install it, and what is not built yet.
 const refuses: [string, string][] = [
   ['It won\'t write to your equipment.', 'Cascade reads and subscribes. Anything that moves a valve or changes a setpoint goes through HotLoop\'s write gate, so the gate\'s audit sees every write no matter which workflow started it.'],
-  ['It won\'t run JavaScript in your fields.', 'Field expressions use HotLoop\'s small automation language, which can\'t touch the OS, the network, or the filesystem. JavaScript lives in one place, the Code step, in a separate jailed process with no network and no files.'],
-  ['It won\'t gate anything.', 'SSO, enforced MFA, roles, audit, version history, scoped API keys, and HA workers are in the one binary for everyone. There is no license check in the code.'],
+  ['It won\'t run JavaScript in your fields.', 'Field expressions use HotLoop\'s small automation language, which can\'t touch the operating system, the network, or the files. JavaScript lives in one place, the Code step, locked in its own box with no network and no files.'],
+  ['It won\'t gate anything.', 'Single sign-on, enforced MFA, roles, audit, version history, scoped API keys, and high-availability workers are in for everyone. There is no license check anywhere.'],
   ['It won\'t phone home.', 'No license server and no cloud dependency. Telemetry is opt-in, off by default, and documented down to the field when it lands.'],
 ];
 
 const planned: [string, string][] = [
-  ['Environments and scale', 'Git source control and environments, protected instances, rate limits, retention, and backup and restore. Many mains against one database already work.'],
+  ['Environments and scale', 'Git source control and environments, protected instances, rate limits, retention, and backup and restore. Several Cascade servers on one database already work.'],
   ['Connectors and people', 'A published connector spec, a plugin SDK, and forms with human approval steps that work from a phone.'],
-  ['AI steps', 'LLM and agent steps, and a builder that uses your own model. None of it exists yet. The MCP server is built and ships in 1.1.0.'],
+  ['AI steps', 'LLM and agent steps, and a builder that uses your own model. None of it exists yet. Agents can already drive Cascade from outside, over MCP.'],
 ];
 ---
 
@@ -36,7 +36,7 @@ const planned: [string, string][] = [
       name: 'HotLoop Cascade',
       url: 'https://hotloop.io/cascade/',
       description:
-        'A workflow engine in one static Go binary where every step is checkpointed, on SQLite for a Raspberry Pi or Postgres for a cluster, with a new editor, SSO, roles, and external secrets.',
+        'A workflow engine in one small Go program where every step is checkpointed, on SQLite for a Raspberry Pi or Postgres for a cluster, with an editor, SSO, roles, and external secrets.',
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Linux',
       license: 'https://hotloop.io/license/',
@@ -98,7 +98,7 @@ const planned: [string, string][] = [
         <h2>Everything Cascade can do is a screen, on a box with no internet.</h2>
         <p class="lede">
           The editor is built into the binary and fetches nothing from anywhere. Workflows live in projects and folders that
-          nest as deep as the plant does: area, line, cell. These are the repository's own screenshots, of a demo plant
+          nest as deep as the plant does: area, line, cell. These are real screenshots, of a demo plant
           with a week of real runs.
         </p>
       </div>
@@ -126,7 +126,7 @@ const planned: [string, string][] = [
           Passwords with enforced MFA, passkeys, OIDC, SAML, and LDAP or Active Directory, with roles from groups. SCIM lets
           your identity provider make and switch off accounts without anyone touching a screen. Roles are yours to define.
           Credentials can live in OpenBao or HashiCorp Vault, so a password rotates where you already rotate it. The audit
-          log and finished runs can stream to syslog or OTLP. Since 1.0.1, a database blink no longer signs everyone out. Since 1.1.0 an agent can sign in with an API key through the MCP server and do what that key's holder could do, reading and writing, with the reason for every change in the audit log. 1.2.0 gives it the last four tools a key may call: listing and revoking keys, opening a test webhook, and starting an OAuth sign-in.
+          log and finished runs can stream to your log collector. A database blink never signs everyone out. An agent can sign in with an API key and do what that key's holder could do, reading and writing, with the reason for every change in the audit log.
         </p>
       </div>
       <div class="stack">
@@ -134,9 +134,9 @@ const planned: [string, string][] = [
         <h2>Podman with Quadlet, or k3s with Helm.</h2>
         <p class="muted">
           One file and a volume is Cascade on SQLite on a Raspberry Pi. On Postgres, it is a server, a worker, and the
-          database, and Postgres is the queue too, so there is no Redis to patch. Both start at boot, restart on failure,
-          and run read-only, non-root, with every capability dropped. On k3s the chart can split it into API, webhook, and
-          worker pods that scale separately. Prometheus metrics come with it, and every execution is one OpenTelemetry trace with a span per step, so a stuck job shows up on a graph. With no endpoint named, nothing is sent.
+          database, and Postgres is the queue too, so there is no extra queue service to patch. Both start at boot, restart on failure,
+          and run locked down, non-root, with every special privilege dropped. On Kubernetes the chart can split it into parts
+          that scale separately. Metrics come with it, and every execution is one trace with a step for each node, so a stuck job shows up on a graph. With no collector named, nothing is sent.
         </p>
       </div>
     </div>
@@ -160,9 +160,9 @@ const planned: [string, string][] = [
         <span class="label">Install it</span>
         <h2>Pull {CASCADE} with Podman, or install the chart with Helm.</h2>
         <p class="lede">
-          The image is <code>ghcr.io/hotloop-io/hotloop-cascade</code> for amd64 and arm64, tagged <code>{CASCADE}</code>,
-          <code>1.2</code>, <code>1</code>, <code>latest</code>, and <code>stable</code>. 1.2.1 is 1.2.0 with the arm64 image added. The chart is <code>hotloop-cascade</code>
-          in the same registry. Both are public and pull with no login. The source repository is private.
+          The image and the chart are public and pull with no login, on amd64 and arm64, so a Pi and a server both get the
+          right one. The image is <code>ghcr.io/hotloop-io/hotloop-cascade</code> and the chart is <code>hotloop-cascade</code>
+          in the same registry.
         </p>
       </div>
       <div class="grid grid-2">
@@ -183,11 +183,10 @@ const planned: [string, string][] = [
         </article>
       </div>
       <p class="muted note">
-        Migrations only go forward. A rollback puts the old image back and does not un-migrate your database, so take a
-        backup before you turn updates on. Lose the key that seals stored credentials and every stored credential is
-        unreadable, so keep a copy somewhere that isn't the box. If you are coming from 0.1.2, read the
-        <a href="/releases/cascade/#cascade-1.0.0">1.0.0 notes</a> first: the EmberOps steps are gone, and a workflow that
-        uses one won't start until you replace it. The full steps are in the <a href="https://docs.hotloop.io/cascade/running/">docs</a>.
+        Take a backup before you turn updates on, because a rollback puts the old version back and does not undo a
+        database change. Keep a copy of the key that seals stored credentials somewhere that isn't the box, because
+        without it every stored credential is unreadable. Coming from the earliest releases? Read the
+        <a href="/releases/cascade/#cascade-1.0.0">1.0.0 notes</a> first. The full steps are in the <a href="https://docs.hotloop.io/cascade/running/">docs</a>.
       </p>
     </div>
   </section>
@@ -198,8 +197,8 @@ const planned: [string, string][] = [
         <span class="label">Not built yet</span>
         <h2>What comes after {CASCADE}.</h2>
         <p class="lede">
-          1.0.0 is the engine, the identity and governance work, and the new editor, and 1.1.0 added the MCP server and the screens the editor was missing. It is not a promise about the workflow
-          file format or the API yet. No phase below is a paid tier, and none of it exists today.
+          What is out is the engine, the identity and governance work, the editor, and the agent interface. The workflow
+          file format and the API can still change. No phase below is a paid tier, and none of it exists today.
         </p>
       </div>
       <div class="table-wrap">

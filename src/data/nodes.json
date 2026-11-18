@@ -88,7 +88,7 @@
     "type": "hotloop-flow-influxdb",
     "category": "Config",
     "level": "flow-only",
-    "notes": "Flow's own InfluxDB connection, targeting the App Store's influxdb-app."
+    "notes": "Flow's own InfluxDB connection, targeting the InfluxDB in the EmberNet App Store."
   },
   {
     "id": "hotloop-flow-mcp-server",
@@ -116,7 +116,7 @@
     "type": "hotloop-flow-postgres",
     "category": "Config",
     "level": "flow-only",
-    "notes": "Flow's own PostgreSQL connection. Targets the App Store's postgresql-app and timescale-db-pod, which share a wire protocol."
+    "notes": "Flow's own PostgreSQL connection. Targets the PostgreSQL and TimescaleDB apps in the EmberNet App Store."
   },
   {
     "id": "hotloop-flow-s7",
@@ -172,28 +172,28 @@
     "type": "ui-base",
     "category": "Config",
     "level": "partial",
-    "notes": "Dashboard 2 (FlowFuse) configuration, accepted so a flow that carries it loads and saves unchanged. Dashboard 2's widgets (ui-text, ui-button and the rest) are not provided, so nothing draws it. Use the ui_ nodes."
+    "notes": "Dashboard 2 configuration, accepted so a flow that carries it loads and saves unchanged. Dashboard 2's widgets (ui-text, ui-button and the rest) are not provided, so nothing draws it. Use the ui_ nodes."
   },
   {
     "id": "ui-group",
     "type": "ui-group",
     "category": "Config",
     "level": "partial",
-    "notes": "Dashboard 2 (FlowFuse) configuration, accepted so a flow that carries it loads and saves unchanged. Dashboard 2's widgets (ui-text, ui-button and the rest) are not provided, so nothing draws it. Use the ui_ nodes."
+    "notes": "Dashboard 2 configuration, accepted so a flow that carries it loads and saves unchanged. Dashboard 2's widgets (ui-text, ui-button and the rest) are not provided, so nothing draws it. Use the ui_ nodes."
   },
   {
     "id": "ui-page",
     "type": "ui-page",
     "category": "Config",
     "level": "partial",
-    "notes": "Dashboard 2 (FlowFuse) configuration, accepted so a flow that carries it loads and saves unchanged. Dashboard 2's widgets (ui-text, ui-button and the rest) are not provided, so nothing draws it. Use the ui_ nodes."
+    "notes": "Dashboard 2 configuration, accepted so a flow that carries it loads and saves unchanged. Dashboard 2's widgets (ui-text, ui-button and the rest) are not provided, so nothing draws it. Use the ui_ nodes."
   },
   {
     "id": "ui-theme",
     "type": "ui-theme",
     "category": "Config",
     "level": "partial",
-    "notes": "Dashboard 2 (FlowFuse) configuration, accepted so a flow that carries it loads and saves unchanged. Dashboard 2's widgets (ui-text, ui-button and the rest) are not provided, so nothing draws it. Use the ui_ nodes."
+    "notes": "Dashboard 2 configuration, accepted so a flow that carries it loads and saves unchanged. Dashboard 2's widgets (ui-text, ui-button and the rest) are not provided, so nothing draws it. Use the ui_ nodes."
   },
   {
     "id": "ui_base",
@@ -284,7 +284,7 @@
     "type": "function",
     "category": "Function",
     "level": "partial",
-    "notes": "Runs on goja, a JavaScript interpreter written in Go, rather than Node's vm module. The language is ES2023; the Node standard library is not present. require() and npm modules do not work and cannot be made to without embedding Node. There is always a CPU time limit, which Node-RED leaves optional and off, and it applies to every timer callback too. setTimeout, setInterval and their clear functions work, on the node's clock, and every one is cleared when the flow stops or is redeployed. Buffer is there (alloc, from, concat, the read and write methods for integers and floats in both byte orders, slice, toString and toJSON). A byte slice in a message arrives as a byte array, so wrap it with Buffer.from. Ignored properties: `libs`, `require`."
+    "notes": "Runs on our own sandboxed JavaScript engine rather than Node's vm module. The language is ES2023; the Node standard library is not present. require() and npm modules do not work and cannot be made to without embedding Node. There is always a CPU time limit, which Node-RED leaves optional and off, and it applies to every timer callback too. setTimeout, setInterval and their clear functions work, on the node's clock, and every one is cleared when the flow stops or is redeployed. Buffer is there (alloc, from, concat, the read and write methods for integers and floats in both byte orders, slice, toString and toJSON). A byte slice in a message arrives as a byte array, so wrap it with Buffer.from. Ignored properties: `libs`, `require`."
   },
   {
     "id": "range",
@@ -410,28 +410,28 @@
     "type": "hotloop in",
     "category": "Network",
     "level": "flow-only",
-    "notes": "Flow's own node. It follows HotLoop's live feed (GET /api/stream), which has no Node-RED counterpart."
+    "notes": "Flow's own node. It follows HotLoop's live feed, which has no Node-RED counterpart."
   },
   {
     "id": "hotloop-recipe",
     "type": "hotloop recipe",
     "category": "Network",
     "level": "flow-only",
-    "notes": "Flow's own node. It applies a HotLoop recipe (POST /api/recipes/{id}/apply)."
+    "notes": "Flow's own node. It applies a HotLoop recipe."
   },
   {
     "id": "hotloop-script",
     "type": "hotloop script",
     "category": "Network",
     "level": "flow-only",
-    "notes": "Flow's own node. It runs a HotLoop script (POST /api/scripts/{id}/run)."
+    "notes": "Flow's own node. It runs a HotLoop script."
   },
   {
     "id": "hotloop-state",
     "type": "hotloop state",
     "category": "Network",
     "level": "flow-only",
-    "notes": "Flow's own node. It reads one entity's state from HotLoop (GET /api/states/{entity_id})."
+    "notes": "Flow's own node. It reads one entity's state from HotLoop."
   },
   {
     "id": "http-in",
@@ -473,7 +473,7 @@
     "type": "mcp tool",
     "category": "Network",
     "level": "flow-only",
-    "notes": "Flow's own node. It serves a flow as a Model Context Protocol tool at /mcp, for a caller authenticated like the admin API's, and it has no Node-RED counterpart."
+    "notes": "Flow's own node. It serves a flow as an agent tool, for a caller authenticated like the admin API's, and it has no Node-RED counterpart."
   },
   {
     "id": "modbus-read",
