@@ -1,13 +1,7 @@
-// Words that never appear on a public HotLoop surface. HotLoop's code and screens are HotLoop's
-// own, so no customer is named, not even by a project code, and a product that has not shipped
-// is not on the page. The build and the sync both fail on a match, in the generated pages, the
+// Words that never appear on a public HotLoop surface. A product that has not shipped is not on the
+// page: add its pattern here as [regex, reason]. The build fails on a match, in the generated pages, the
 // built HTML, the search index, and the strings the social cards are drawn from.
-export const FORBIDDEN = [
-  [/\bUT3\b/i, 'UT3, a customer project code'],
-  [/tranetech(?!nologies)/i, 'tranetech, a customer tenant'],
-  [/expert[ -]?lift/i, 'Expert Lift, a customer'],
-  [/a customer'?s? production (program|plc)/i, 'a customer program, described by whose it is'],
-];
+export const FORBIDDEN = [];
 
 // Returns one line per match, with a little of the text around it.
 export function scan(label, text) {
