@@ -1,21 +1,19 @@
 ---
-import { getEntry, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 
-const licenseText = await getEntry('legal', 'license');
-if (!licenseText) throw new Error('src/legal/LICENSE.md is missing, so /license has no license to render.');
-const { Content: LicenseText } = await render(licenseText);
+// The plain-language license page. The full agreement lives in the HotLoop-io/HotLoop-io
+// repository and is linked from here, so this page carries no legal text of its own.
+const agreement = 'https://github.com/HotLoop-io/HotLoop-io/blob/main/LICENSE.md';
 
 const situations: [string, boolean][] = [
   ['Automating your own house', true],
   ['A hobby project you are building for fun', true],
-  ['A home lab, however large and however much of your weekend it eats', true],
+  ['A home lab, however large', true],
   ['A class project or a student lab', true],
   ['An accredited school or university running it for its own operations', true],
   ['A nonprofit, or a city or other government body, running it for its own operations', true],
-  ['Running it inside a company, internal only, no customers touching it', false],
+  ['Running it inside a company to support its operations', false],
   ['Deploying it as part of a product or service you sell', false],
-  ['A landlord automating a rental property they operate as a business', false],
   ['A contractor installing and managing it for paying clients', false],
 ];
 
@@ -32,126 +30,79 @@ const products: [string, string][] = [
 ---
 
 <Base
-  title="HotLoop license: free to use, every product"
-  description="Every HotLoop product is free to use. Free for home, lab, schools, nonprofits and government, and free for business through EmberNet."
+  title="HotLoop license: what you can do with HotLoop"
+  description="One source license for every HotLoop product. Free for home, lab, schools, nonprofits and government. Every version becomes AGPL-3.0 after four years."
   ogAlt="HotLoop licensing, in plain language."
 >
   <section class="page-hero">
     <div class="wrap stack">
       <span class="label">License</span>
-      <p class="hero-title">Free to use. Eight products. No keys.</p>
+      <h1>One license. Every HotLoop product.</h1>
       <p class="lede">
-        Every HotLoop product is under the HotLoop Source License Agreement 1.0, with Fireball Industries LLC as the licensor.
-Home and lab use is free. Business use is free when you run it through EmberNet. That's the whole deal, and
-it's the one we should have shipped from the start. Know which side you're on before you build a plant on a
-        guess.
+        Every HotLoop product ships under the HotLoop Source License Agreement 1.0. You get the source, you can change it,
+        and you can run it free at home, in the lab, at school, at a nonprofit or in government. Every version becomes
+        AGPL-3.0 or later four years after it is released.
       </p>
     </div>
   </section>
 
   <section class="wrap body stack">
-    <div class="table-wrap">
-      <table class="data stack">
-        <thead><tr><th>Who</th><th>Cost</th><th>How to get it</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>Home and lab use</td>
-            <td data-label="Cost"><span class="chip ok">Free</span></td>
-            <td data-label="How to get it">Self-host directly, no agreement and no key</td>
-          </tr>
-          <tr>
-            <td>Accredited schools, nonprofits and government bodies</td>
-            <td data-label="Cost"><span class="chip ok">Free</span></td>
-            <td data-label="How to get it">Self-host directly for your own operations, no agreement and no key</td>
-          </tr>
-          <tr>
-            <td>Business use</td>
-            <td data-label="Cost"><span class="chip info">Free, through EmberNet</span></td>
-            <td data-label="How to get it">Run it through <a href="https://embernet.ai">EmberNet</a>, HotLoop's free business-use channel</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h2>It covers the whole lineup</h2>
-    <p>
-      Every product is under the HotLoop Source License Agreement 1.0, so there is one set of terms to read. That is how
-      everything we publish now is licensed. A version published before that move stays under the license it was released with.
-    </p>
-    <ul class="products">
-      {products.map(([n, h]) => <li><a href={h}>{n}</a></li>)}
+    <h2>What you can do</h2>
+    <ul class="can">
+      <li><strong>Read, copy, change and share it.</strong> You can copy, modify and redistribute HotLoop and build your own work on it, and use it for anything that is not production use.</li>
+      <li><strong>Run it at home and in the lab.</strong> Personal, hobby, educational, evaluation, development and testing use is free.</li>
+      <li><strong>Run it at a school, nonprofit or government body.</strong> Accredited schools, nonprofits and government bodies can run HotLoop for their own operations, and can have a contractor install and operate it for them on equipment they own or control.</li>
+      <li><strong>Build Spark SDK and Transmitter into what you make.</strong> Put the Spark SDK in your own firmware and the HotLoop Transmitter library in your own PLC projects, and sell the compiled result to your customers.</li>
     </ul>
 
-    <h2>What the license means here</h2>
-    <p>
-      There are no license keys and nothing unlocks at runtime. Which product you run is which image you pulled. The HotLoop
-      Source License Agreement is free to use and source-available, not OSI-approved open source, and we won't pretend
-      otherwise. You may copy, modify and redistribute what you receive. Hosting HotLoop for your
-      customers is allowed only through EmberNet, and outside EmberNet it needs a commercial license from
-      {' '}<a href="mailto:sales@fireballz.ai">sales@fireballz.ai</a>.
-    </p>
-    <p>
-      Each version of every HotLoop product converts to AGPL-3.0 or later four years after it is released. Flow's source is
-      public, so you can read all of it.
-    </p>
-
-    <h2>A few real situations</h2>
-    <p>“Business use” gets fuzzy fast once somebody starts talking themselves into it, so here are the usual ones.</p>
     <div class="table-wrap">
       <table class="data">
         <thead><tr><th>Situation</th><th>Cost</th></tr></thead>
         <tbody>
           {situations.map(([s, free]) => (
-            <tr><td>{s}</td><td class="cost">{free ? <span class="chip ok">Free</span> : <span class="chip info">Free, through EmberNet</span>}</td></tr>
+            <tr><td>{s}</td><td class="cost">{free ? <span class="chip ok">Free</span> : <span class="chip info">Talk to us</span>}</td></tr>
           ))}
         </tbody>
       </table>
     </div>
-    <p class="muted">
-      Not sure which side you're on? Ask before you build a whole setup on a bad assumption. Email
-      {' '}<a href="mailto:support@hotloop.io">support@hotloop.io</a>, or go straight to EmberNet for business use. Either way the answer costs you nothing.
-    </p>
 
     <h2 id="business">Using HotLoop in a business</h2>
-    <p>Two ways in, and you can take both.</p>
     <p>
-      <strong>Do it yourself on EmberNet.</strong> EmberNet is the free channel business use of HotLoop goes through, and the only way to host HotLoop for your customers.
-      Sign up for <a href="https://embernet.ai">EmberNet</a> and run HotLoop there at no cost.
-    </p>
-    <p>
-      <strong>Have it rolled out for you.</strong> <a href="https://fireballz.ai">Fireball Industries</a> is our
-      master systems integrator. If you want a company to design, install and support a rollout, that is who to
-      talk to.
-    </p>
-    <p>
-      The <a href="https://docs.hotloop.io/business/">docs</a> cover the business route too, in case that is where
-      you landed first.
+      Running HotLoop to support a company's operations, building it into something you sell, or hosting it for your
+      customers is business use. Email <a href="mailto:support@hotloop.io">support@hotloop.io</a>, tell us what you want
+      to run and where, and we'll set you up with the right license for it.
     </p>
 
-    <p class="muted">
-      The summary above is plain language. Where it and the license text below differ, the license text governs.
-      Questions go to <a href="mailto:support@hotloop.io">support@hotloop.io</a>.
+    <h2>Every version becomes AGPL</h2>
+    <p>
+      Four years after a version of a HotLoop product is first released, that version is also available under the GNU
+      Affero General Public License, version 3 or later. From then on, anyone can use that version under either license.
     </p>
 
-    <h2 id="text">The license text</h2>
-    <p class="muted">
-      This is HotLoop-io/HotLoop-io <a href="https://github.com/HotLoop-io/HotLoop-io/blob/main/LICENSE.md">LICENSE.md</a>,
-      word for word, so what you read here is what the organization publishes.
+    <h2>It covers the whole lineup</h2>
+    <p>
+      One agreement covers every product, so there is one set of terms to read. A version released under an earlier
+      license stays under that license.
     </p>
-    <div class="legal"><LicenseText /></div>
+    <ul class="products">
+      {products.map(([n, h]) => <li><a href={h}>{n}</a></li>)}
+    </ul>
+
+    <h2 id="text">The full agreement</h2>
+    <p>
+      This page is the short version. The <a href={agreement}>HotLoop Source License Agreement 1.0</a> is the full text,
+      and where the two differ, the agreement governs. Questions go to
+      {' '}<a href="mailto:support@hotloop.io">support@hotloop.io</a>.
+    </p>
   </section>
 </Base>
 
 <style>
   .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s6); }
-  /* The license text opens with its own h1, which is the page's one h1, so the hero title is a paragraph. */
-  .hero-title { font-family: var(--hl-font-display, inherit); font-weight: 800; font-size: var(--hl-fs-3xl); line-height: var(--hl-lh-tight); letter-spacing: var(--hl-ls-tight); text-wrap: balance; margin: 0; }
-  .legal :global(h1) { font-size: var(--hl-fs-xl); margin-bottom: var(--hl-s3); }
   .body { max-width: 860px; padding-bottom: var(--hl-s8); }
   .body h2 { font-size: var(--hl-fs-xl); margin-top: var(--hl-s7); }
   td.cost { width: 1%; white-space: nowrap; }
   @media (max-width: 480px) { td.cost { white-space: normal; } }
-  .legal { padding: var(--hl-s5); border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); background: var(--hl-card); }
-  .legal :global(p) { margin-block: var(--hl-s3); overflow-wrap: anywhere; }
+  ul.can { display: grid; gap: var(--hl-s3); padding-left: 1.2em; }
   ul.products { display: flex; flex-wrap: wrap; gap: var(--hl-s2) var(--hl-s5); list-style: none; padding: 0; }
 </style>
