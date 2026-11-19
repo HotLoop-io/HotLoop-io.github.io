@@ -129,21 +129,20 @@ const CODESYS = /export const CODESYS = \{[^}]*?version: '([\d.]+)'/.exec(consts
 const protocols = JSON.parse(readFileSync(resolve(root, 'src/data/protocols.json'), 'utf8'));
 const nodeCount = JSON.parse(readFileSync(resolve(root, 'src/data/nodes.json'), 'utf8')).length;
 const nativeCount = protocols.filter((p) => p.verification !== 'gateway-mode').length;
-const certified = protocols.filter((p) => p.verification === 'certified').length;
 
 const pages = [
   ['home', 'Automation loops for the real world.', 'IoT, Edge, Gateway, and Edge Relay from one codebase, with Flow, Cascade, HotLoop for CODESYS, and Transmitter beside them.', 'HotLoop'],
   ['products', 'Eight products. Five release lines.', 'IoT, Edge, Gateway, and Edge Relay from one tag, plus Flow, Cascade, HotLoop for CODESYS, and Transmitter.', 'Products'],
   ['iot', 'HotLoop IoT', `The automation base for the plant floor, built in Go. ${CURRENT} is out.`, 'Product'],
   ['edge', 'HotLoop Edge', 'IoT plus the machine layer: store-and-forward that survives a dead WAN, and an OPC UA server.', 'Product'],
-  ['gateway', 'HotLoop Gateway', 'An industrial gateway that tells you what it has not proven. Twelve native protocols, one write gate.', 'Product'],
+  ['gateway', 'HotLoop Gateway', 'An industrial gateway with twelve native protocols, ISA-18.2 alarms, and one write gate.', 'Product'],
   ['edge-relay', 'HotLoop Edge Relay', 'Poll, forward over Sparkplug B, survive the uplink dying. No database, no UI.', 'Product'],
   ['unifi', 'UniFi in HotLoop', 'Read-only Network driver, screens and events are out. Writes, Protect, Access and PDUs come next.', 'Integration'],
-  ['flow', 'HotLoop Flow', "Node-RED's idea, with a runtime that does not fall over. Free for home and lab, free for business through EmberNet.", 'Product'],
+  ['flow', 'HotLoop Flow', 'Your Node-RED flows on a runtime built for the plant floor. Free for home and lab, free for business through EmberNet.', 'Product'],
   ['cascade', 'HotLoop Cascade', `The plant talking to everything else, with every step checkpointed. Released, ${CASCADE}: a new editor, SAML, LDAP, SCIM, and roles.`, 'Product'],
   ['codesys', 'HotLoop for CODESYS', `The screens and alarms for a CODESYS PLC, beside the runtime. Chart ${CODESYS} is out.`, 'Product'],
   ['transmitter', 'HotLoop Transmitter', 'OPC UA PubSub from inside the PLC, in Structured Text. 1.1.0 is out.', 'Product'],
-  ['integrations', 'What it speaks, and how far each one has been proven.', `${nativeCount} Gateway protocols and ${nodeCount} Flow nodes. ${certified === 0 ? 'None are certified, and we say so.' : `${certified} certified.`}`, 'Integrations'],
+  ['integrations', 'What it speaks, and how far each one has been proven.', `${nativeCount} Gateway protocols and ${nodeCount} Flow nodes, each listed with what it was tested against.`, 'Integrations'],
   ['license', 'Which license applies to you?', 'One license for every HotLoop product: free for home and lab, unrestricted for business through EmberNet.', 'License'],
   ['terms', 'HotLoop Terms of Service', 'What you can do with HotLoop, what we do for you, and what happens when something goes wrong.', 'Terms'],
   ['releases', 'Release notes', 'What changed in HotLoop core, Flow, Cascade, HotLoop for CODESYS, and Transmitter, including which versions are actually published.', 'Releases'],

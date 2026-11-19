@@ -137,7 +137,7 @@
     "verifiedAgainst": [
       "Reference agent documents served over HTTP"
     ],
-    "summary": "Read-only machine tool telemetry. There is no command channel in MTConnect, and this driver does not pretend otherwise.",
+    "summary": "Read-only machine tool telemetry. MTConnect has no command channel, so this driver reads only.",
     "vendors": [],
     "addressExamples": [],
     "trap": "UNAVAILABLE is the agent explicitly saying it has no reading. It becomes bad quality, not the text \"UNAVAILABLE\" and not zero.",
