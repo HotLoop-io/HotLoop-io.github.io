@@ -78,10 +78,10 @@
       "Common Industrial Protocol"
     ],
     "order": 4,
-    "verification": "live",
+    "verification": "decode",
     "verifiedAgainst": [
-      "Address, batching, and type-mapping tests",
-      "Bare metal (2026-11-17)"
+      "Address, batching, and type-mapping tests on CIP frames",
+      "Run on a bare-metal host (2026-11-17)"
     ],
     "summary": "Allen-Bradley ControlLogix, CompactLogix, and Micro820. Tags have names, so the controller can be asked what it holds.",
     "vendors": [
@@ -95,7 +95,8 @@
     "body": [
       "The data type comes from the tag, or from an explicit suffix, which wins.",
       "Reads are batched, falling back to single reads when a batch fails, so one bad tag path does not blind the other nineteen."
-    ]
+    ],
+    "notVerifiedNote": "Check a value you already know on the controller at commissioning before trusting a screen."
   },
   {
     "id": "s7comm",
@@ -105,10 +106,10 @@
       "ISO-on-TCP"
     ],
     "order": 5,
-    "verification": "live",
+    "verification": "decode",
     "verifiedAgainst": [
       "Frame-level decode and encode tests",
-      "Bare metal (2026-11-17)"
+      "Run on a bare-metal host (2026-11-17)"
     ],
     "summary": "Siemens S7-300, S7-400, S7-1200, and S7-1500, over ISO-on-TCP by rack and slot.",
     "vendors": [
@@ -124,7 +125,8 @@
       "Defaults suit an S7-1200 or S7-1500, and an S7-300 or S7-400 usually needs one setting changed.",
       "HotLoop uses the plain connection type, so it does not occupy the connection an engineer wants for TIA Portal.",
       "There is no browse: a CPU does not publish the layout of its data blocks, because that lives in the TIA Portal project."
-    ]
+    ],
+    "notVerifiedNote": "Check a value you already know on the PLC at commissioning before trusting a screen. Set the type of anything wider than a byte from the PLC program."
   },
   {
     "id": "mtconnect",
@@ -133,11 +135,11 @@
       "Machine tool telemetry"
     ],
     "order": 6,
-    "verification": "live",
+    "verification": "decode",
     "verifiedAgainst": [
-      "Reference agent documents served over HTTP"
+      "Golden MTConnect agent documents, served by a test HTTP server"
     ],
-    "summary": "Read-only machine tool telemetry. There is no command channel in MTConnect, and this driver does not pretend otherwise.",
+    "summary": "Read-only machine tool telemetry. MTConnect has no command channel, so this driver reads only.",
     "vendors": [],
     "addressExamples": [],
     "trap": "UNAVAILABLE is the agent explicitly saying it has no reading. It becomes bad quality, not the text \"UNAVAILABLE\" and not zero.",
@@ -145,7 +147,8 @@
     "body": [
       "Two details separate a working integration from a plausible one. First, UNAVAILABLE becomes bad quality rather than a string or a zero. Second, a Condition's meaning is its state (Normal, Warning, Fault, or Unavailable), not its text, which is usually empty.",
       "Browse walks the machine's whole component tree to any depth, so you pick data points instead of typing paths."
-    ]
+    ],
+    "notVerifiedNote": "Compare a value on the machine's own display with what HotLoop reads, at commissioning."
   },
   {
     "id": "http-rest",
@@ -155,9 +158,9 @@
       "JSON over HTTP"
     ],
     "order": 7,
-    "verification": "live",
+    "verification": "decode",
     "verifiedAgainst": [
-      "Real HTTP endpoints"
+      "Recorded JSON documents, served by a test HTTP server"
     ],
     "summary": "The catch-all, for energy meters, environmental sensors, OEM controllers, and the REST side of a gateway that speaks something proprietary underneath.",
     "vendors": [],
@@ -166,7 +169,8 @@
     "configKeys": [],
     "body": [
       "One request serves every tag on the device. Browse walks the document and reports every value with the path that reaches it."
-    ]
+    ],
+    "notVerifiedNote": "Compare one value from the device's API with the device's own reading, at commissioning."
   },
   {
     "id": "unifi",
