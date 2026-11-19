@@ -4,14 +4,14 @@
     "type": "catch",
     "category": "Common",
     "level": "full",
-    "notes": ""
+    "notes": "n/a"
   },
   {
     "id": "comment",
     "type": "comment",
     "category": "Common",
     "level": "full",
-    "notes": ""
+    "notes": "n/a"
   },
   {
     "id": "complete",
@@ -25,7 +25,7 @@
     "type": "debug",
     "category": "Common",
     "level": "full",
-    "notes": ""
+    "notes": "n/a"
   },
   {
     "id": "inject",
@@ -39,7 +39,7 @@
     "type": "junction",
     "category": "Common",
     "level": "full",
-    "notes": ""
+    "notes": "n/a"
   },
   {
     "id": "link-call",
@@ -53,7 +53,7 @@
     "type": "link in",
     "category": "Common",
     "level": "full",
-    "notes": ""
+    "notes": "n/a"
   },
   {
     "id": "link-out",
@@ -67,7 +67,14 @@
     "type": "status",
     "category": "Common",
     "level": "full",
-    "notes": ""
+    "notes": "n/a"
+  },
+  {
+    "id": "hotloop-flow-discord-bot",
+    "type": "hotloop-flow-discord-bot",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own Discord bot, the same bot token HotLoop core's bot uses."
   },
   {
     "id": "hotloop-flow-ethernetip",
@@ -75,6 +82,13 @@
     "category": "Config",
     "level": "flow-only",
     "notes": "Flow's own EtherNet/IP connection, for tag access on ControlLogix, CompactLogix and Micro800 controllers. It connects on the first request, drops the connection on any failure that makes it untrustworthy, and reconnects on the next one."
+  },
+  {
+    "id": "hotloop-flow-gotify",
+    "type": "hotloop-flow-gotify",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own Gotify server, the same settings HotLoop core publishes alarms with."
   },
   {
     "id": "hotloop-flow-hotloop",
@@ -91,6 +105,13 @@
     "notes": "Flow's own InfluxDB connection, targeting the InfluxDB in the EmberNet App Store."
   },
   {
+    "id": "hotloop-flow-kafka",
+    "type": "hotloop-flow-kafka",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own Kafka connection, the same settings HotLoop core's Kafka output uses."
+  },
+  {
     "id": "hotloop-flow-mcp-server",
     "type": "hotloop-flow-mcp-server",
     "category": "Config",
@@ -103,6 +124,13 @@
     "category": "Config",
     "level": "flow-only",
     "notes": "Flow's own Modbus TCP connection. It connects on the first request, drops the connection on any failure that makes it untrustworthy, and reconnects on the next one."
+  },
+  {
+    "id": "hotloop-flow-ntfy",
+    "type": "hotloop-flow-ntfy",
+    "category": "Config",
+    "level": "flow-only",
+    "notes": "Flow's own ntfy server, the same settings HotLoop core publishes alarms with."
   },
   {
     "id": "hotloop-flow-opcua",
@@ -270,7 +298,7 @@
     "type": "delay",
     "category": "Function",
     "level": "divergent",
-    "notes": "All six modes are implemented: fixed, variable, random, rate limit, per-topic queue and timed release, along with msg.reset, msg.flush and the second output for dropped messages. Two deliberate differences: the queue is bounded, and past the limit a message is refused to a Catch node rather than held, because Node-RED's unbounded queue turns a source faster than the drain into an OOM-kill with no explanation; and messages still held when the flow stops are released rather than discarded."
+    "notes": "All six modes are implemented, fixed, variable, random, rate limit, per-topic queue and timed release, along with msg.reset, msg.flush and the second output for dropped messages. Two deliberate differences: the queue is bounded, and past the limit a message is refused to a Catch node rather than held, because Node-RED's unbounded queue turns a source faster than the drain into an OOM-kill with no explanation; and messages still held when the flow stops are released rather than discarded."
   },
   {
     "id": "exec",
@@ -284,14 +312,14 @@
     "type": "function",
     "category": "Function",
     "level": "partial",
-    "notes": "Runs on our own sandboxed JavaScript engine rather than Node's vm module. The language is ES2023; the Node standard library is not present. require() and npm modules do not work and cannot be made to without embedding Node. There is always a CPU time limit, which Node-RED leaves optional and off, and it applies to every timer callback too. setTimeout, setInterval and their clear functions work, on the node's clock, and every one is cleared when the flow stops or is redeployed. Buffer is there (alloc, from, concat, the read and write methods for integers and floats in both byte orders, slice, toString and toJSON). A byte slice in a message arrives as a byte array, so wrap it with Buffer.from. Ignored properties: `libs`, `require`."
+    "notes": "Runs on the JavaScript interpreter, a JavaScript interpreter written in Go, rather than Node's vm module. The language is ES2023; the Node standard library is not present. require() and npm modules do not work and cannot be made to without embedding Node. There is always a CPU time limit, which Node-RED leaves optional and off, and it applies to every timer callback too. setTimeout, setInterval and their clear functions work, on the node's clock, and every one is cleared when the flow stops or is redeployed. Buffer is there (alloc, from, concat, the read and write methods for integers and floats in both byte orders, slice, toString and toJSON). A byte slice in a message arrives as a byte array, so wrap it with Buffer.from. Ignored properties: `libs`, `require`."
   },
   {
     "id": "range",
     "type": "range",
     "category": "Function",
     "level": "full",
-    "notes": ""
+    "notes": "n/a"
   },
   {
     "id": "rbe",
@@ -385,6 +413,20 @@
     "notes": "Sends the text, or the number in number mode, after delay milliseconds without typing, on Enter, or on leaving the box when sendOnBlur is on. A message sets the text."
   },
   {
+    "id": "discord-bot-out",
+    "type": "discord bot out",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node."
+  },
+  {
+    "id": "discord-out",
+    "type": "discord out",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node."
+  },
+  {
     "id": "e-mail",
     "type": "e-mail",
     "category": "Network",
@@ -404,6 +446,13 @@
     "category": "Network",
     "level": "flow-only",
     "notes": "Flow's own EtherNet/IP tag write. Not the same configuration as the community node-red-contrib-cip-ethernet-ip, which does not run here."
+  },
+  {
+    "id": "gotify-out",
+    "type": "gotify out",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node."
   },
   {
     "id": "hotloop-in",
@@ -453,6 +502,13 @@
     "category": "Network",
     "level": "partial",
     "notes": "Status code and headers from the node or from msg.statusCode and msg.headers, with the payload as the body. msg.cookies sets and clears cookies exactly as Express does for Node-RED, options and all; with more than one, they go out in name order rather than the order the object was built in."
+  },
+  {
+    "id": "kafka-out",
+    "type": "kafka out",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node."
   },
   {
     "id": "mcp-client",
@@ -546,6 +602,13 @@
     "notes": "Publishing with topic, QoS and retain from the node or the message, and on MQTT 5 the content type, response topic, correlation data, message expiry and user properties, from the node or from msg.contentType, msg.responseTopic, msg.correlationData, msg.messageExpiryInterval and msg.userProperties, with msg.responseTopic as the topic when there is no other. Topic aliases are not used: the full topic always goes. The connect and disconnect control messages are not implemented. Ignored properties: `topicAlias`."
   },
   {
+    "id": "ntfy-out",
+    "type": "ntfy out",
+    "category": "Network",
+    "level": "flow-only",
+    "notes": "Flow's own node."
+  },
+  {
     "id": "opcua-read",
     "type": "opcua read",
     "category": "Network",
@@ -613,14 +676,14 @@
     "type": "tcp out",
     "category": "Network",
     "level": "partial",
-    "notes": "Connects to a host and sends, or replies on the connection a TCP In node accepted, found through msg._session. Listening for inbound connections purely to write to them, which Node-RED's third mode does, is not implemented. Use a TCP In node for the listening half and this node in reply mode. TLS through a tls-config applies to client mode; a reply goes back down whatever the TCP In node accepted, TLS or not."
+    "notes": "Connects to a host and sends, or replies on the connection a TCP In node accepted, found through msg._session. Listening for inbound connections purely to write to them, which Node-RED's third mode does, is not implemented, use a TCP In node for the listening half and this node in reply mode. TLS through a tls-config applies to client mode; a reply goes back down whatever the TCP In node accepted, TLS or not."
   },
   {
     "id": "tcp-request",
     "type": "tcp request",
     "category": "Network",
     "level": "partial",
-    "notes": "Connects, sends the payload and waits for the reply, in any of Node-RED's four wait modes: a fixed time, a delimiter, a byte count, or until the peer closes. msg.host and msg.port override the node. Every request opens its own connection. Node-RED's connection-reuse mode is not implemented, and reusing one would change the semantics of the wait modes, which all end at a connection boundary. With a tls-config the server's certificate is checked unless the config says not to. Node-RED's TCP Request never checks it, whatever the config says, which makes its TLS a padlock painted on the door. networkInterface (not in Node-RED) binds the connection to one network interface."
+    "notes": "Connects, sends the payload and waits for the reply, in any of Node-RED's four wait modes: a fixed time, a delimiter, a byte count, or until the peer closes. msg.host and msg.port override the node. Every request opens its own connection, Node-RED's connection-reuse mode is not implemented, and reusing one would change the semantics of the wait modes, which all end at a connection boundary. With a tls-config the server's certificate is checked unless the config says not to. Node-RED's TCP Request never checks it, whatever the config says, which makes its TLS a padlock painted on the door. networkInterface (not in Node-RED) binds the connection to one network interface."
   },
   {
     "id": "udp-in",
@@ -662,7 +725,7 @@
     "type": "html",
     "category": "Parser",
     "level": "partial",
-    "notes": "Extracts elements by CSS selector, returning inner HTML, text or attributes, as one message per match or one message holding an array. The selector engine covers type, id, class, attribute, descendant, child and comma groups. Pseudo-classes, pseudo-elements, sibling combinators and the ~= and \\|= attribute operators are refused at deploy time rather than ignored, because a selector that quietly drops its :nth-child matches the wrong elements and keeps working. Returned HTML is re-rendered from the parse tree, so it is normalised markup rather than the original bytes."
+    "notes": "Extracts elements by CSS selector, returning inner HTML, text or attributes, as one message per match or one message holding an array. The selector engine covers type, id, class, attribute, descendant, child and comma groups. Pseudo-classes, pseudo-elements, sibling combinators and the ~= and \\|= attribute operators are refused at deploy time rather than ignored, because a selector that quietly drops its :nth-child matches the wrong elements and keeps working. Returned HTML is re-rendered from the parse tree, so it is normalized markup rather than the original bytes."
   },
   {
     "id": "json",
@@ -676,7 +739,7 @@
     "type": "xml",
     "category": "Parser",
     "level": "partial",
-    "notes": "Both directions, using xml2js's object convention: attributes under the key named by \"attr\" (default $), element text under \"chr\" (default _), and every child element as an array, which is xml2js's own explicitArray default. Set ew_explicitArray to false to collapse single children instead. The per-message msg.options that Node-RED passes through to xml2js is not honored. The other xml2js options change the shape of the output, and silently ignoring one would produce an object the flow does not expect while looking like it worked. Namespaces are kept as part of the element name rather than being resolved. Ignored properties: `options`."
+    "notes": "Both directions, using xml2js's object convention: attributes under the key named by \"attr\" (default $), element text under \"chr\" (default _), and every child element as an array, which is xml2js's own explicitArray default. Set ew_explicitArray to false to collapse single children instead. The per-message msg.options that Node-RED passes through to xml2js is not honored, the other xml2js options change the shape of the output, and silently ignoring one would produce an object the flow does not expect while looking like it worked. Namespaces are kept as part of the element name rather than being resolved. Ignored properties: `options`."
   },
   {
     "id": "yaml",
@@ -732,7 +795,7 @@
     "type": "influxdb out",
     "category": "Storage",
     "level": "flow-only",
-    "notes": "Flow's own node. The type name matches the community node-red-contrib-influxdb so an imported flow finds it, but the configuration is not identical. Check the fields after importing."
+    "notes": "Flow's own node. The type name matches the community node-red-contrib-influxdb so an imported flow finds it, but the configuration is not identical, check the fields after importing."
   },
   {
     "id": "postgres",

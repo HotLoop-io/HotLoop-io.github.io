@@ -60,11 +60,11 @@ const different = [
 ];
 
 const notDone = [
-  ['Hardware coverage.', 'Modbus TCP, OPC UA, S7, EtherNet/IP, and Sparkplug B nodes were run against simulators, a real broker, and bare metal (2026-11-17). Modbus RTU, Modbus over TLS, OPC UA events, history, method calls and browse, S7 timers and counters, and PCCC controllers are not done.'],
-  ['HotLoop nodes.', 'Flows can follow HotLoop\'s live feed, read state, run scripts, and apply recipes, and the write nodes can go through HotLoop\'s write gate. An https HotLoop with a private CA is not covered yet.'],
-  ['AI agents.', 'Flows serve tools to agents and call tools on other servers. Not done: OAuth, stdio servers, resources, prompts, sampling, and a tool\'s output schema.'],
+  ['Hardware coverage.', 'Modbus TCP, OPC UA, S7, EtherNet/IP, and Sparkplug B nodes ran against simulators, a real broker, and bare metal (2026-11-17). Next: Modbus RTU, Modbus over TLS, OPC UA events, history, method calls and browse, S7 timers and counters, and PCCC controllers.'],
+  ['HotLoop nodes.', 'Flows can follow HotLoop\'s live feed, read state, run scripts, and apply recipes, and the write nodes can go through HotLoop\'s write gate. Next: an https HotLoop with a private CA.'],
+  ['AI agents.', 'Flows serve tools to agents and call tools on other servers. Next: OAuth, stdio servers, resources, prompts, sampling, and a tool\'s output schema.'],
   ['Plugins.', 'Signed, sandboxed plugins are out and were run on bare metal (2026-11-17).'],
-  ['The editor.', 'It was rebuilt in HotLoop\'s colors and type, and its browser tests pass. It is tested in Chrome.'],
+  ['The editor.', 'Rebuilt in HotLoop\'s colors and type, with browser tests that pass in Chrome.'],
 ];
 
 // What Flow does, grouped by the question a plant person asks. Every card is a title
@@ -117,7 +117,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
     ],
   },
   {
-    id: 'flowlab', label: 'FlowLab', h: 'A second way to run a tab, for test benches and data loggers, with 28 node types of its own beside the ones for messages.', cols: 3,
+    id: 'flowlab', label: 'FlowLab', h: 'A second way to run a tab, for test benches and data loggers, with 37 node types of its own beside the ones for messages.', cols: 3,
     cards: [
       { h: 'Diagrams with loops and an error wire', b: 'In a diagram each node runs once, when every wired input has a value, and nodes with no wire between them run at the same time. While and for loops carry a value from one pass to the next, and an error travels on a wire of its own. Existing flows run exactly as they did.' },
       { h: 'A panel and a debugger', b: 'A panel with controls, indicators and charts that opens on a phone, and a run bar with highlight execution, probes, breakpoints and step.' },
@@ -321,7 +321,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           </table>
         </div>
         <p class="muted">
-          The ten minute row is the honest one for a box that stays loaded: the board heated up and throttled its clock,
+          The ten minute row shows a box that stays loaded: the board heated up and throttled its clock,
           and Flow still held steady. Idle memory runs higher than the desktop figure above, and the
           method is in the
           <a href="https://github.com/HotLoop-io/hotloop-flow/blob/main/docs/bench/README.md#results-on-a-raspberry-pi-5">bench docs</a>.
@@ -351,8 +351,8 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           </li>
         </ol>
         <p class="muted">
-          Memory is the process's own resident memory, not what a container tool charges the container, because a figure
-          that moves fivefold depending on the tool doesn't get printed.
+          Memory is the process's own resident memory, not what a container tool charges the container, so the figure
+          is the same whichever tool reads it.
         </p>
       </div>
     </div>
@@ -392,7 +392,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
             surface both present identically. It is not a measurement of either scheduler in isolation.
           </li>
           <li>
-            <strong>The worst-case gap is far narrower than the typical gap</strong>, for a reason that flatters nobody. Under
+            <strong>The worst-case gap is far narrower than the typical gap</strong>. Under
             saturation both runtimes queue, queueing dominates the tail, and the median is the only column where
             per-request cost actually shows up.
           </li>
@@ -404,9 +404,8 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           and the gap was 29×, and Flow has grown since as it gained features.
         </p>
         <p class="muted">
-          Memory isn't in this table, on purpose. Those numbers came off a container tool that reports what
-          the kernel charges the container, not what the process holds, and nobody could reproduce them.
-          A ratio across two methods is exactly the mistake that got the old numbers pulled.
+          Memory isn't in this table. The earlier memory figures came from a container tool that reports what the
+          kernel charges the container, not what the process holds, so they are left out.
         </p>
       </div>
       </CardDetail>
@@ -416,30 +415,23 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
   <section class="block" id="from-node-red">
     <div class="wrap">
       <div class="section-head">
-        <span class="label">Why not just keep running Node-RED</span>
-        <h2>Four things, and none of them are fixable with configuration.</h2>
+        <span class="label">Coming from Node-RED</span>
+        <h2>Bring your Node-RED flows.</h2>
         <p class="lede">
-          Node-RED is fine on a Pi in a workshop and it falls down on a plant floor, for four specific reasons. Flow reads
-          your existing flow file and runs it, and the
-          <a href="https://docs.hotloop.io/flow/migrating-from-node-red/">migration guide</a> walks a flow across. The
-          one thing that doesn't come along is community nodes, because they only run inside Node.js. Each card is the short version, and the
-          receipts are under them.
+          Flow reads your existing flows.json and runs it on a runtime built for the plant floor: a bounded queue on
+          every wire, a thread for every node, a Function node sealed off from the host, and authenticated encryption on
+          stored credentials. The
+          <a href="https://docs.hotloop.io/flow/migrating-from-node-red/">migration guide</a> walks a flow across, and the
+          compatibility table below lists every node and every difference. Community nodes are the one thing that
+          doesn't come along, because they need Node.js.
         </p>
       </div>
       <div class="grid grid-2">
-        <article class="card reveal"><h3 class="t-md">There is no back-pressure.</h3><p>Nothing puts a ceiling on Node-RED's wire queues, so one chatty sensor outruns a slow sink until the pod runs out of memory and gets killed, with nothing in the log. Every Flow inbox is bounded.</p></article>
-        <article class="card reveal"><h3 class="t-md">It is single-threaded.</h3><p>One event loop runs the runtime, the editor and every node's I/O, so one CPU-heavy Function node freezes all of it. Flow gives every node its own thread.</p></article>
-        <article class="card reveal"><h3 class="t-md">The Function node's sandbox is not a boundary.</h3><p>Node-RED runs Function code in a Node.js module whose own documentation says it is not a security mechanism. Flow runs it locked in a box with no access to the host.</p></article>
-        <article class="card reveal"><h3 class="t-md">Credentials are weakly protected.</h3><p>Node-RED encrypts them in a way that can't tell if the file was tampered with, keyed straight from a hash of your secret. Flow uses modern authenticated encryption under a proper key derivation.</p></article>
+        <article class="card reveal"><h3 class="t-md">A ceiling on every queue.</h3><p>Every inbox is bounded, with a policy per node: block, drop the newest, drop the oldest, or raise it to a Catch node. A chatty sensor and a slow database can't run the box out of memory.</p></article>
+        <article class="card reveal"><h3 class="t-md">A thread for every node.</h3><p>Each node runs on its own thread, in order within the node and in parallel across nodes, so one CPU-heavy Function node never freezes the editor or another flow.</p></article>
+        <article class="card reveal"><h3 class="t-md">A Function node sealed off from the host.</h3><p>Function code runs with no access to the host, its files or the network.</p></article>
+        <article class="card reveal"><h3 class="t-md">Credentials that detect tampering.</h3><p>Stored credentials use modern authenticated encryption under a proper key derivation, so a file somebody altered fails to decrypt.</p></article>
       </div>
-      <CardDetail label="The detail, with the sources">
-        <div id="node-red-detail" class="stack">
-          <div><h4>There is no back-pressure.</h4><p>Node-RED, by default, hands every message to the next node through a queue, and nothing puts a ceiling on that queue. A fast source outruns a slow sink, the queue grows, and the pod runs out of memory and gets killed with nothing in the log to explain it. Every inbox in Flow is bounded, with a policy per node: block, drop the newest, drop the oldest, or raise it to a Catch node and let the flow decide.</p></div>
-          <div><h4>It is single-threaded.</h4><p>One event loop carries the runtime, the editor API, the websocket fan-out, and every node's I/O. One CPU-heavy Function node stalls all of it, including the editor you are using to find out why it stalled. In Flow, every node instance gets its own thread, ordered within a node and parallel across nodes.</p></div>
-          <div><h4>The Function node's sandbox is not a boundary.</h4><p>Node-RED's Function node runs your code in <code>node:vm</code>. That is not our accusation, it is Node's own documentation: <a href="https://nodejs.org/api/vm.html">“The <code>node:vm</code> module is not a security mechanism. Do not use it to run untrusted code.”</a> Node-RED's own guide says an unsecured editor is only suitable on a trusted network, and anyone who can deploy a flow can run commands on the box, which is fine on a Pi in a workshop and not fine on a customer's plant floor. It is not hypothetical either: <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-41656">CVE-2025-41656</a> is unauthenticated remote command execution, rated critical, in Pilz's IndustrialPI 4 firmware, because authentication for the Node-RED server on it was not configured by default. That is a CVE in Pilz's product, not in Node-RED, and Node-RED's own guide says the editor is not secured by default.</p></div>
-          <div><h4>Credentials are weakly protected.</h4><p>They are encrypted with AES-256-CTR keyed by a raw SHA-256 of your secret. CTR has no MAC, so anyone who can write the credentials file on a shared volume can flip chosen plaintext bits, which turns “can write a file” into “can change a broker password to one they picked.” And plain SHA-256 is not a key derivation function. There is no CVE on either of those, and both are still real.</p></div>
-        </div>
-      </CardDetail>
       <Backpressure />
     </div>
   </section>
@@ -448,7 +440,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
     <div class="wrap">
       <div class="section-head">
         <span class="label">Compared with Node-RED, concretely</span>
-        <h2>The same idea, rebuilt around what bites people in production.</h2>
+        <h2>The same idea, built for production.</h2>
       </div>
       <div class="table-wrap">
         <table class="data stack">
@@ -488,7 +480,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         <div class="card"><div class="mono big">{level('flow-only')}</div><h3 class="t-md">Flow only</h3><p>No Node-RED counterpart.</p></div>
       </div>
       <div class="grid grid-2 after">
-        <div class="card"><h3 class="t-md">Not supported at all: community nodes</h3><p>They are npm packages that need Node.js. There is no version of this where they work.</p></div>
+        <div class="card"><h3 class="t-md">Not supported at all: community nodes</h3><p>They are npm packages that need Node.js, so they don't run in Flow. The plant nodes most flows lean on run natively.</p></div>
         <div class="card"><h3 class="t-md">JSONata, checked against the published examples</h3><p>Every <code>jsonata</code> property runs on our own JSONata engine, which passes 1,673 of the 1,686 published test cases. The 13 misses are listed in the repository.</p></div>
       </div>
       <p class="after"><a class="btn" href="/integrations/#flow-nodes">Browse all {nodes.length} nodes</a></p>
@@ -516,8 +508,9 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         <span class="label">Where it stands</span>
         <h2>Running today, with the roadmap in the open.</h2>
         <p class="lede">
-          Verified against a real MQTT broker, InfluxDB and PostgreSQL, and on bare metal. Here's what's still in
-          progress, so you can plan around it.
+          Verified against a real MQTT broker, InfluxDB and PostgreSQL, and on bare metal (2026-11-17). Each line below
+          says what runs today and what is next, and the full plan is on the
+          <a href="https://docs.hotloop.io/flow/roadmap/">Flow roadmap</a>.
         </p>
       </div>
       <ul class="notdone">
