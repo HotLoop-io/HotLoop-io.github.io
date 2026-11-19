@@ -2,10 +2,10 @@
 // integrations grid, and every protocol page, so they cannot disagree about what
 // a tier means.
 //
-// Careful with the wording of 'live'. It does not say "a real server" in every
-// case, because the Gateway's own PROTOCOLS.md verifies MTConnect against golden
-// agent documents served over HTTP. The tier means "ran against a real target
-// and the row names it", and the row's own text is what carries the detail.
+// 'live' means "ran against a real target and the row names it". A driver whose
+// record names no real target (EtherNet/IP, S7comm, MTConnect and HTTP today:
+// tests on recorded frames and documents, plus an unnamed bare-metal run) sits in
+// 'decode' until a run against a named controller or agent is on record.
 
 export type Tier = 'certified' | 'live' | 'decode' | 'gateway-mode';
 
