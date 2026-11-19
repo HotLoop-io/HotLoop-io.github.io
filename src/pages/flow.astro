@@ -140,7 +140,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
 
 <Base
   title="HotLoop Flow: a Node-RED alternative in Go"
-  description="A Node-RED-compatible flow engine in one static Go binary, with bounded queues and a thread per node. Free for home and lab and for business via EmberNet."
+  description="A Node-RED-compatible flow engine in one static Go binary, with bounded queues and a thread per node. Free for home and lab, and its source is public."
   ogAlt="HotLoop Flow, a flow engine in one static Go binary."
 >
   <JsonLd
@@ -177,8 +177,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
             The code is at <a href="https://github.com/HotLoop-io/hotloop-flow">github.com/HotLoop-io/hotloop-flow</a>. It runs on
             amd64 and arm64, so every box pulls its own, and there is a chart for Kubernetes. Upgrading is a plain
             image bump, and the <a href="/releases/flow/#flow-2.14.1">release notes</a> say what each version changes before you do it.
-            Flow is under the HotLoop Source License Agreement 1.0: free for home and lab, and unrestricted for business use run through
-            <a href="https://embernet.ai">EmberNet</a>.
+            Flow is under the HotLoop Source License Agreement 1.0, and home and lab use is free.
           </p>
         </div>
       </div>
@@ -516,7 +515,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
       <ul class="notdone">
         {notDone.map(([h, b]) => <li><strong>{h}</strong> {b}</li>)}
         <li>
-          <strong>In production through EmberNet.</strong> A plant runs it through EmberNet today, and everything past the
+          <strong>In production.</strong> A plant runs it today, and everything past the
           deploy line was proven against simulators and on bare metal.
         </li>
       </ul>
@@ -530,8 +529,8 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           <span class="label">Licensing</span>
           <h2>Source-available, with the source public.</h2>
           <p class="muted">
-            Flow is source-available under the HotLoop Source License Agreement 1.0, like every HotLoop product, which is not an OSI open source license. Home and lab use is free, and business use run
-            through <a href="https://embernet.ai">EmberNet</a> is unrestricted. Each version converts to AGPL-3.0 or later four years after
+            Flow is source-available under the HotLoop Source License Agreement 1.0, like every HotLoop product, which is not an OSI open source license. Home and lab use is free.
+            For business use, <a href="/license/#business">talk to us</a>. Each version converts to AGPL-3.0 or later four years after
             its release. The Flow repository is public, so you can read all of it.
           </p>
         </div>
