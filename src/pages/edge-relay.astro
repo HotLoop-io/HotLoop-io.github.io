@@ -98,7 +98,7 @@ const v = latest.data.version;
     <div class="wrap">
       <h3>What each piece does</h3>
       <CardDetail label="The detail on each piece">
-        <div><h4>Every driver</h4><p>OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, SNMP, BACnet/IP, and UniFi. The same code the Gateway polls with, down to the reconnect behavior, so a bug fixed there is fixed here.</p></div>
+        <div><h4>Every driver</h4><p>OPC UA, CODESYS, OPC UA PubSub, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, SNMP, BACnet/IP, and UniFi. The same code the Gateway polls with, down to the reconnect behavior, so a bug fixed there is fixed here.</p></div>
         <div><h4>Store-and-forward</h4><p>Births and deaths announced the way Sparkplug B says. When the link drops it holds readings on disk and replays them in order, flagged historical, when it's back. The historian upstream gets the gap filled instead of a hole.</p></div>
         <div><h4>Configured by a file</h4><p>Devices and tags come from one file, and a file the Gateway pushes applies the moment it lands: new devices connect, removed ones let go, changed ones reconnect, and the ones nobody touched keep their sessions. A bad file is refused and the old one keeps running. The connection upstream stays up the whole time, so the Gateway doesn't see a relay "die" because somebody edited a device.</p></div>
         <div><h4>No write path</h4><p>It reads and forwards. It can't take a write, serve a screen or answer an AI agent, because every one of those needs a signed-in person to pin the action on, and it has no users at all.</p></div>
@@ -175,7 +175,7 @@ helm install press-line-3 hotloop/hotloop-edge-relay \
             The Edge Relay is under the HotLoop Source License Agreement 1.0, like the rest of the lineup. It is free to use
 and source-available, not OSI open source. Home and lab use is free. Business use is free through <a href="https://embernet.ai">EmberNet</a>.
             Support, SLAs, and warranties come from our Official Systems Integrator,
-            {' '}<a href="https://fireballz.ai">Fireball Industries</a>.
+            {' '}<a href="https://fireballz.ai/get-a-quote/">Fireball Industries</a>.
           </p>
         </div>
         <a class="btn primary" href="/license/">Read the license</a>
