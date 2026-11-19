@@ -320,7 +320,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           </table>
         </div>
         <p class="muted">
-          The ten minute row shows a box that stays loaded: the board heated up and throttled its clock,
+          The ten minute row is the honest one for a box that stays loaded: the board heated up and throttled its clock,
           and Flow still held steady. Idle memory runs higher than the desktop figure above, and the
           method is in the
           <a href="https://github.com/HotLoop-io/hotloop-flow/blob/main/docs/bench/README.md#results-on-a-raspberry-pi-5">bench docs</a>.
@@ -403,8 +403,9 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
           and the gap was 29×, and Flow has grown since as it gained features.
         </p>
         <p class="muted">
-          Memory isn't in this table. The earlier memory figures came from a container tool that reports what the
-          kernel charges the container, not what the process holds, so they are left out.
+          Memory isn't in this table, on purpose. Those numbers came off a container tool that reports what
+          the kernel charges the container, not what the process holds, and nobody could reproduce them.
+          A ratio across two methods is exactly the mistake that got the old numbers pulled.
         </p>
       </div>
       </CardDetail>
@@ -507,15 +508,15 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         <span class="label">Where it stands</span>
         <h2>Running today, with the roadmap in the open.</h2>
         <p class="lede">
-          Verified against a real MQTT broker, InfluxDB and PostgreSQL, and on bare metal (2026-11-17). Each line below
-          says what runs today and what is next, and the full plan is on the
+          Verified against a real MQTT broker, InfluxDB and PostgreSQL, and on bare metal. Here's what's still in
+          progress, so you can plan around it. The full plan is on the
           <a href="https://docs.hotloop.io/flow/roadmap/">Flow roadmap</a>.
         </p>
       </div>
       <ul class="notdone">
         {notDone.map(([h, b]) => <li><strong>{h}</strong> {b}</li>)}
         <li>
-          <strong>In production.</strong> A plant runs it today, and everything past the
+          <strong>In production through EmberNet.</strong> A plant runs it through EmberNet today, and everything past the
           deploy line was proven against simulators and on bare metal.
         </li>
       </ul>
