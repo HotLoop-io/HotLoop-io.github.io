@@ -30,7 +30,7 @@ const wontDo: [string, string][] = [
 
 const built: [string, string, string?][] = [
   ['The connector', 'HotLoop\'s CODESYS driver: read and discover by symbol, with arrays and structures walked into one point per field.',
-    'It lists what the application exports as the types it has: a STRING is a string, a TIME is milliseconds, an enumeration is an integer. An array lists its first elements, and any element can still be addressed by its symbol. It shapes every request to the limits the runtime publishes, so a big program never overwhelms it. It was tested against a real CODESYS runtime.'],
+    'It lists what the application exports as the types it has: a STRING is a string, a TIME is milliseconds, an enumeration is an integer. An array lists its first elements, and any element can still be addressed by its symbol. It shapes every request to the limits the runtime publishes, so a big program never overwhelms it. It was tested against a real CODESYS runtime and on bare metal (2026-11-17).'],
   ['The chart', 'HotLoop Edge with defaults for a runtime on a node: SQLite, and the parts you do not need beside a PLC switched off.'],
   ['The provisioner', 'A small program that applies a profile to HotLoop and keeps it right: the device, the variables, the alarms, and one screen.',
     'The profile is one file the installer provides, never part of the chart or the image, so both are generic. A variable the PLC gained since is added, one it lost reads bad with the server\'s reason, and the screen and alarms are replaced only when the profile\'s revision is higher, so a change a person made survives until a newer profile is shipped on purpose.'],
@@ -41,7 +41,7 @@ const built: [string, string, string?][] = [
 const proven: [string, string][] = [
   ['Shown', 'The device, its tags (none writable), its alarm, and its screen appeared with no hand step. Every value read good and moved. It came back after a restart. Through a runtime restart the install read bad with the reason "the PLC\'s runtime is not answering" and came back by itself about a minute and a half later.'],
   ['Run against', 'A real CODESYS Control for Linux runtime running a lab program, with HotLoop Edge beside it on Kubernetes.'],
-  ['On a Raspberry Pi 5', 'A real CODESYS Control for Linux ARM64 SL 4.22.0.0 runtime ran with HotLoop beside it, and HotLoop recognised it.'],
+  ['On bare metal', 'The pieces that had only been run in the lab, including a node losing its link to the cluster, were tested on bare metal (2026-11-17).'],
 ];
 ---
 
