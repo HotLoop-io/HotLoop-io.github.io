@@ -31,7 +31,7 @@ pub();`;
 // and then the reference material (what is in it, what it refuses, what comes after).
 const proof: [string, string][] = [
   ['Built', 'The library compiled with no errors and no warnings in the CODESYS development system, and the example application built against it for a CODESYS Control for Linux SL device.'],
-  ['Run on', 'A real CODESYS Control for Linux runtime with a fast task, and on bare metal (2026-11-17). Two publishers, one in each encoding, seventeen fields each.'],
+  ['Run on', 'A real CODESYS Control for Linux runtime with a fast task. Two publishers, one in each encoding, seventeen fields each.'],
   ['Read by an independent decoder', 'Every field equalled the PLC\'s own value, in both encodings, with no gap in the message sequence numbers.'],
   ['Read by a stack that is not ours', 'An independent OPC UA stack read every value in the Variant encoding, strings and arrays included, and every numeric scalar in the compact RawData encoding. Compact RawData is limited by that reader for longer strings and arrays, not by Transmitter.'],
   ['Read by HotLoop', 'HotLoop\'s own subscriber read both publishers live and checked 21 values equal, including the string, the TIME, both arrays and two counters that moved between reads. It refused nothing, and every reading carried the publisher\'s timestamp as its time.'],
@@ -106,7 +106,7 @@ const planned: [string, string][] = [
             <strong>There is no release yet, and no file to download.</strong>
             <p>
               The library builds and runs on a real CODESYS runtime, and what it sends was
-              read back by decoders that are not ours. It was also run on bare metal (2026-11-17). Nothing here is installable until a
+              read back by decoders that are not ours. Nothing here is installable until a
               version is tagged, and this page says so until then.
             </p>
           </div>
