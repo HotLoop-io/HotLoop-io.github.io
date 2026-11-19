@@ -39,8 +39,8 @@ const p = product('edge');
         A machine's screen and logic should not depend on a network three buildings away. Edge is HotLoop on a box next to
         the machine: everything in <a href="/iot/">IoT</a>, plus an OPC UA server your SCADA can read and a queue that
         holds readings and replays them in order when the uplink comes back. When the WAN dies, the operator still has a
-        screen, the alarm still raises, and the rule still runs. The backhoe through the fiber becomes an IT ticket, not a
-        line down.
+        screen, the alarm still raises, and the rule still runs. A cut fiber stays an IT ticket, and the line keeps
+        running.
       </p>
       <div class="notice info">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
@@ -111,8 +111,7 @@ const p = product('edge');
         <p class="lede">
           HMI screens aren't a second front end bolted on the side. They're the dashboards IoT gets, bound to a
           physical screen, and that part is out in every product with a UI. The symbol library and faceplates below are still ahead. They use the same
-          bindings and the same write gate. Two UIs means two sets of bugs and two places to
-          forget a permission check, and we're not signing up for that.
+          bindings and the same write gate, so there is one interface to learn and one set of permission checks.
         </p>
       </div>
       <div class="grid grid-2 split">
@@ -181,13 +180,13 @@ helm install hotloop hotloop/hotloop-edge --version {CURRENT} \
         <article class="card reveal"><h3>Small Raspberry Pis</h3><p>The 32-bit ARM build is published and was tested on bare metal (2026-11-17).</p></article>
         <article class="card reveal"><h3>Moving up a product</h3><p>IoT to Edge to the Gateway on one database has been run on a plain Linux box, and each step kept the data and the config.</p></article>
       </div>
-      <div class="notice after">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+      <div class="notice info after">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>S7comm and EtherNet/IP are tested at the frame level and on bare metal (2026-11-17).</strong>
+          <strong>S7comm and EtherNet/IP have run on bare metal (2026-11-17).</strong>
           <p>
-            Any new controller is still a commissioning job, not a formality. Check a value you
-            already know before you trust a screen. <a href="/integrations/">The integrations page</a> says the same.
+            As with any new controller, confirm a value you already know at commissioning. Each driver's tests are on
+            <a href="/integrations/">the integrations page</a>.
           </p>
         </div>
       </div>

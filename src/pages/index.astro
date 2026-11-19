@@ -48,8 +48,8 @@ const fmt = (d: Date) =>
         <p class="lede">
           HotLoop connects to your PLCs and devices, keeps the history, raises the alarms that matter, and moves a
           machine only when someone with the authority arms it. It runs on a Raspberry Pi next to one machine or across
-          every site you operate, and it grows with you without a migration. Home and lab use is free, and businesses
-          run it on EmberNet, starting with a free Pilot.
+          every site you operate, and it moves up a product without losing your devices, tags or history. It's free for
+          you, and free for your business through EmberNet.
         </p>
         <div class="cluster">
           <a class="btn primary" href="https://docs.hotloop.io/install/">
@@ -76,20 +76,6 @@ const fmt = (d: Date) =>
         <div class="n mono">45.6<small>MB</small></div>
         <p>The whole Flow container image. It starts in a fraction of a second and runs on a Raspberry Pi 5. The full benchmark and method are on <a href="/flow/#numbers">the Flow page</a>.</p>
       </div>
-    </div>
-  </section>
-
-  <section class="block running" aria-labelledby="running-at">
-    <div class="wrap">
-      <div class="section-head">
-        <span class="label" id="running-at">In production</span>
-        <p class="lede">Running in production at Shepherd Boy Farms, DayGlo and Trane Technologies through EmberNet.</p>
-      </div>
-      <ul class="logos">
-        <li><a class="plate" href="https://shepherdboyfarms.com" rel="noopener" aria-label="Shepherd Boy Farms"><img src="/customers/shepherd-boy-farms-logo.png" alt="Shepherd Boy Farms" width="2472" height="1238" loading="lazy" decoding="async" /></a></li>
-        <li><a class="plate" href="https://www.dayglo.com" rel="noopener" aria-label="DayGlo"><img class="on-light" src="/customers/dayglo-logo-standard-transparent.png" alt="DayGlo" width="279" height="69" loading="lazy" decoding="async" /><img class="on-dark" src="/customers/dayglo-logo.svg" alt="DayGlo" width="648" height="180" loading="lazy" decoding="async" /></a></li>
-        <li><a class="plate" href="https://www.tranetechnologies.com" rel="noopener" aria-label="Trane Technologies"><img class="on-light" src="/customers/trane-technologies-logo.svg" alt="Trane Technologies" width="626" height="175" loading="lazy" decoding="async" /><img class="on-dark blend" src="/customers/trane-technologies-logo-reversed.png" alt="Trane Technologies" width="1310" height="730" loading="lazy" decoding="async" /></a></li>
-      </ul>
     </div>
   </section>
 
@@ -121,9 +107,9 @@ const fmt = (d: Date) =>
         </article>
       </div>
       <CardDetail>
-        <div><h4>Sense</h4><p>Poll real equipment over real protocols, and keep the quality of every reading, not just the number. A failed read is bad, never zero, so a dead sensor doesn't trip every low alarm on the unit and send the night shift chasing a tank that's fine.</p></div>
-        <div><h4>Decide</h4><p>ISA-18.2 alarms (the industrial alarm standard), including the one homegrown systems forget: the alarm that cleared on its own before anybody saw it. It's still on the list at shift change. Rules are checked when you save them, so a typo dies in the editor, not at 3am halfway through a batch.</p></div>
-        <div><h4>Act</h4><p>Every write, from a person, a rule, or an agent, crosses one gate that nothing routes around. Out of range is refused, not clamped, and the refusal gets written down. Want to watch it say no? <a href="/gateway/#the-gate">Go try to break it</a>.</p></div>
+        <div><h4>Sense</h4><p>HotLoop polls real equipment over the protocols it already speaks and keeps the quality of every reading with the number. A failed read is marked bad, so a dead sensor doesn't trip every low alarm on the unit or send the night shift to check a tank that's fine.</p></div>
+        <div><h4>Decide</h4><p>ISA-18.2 alarms, the industrial alarm standard, including the alarm that cleared on its own before anybody saw it. It stays on the list for the next shift. Rules are checked when you save them, so a typo is caught in the editor before it reaches a batch.</p></div>
+        <div><h4>Act</h4><p>Every write, from an operator, a rule or an AI agent, passes through one gate. A value out of range is refused rather than quietly changed, and every refusal is logged. <a href="/gateway/#the-gate">See the write gate in action</a>.</p></div>
       </CardDetail>
     </div>
   </section>
@@ -215,31 +201,23 @@ const fmt = (d: Date) =>
           <span class="label">Licensing</span>
           <h2>Free to use. No license keys.</h2>
           <p class="lede">
-            Home and lab use is free. Businesses run HotLoop on <a href="https://embernet.ai">EmberNet</a>, starting with a
-            free Pilot, with no keys to enter and nothing locked behind a paywall. When you want a turnkey rollout with SLAs
-            and a warranty, our Official Systems Integrator, {' '}<a href="https://fireballz.ai">Fireball Industries</a>,
-            designs, installs and supports it.
+            Every HotLoop product except Flow is under the HotLoop Free Use License 1.0, and Flow is under the EmberNet Source License 1.0. HotLoop is free to use and it is not
+open source, apart from Flow's source, which is public. Home and lab use is free. A
+business signs up for <a href="https://embernet.ai">EmberNet</a>, free, and runs HotLoop there. There's no key to type in and nothing waiting
+behind a paywall. For a turnkey rollout with SLAs and a warranty, Fireball Industries, our master systems
+            integrator, designs, installs and supports it.
           </p>
         </div>
-        <a class="btn primary" href="/license/">What the license means</a>
+        <div class="cluster">
+          <a class="btn primary" href="/license/">What the license means</a>
+          <a class="btn" href="https://fireballz.ai/get-a-quote/">Talk to Fireball</a>
+        </div>
       </div>
     </div>
   </section>
 </Base>
 
 <style>
-  /* Customer logos are the companies' own files, never recolored or redrawn. Every plate is the page's own
-     surface, and where a company publishes a standard and a reversed mark the page shows the standard one
-     in light and the reversed one in dark. The plates span the content width and share one size. */
-  .running .section-head { margin-bottom: var(--hl-s5); }
-  .logos { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: var(--hl-s4); }
-  .plate { display: flex; align-items: center; justify-content: center; height: 120px; padding: var(--hl-s4) var(--hl-s6); box-sizing: border-box; background: var(--hl-card); border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); transition: border-color var(--hl-transition-fast); }
-  .plate:hover { border-color: var(--hl-orange); }
-  .plate img { height: auto; width: auto; max-height: 64px; max-width: 100%; display: block; object-fit: contain; }
-  .plate .on-dark { display: none; }
-  /* Trane's reversed logo is a 1310 by 730 picture with a wide black margin around the mark, so it is drawn
-     larger to make the mark the same size as the standard one, and the black margin is blended into the surface. */
-  .plate .blend { max-height: none; width: 273px; height: 152px; margin-block: -44px; }
   .hero { padding-top: clamp(var(--hl-s7), 6vw, var(--hl-s8)); }
   .grid-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 620px); gap: clamp(var(--hl-s6), 5vw, var(--hl-s8)); align-items: center; }
   /* Side by side, the copy column gets about 250px at 1024 and the h1 broke
@@ -288,6 +266,7 @@ const fmt = (d: Date) =>
   .licensing { display: flex; flex-wrap: wrap; gap: var(--hl-s6); align-items: center; justify-content: space-between; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
   .licensing > div { display: grid; gap: var(--hl-s3); max-width: 60ch; }
   .licensing .lede { font-size: var(--hl-fs-md); }
+  .licensing > .cluster { display: flex; max-width: none; }
 </style>
 <style is:global>
   @media (prefers-color-scheme: dark) {

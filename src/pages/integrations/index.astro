@@ -28,7 +28,7 @@ const lv = Object.fromEntries(LEVELS.map(([k, l, c]) => [k, { label: l, chip: c 
 <Base
   title="HotLoop integrations: OPC UA, Modbus, Sparkplug B"
   description={`Twelve native Gateway drivers and ${nodes.length} Flow nodes, each listed with exactly what it was tested against.`}
-  ogAlt="HotLoop integrations, with four verification tiers."
+  ogAlt="HotLoop integrations, with what each was tested against."
 >
   <section class="page-hero">
     <div class="wrap-wide stack">
@@ -43,7 +43,7 @@ const lv = Object.fromEntries(LEVELS.map(([k, l, c]) => [k, { label: l, chip: c 
 
   <section class="wrap-wide tiers">
     <div class="grid grid-4">
-      {TIER_ORDER.map((t) => (
+      {TIER_ORDER.filter((t) => count(t) > 0).map((t) => (
         <div class="card tier">
           <div class="cluster head">
             <span class={`chip ${TIERS[t].chip}`}>{TIERS[t].label}</span>
@@ -76,7 +76,7 @@ const lv = Object.fromEntries(LEVELS.map(([k, l, c]) => [k, { label: l, chip: c 
         <legend class="sr-only">Filter by verification tier</legend>
         <input type="radio" name="tier" id="t-all" checked /><label for="t-all">All</label>
         <input type="radio" name="tier" id="t-live" /><label for="t-live">Verified live</label>
-        <input type="radio" name="tier" id="t-decode" /><label for="t-decode">Decode tested</label>
+        {count('decode') > 0 && (<><input type="radio" name="tier" id="t-decode" /><label for="t-decode">Decode tested</label></>)}
         <input type="radio" name="tier" id="t-gateway-mode" /><label for="t-gateway-mode">Gateway mode</label>
       </fieldset>
 

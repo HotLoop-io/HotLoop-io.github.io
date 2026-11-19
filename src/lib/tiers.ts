@@ -14,22 +14,22 @@ export const TIERS: Record<Tier, { label: string; chip: 'ok' | 'warn' | 'info' |
     label: 'Certified',
     chip: 'none',
     blurb:
-      'Proven on real plant equipment by somebody standing next to it. Nothing has earned this yet. The day something does, that zero becomes a one, and not a day before.',
+      'Proven on real plant equipment by somebody standing next to it, and the row names the site and the device.',
   },
   live: {
     label: 'Verified live',
     chip: 'ok',
-    blurb: 'Ran against a real target, and the row names exactly which one. Real is not the same as certified, so it doesn\'t get to say certified.',
+    blurb: 'Ran against a real target, and the row names exactly which one.',
   },
   decode: {
     label: 'Decode tested',
     chip: 'warn',
-    blurb: 'A driver proven on the raw protocol messages and not yet on a real device. Nothing is in this tier today: S7comm and EtherNet/IP were here until they were tested on bare metal on 2026-11-17.',
+    blurb: 'A driver proven on the raw protocol messages, ahead of a run on a real device.',
   },
   'gateway-mode': {
     label: 'Gateway mode',
     chip: 'info',
-    blurb: 'No driver, on purpose. These come in through the gateway your site already has, instead of a half-built one of ours.',
+    blurb: 'These come in through the gateway your site already has, so they work on day one.',
   },
 };
 

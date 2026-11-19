@@ -101,8 +101,7 @@ const gw = product('gateway');
         <h2>Every write goes through one gate, and nothing routes around it.</h2>
         <p class="lede">
           The screen, a rule, a script, an agent: same gate, same checks, same order. Policy lives in one
-          place because the day it lives in five, somebody forgets the fifth, and that somebody's write goes to a
-          live press.
+          place, so every path to a live press meets every check.
         </p>
       </div>
       <WriteGate />
@@ -154,9 +153,8 @@ const gw = product('gateway');
           itself. Each site keeps its own database, so a dead WAN link takes out a roll-up, never a plant.
         </p>
         <p class="muted">
-          A site that doesn't answer shows as unreachable, with the reason, and stays out of the totals. Counting a
-          plant you can't reach as zero alarms is how a head office decides everything is fine on the worst night
-          of the year.
+          A site that doesn't answer shows as unreachable, with the reason, and stays out of the totals, so head office
+          never reads a plant it can't reach as a quiet one.
         </p>
       </div>
     </div>
@@ -166,7 +164,7 @@ const gw = product('gateway');
     <div class="wrap">
       <div class="section-head">
         <span class="label">What it speaks</span>
-        <h2>Twelve native drivers, and a table that admits how far each has been proven.</h2>
+        <h2>Twelve native drivers, each listed with what it was tested against.</h2>
       </div>
       <div class="grid grid-4">
         {native.map((p) => (
@@ -188,12 +186,12 @@ const gw = product('gateway');
           </p>
         </div>
       </div>
-      <div class="notice after">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+      <div class="notice info after">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
         <div>
-          <strong>SNMP and BACnet/IP are tested on bare metal (2026-11-17).</strong>
+          <strong>SNMP and BACnet/IP have run on bare metal (2026-11-17).</strong>
           <p>
-            SNMP was read at every v3 security level, and BACnet/IP against an independent BACnet stack. Both have also run on bare metal.
+            SNMP was read at every v3 security level, and BACnet/IP against an independent BACnet stack.
             Vendors differ about their MIBs, their object lists, and how they answer a request that is too big, so a new switch, UPS, or controller is still a commissioning job: compare the probe's values with the device's own display.
           </p>
         </div>
@@ -330,14 +328,14 @@ helm install hotloop hotloop/hotloop --version {latest.data.version} \
       <div class="card cta reveal">
         <div class="stack">
           <span class="label">Licensing</span>
-          <h2>Free for home and lab. Businesses run it on EmberNet.</h2>
+          <h2>Free. For you, and for your business through EmberNet.</h2>
           <p class="muted">
             The Gateway is under the HotLoop Free Use License 1.0. It is free to use, it is not open source, and it
-never converts to open source. There are no license keys and nothing unlocks at runtime. Home and lab use is free. Businesses
-run it on {' '}<a href="https://embernet.ai">EmberNet</a>, starting with a free Pilot.
-            Support, SLAs and warranties come from our Official Systems Integrator,
-            {' '}<a href="https://fireballz.ai">Fireball Industries</a>, who'll also design, install, and support the
-            rollout if you'd rather not.
+never converts to open source. There are no license keys and nothing unlocks at runtime. Home and lab use is free. Any
+business use is free through {' '}<a href="https://embernet.ai">EmberNet</a>, and signing up is free.
+            Support, SLAs and warranties come from our master systems integrator,
+            {' '}<a href="https://fireballz.ai/get-a-quote/">Fireball Industries</a>, which designs, installs and supports
+            the rollout when you want it done for you.
           </p>
         </div>
         <a class="btn primary" href="/license/">Read the license</a>
