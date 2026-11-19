@@ -46,19 +46,18 @@ const fmt = (d: Date) =>
         <span class="chip ok">Version {gwOut.data.version} is out for all four core products</span>
         <h1>Automation loops for the real world.</h1>
         <p class="lede">
-          Home automation is a toy right up until the day it matters. Industrial automation works, costs a fortune,
-          and comes with a guy who has to drive out to change a setpoint. HotLoop is the thing in the middle that
-          should have existed ten years ago: it reads real equipment, keeps the history, raises the alarm, and moves
-          the machine, from a Pi on a shelf to a whole plant. It's free for you, and free for your business through
-          EmberNet.
+          HotLoop connects to your PLCs and devices, keeps the history, raises the alarms that matter, and moves a
+          machine only when someone with the authority arms it. It runs on a Raspberry Pi next to one machine or across
+          every site you operate, and it grows with you without a migration. Home and lab use is free, and businesses
+          run it on EmberNet, starting with a free Pilot.
         </p>
         <div class="cluster">
-          <a class="btn primary" href="/gateway/">
-            Meet the Gateway
+          <a class="btn primary" href="https://docs.hotloop.io/install/">
+            Install HotLoop
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </a>
           <a class="btn" href="/products/">See the lineup</a>
-          <a class="btn" href="/flow/">Meet Flow</a>
+          <a class="btn" href="https://fireballz.ai/get-a-quote/">Plan a rollout with Fireball</a>
         </div>
       </div>
       <LoopInstrument />
@@ -67,15 +66,15 @@ const fmt = (d: Date) =>
     <div class="wrap-wide stats">
       <div class="stat">
         <div class="n mono">{nativeCount}</div>
-        <p>Native protocol drivers in the Gateway, for talking to PLCs and other equipment. No placeholder drivers, every one run on real equipment, and a table that says exactly how far each has been proven.</p>
+        <p>Native drivers for OPC UA, Modbus, EtherNet/IP, Siemens S7, MQTT and Sparkplug B, CODESYS and more, each listed with exactly what it was tested against.</p>
       </div>
       <div class="stat">
         <div class="n mono">{nodes.length}</div>
-        <p>Node types in Flow, our Node-RED-compatible wiring tool. Each one says how close it is to Node-RED, and the build fails if one lies about it.</p>
+        <p>Flow node types that run your existing Node-RED flows, with every difference documented.</p>
       </div>
       <div class="stat">
         <div class="n mono">45.6<small>MB</small></div>
-        <p>The whole Flow container image on amd64. The method and the caveats are on <a href="/flow/#numbers">the Flow page</a>, because a benchmark without caveats is marketing in a lab coat.</p>
+        <p>The whole Flow container image. It starts in a fraction of a second and runs on a Raspberry Pi 5. The full benchmark and method are on <a href="/flow/#numbers">the Flow page</a>.</p>
       </div>
     </div>
   </section>
@@ -83,8 +82,8 @@ const fmt = (d: Date) =>
   <section class="block running" aria-labelledby="running-at">
     <div class="wrap">
       <div class="section-head">
-        <span class="label" id="running-at">Running at</span>
-        <p class="lede">HotLoop runs at the plants of Shepherd Boy Farms, DayGlo, and Trane Technologies, through EmberNet.</p>
+        <span class="label" id="running-at">In production</span>
+        <p class="lede">Running in production at Shepherd Boy Farms, DayGlo and Trane Technologies through EmberNet.</p>
       </div>
       <ul class="logos">
         <li><a class="plate" href="https://shepherdboyfarms.com" rel="noopener" aria-label="Shepherd Boy Farms"><img src="/customers/shepherd-boy-farms-logo.png" alt="Shepherd Boy Farms" width="2472" height="1238" loading="lazy" decoding="async" /></a></li>
@@ -100,25 +99,24 @@ const fmt = (d: Date) =>
         <span class="label">The loop</span>
         <h2>Sense, decide, act, and around again.</h2>
         <p class="lede">
-          That's the whole product. A rule you set once and pray over is not a loop. A loop is something you can
-          walk away from, because it tells you the truth when it can't see and it refuses to do something stupid when somebody
-          tells it to.
+          HotLoop runs the loop so your people can walk away from it. It reports a dead sensor as a dead sensor, checks
+          every rule when you save it, and refuses any write that is out of range or wasn't armed.
         </p>
       </div>
       <div class="grid grid-3">
         <article class="card reveal">
           <h3>Sense</h3>
-          <p>Poll real equipment over real protocols and keep each reading's quality. A failed read is bad, never zero, so a dead sensor doesn't trip every low alarm.</p>
+          <p>Reads real equipment over the protocols it already speaks and records the quality of every reading. A failed read is marked bad, so a dead sensor never trips every low alarm on the unit.</p>
         </article>
         <article class="card reveal">
           <h3>Decide</h3>
-          <p>ISA-18.2 alarms (the industrial alarm standard), so an alarm that cleared before anybody saw it is still on the list at shift change. Rules are checked on save, so a typo dies in the editor.</p>
+          <p>ISA-18.2 alarms, the industrial alarm standard, keep the trip that cleared on its own on the list for the next shift. Rules are checked the moment you save them.</p>
         </article>
         <article class="card reveal">
           <h3>Act</h3>
           <p>
-            Every write, from a person, a rule, or an agent, crosses one gate nothing routes around. Out of range is
-            refused, not clamped. {' '}<a href="/gateway/#the-gate">Go try to break it</a>.
+            Every write, from an operator, a rule or an AI agent, passes through one gate with one set of checks, and
+            every refusal is logged. {' '}<a href="/gateway/#the-gate">See the write gate</a>.
           </p>
         </article>
       </div>
@@ -159,15 +157,15 @@ const fmt = (d: Date) =>
   <section class="block">
     <div class="wrap">
       <div class="section-head">
-        <span class="label">What we refuse to fake</span>
-        <h2>Every integration says how far it has actually been proven.</h2>
+        <span class="label">Integrations</span>
+        <h2>Every driver shows exactly what it was tested against.</h2>
         <p class="lede">
-          Most integration pages are a wall of logos. Ours has four tiers, and the top one is empty on purpose,
-          because nothing has earned it yet. You'd rather know that now than at commissioning.
+          Each integration lists the systems it has run against, so your team knows what day one looks like before
+          commissioning starts. Protocols HotLoop doesn't speak natively come in through the gateway your site already has.
         </p>
       </div>
       <div class="grid grid-4 tiers">
-        {TIER_ORDER.map((t) => (
+        {TIER_ORDER.filter((t) => counts[t] > 0).map((t) => (
           <div class="card tier reveal">
             <div class="cluster head">
               <span class={`chip ${TIERS[t].chip}`}>{TIERS[t].label}</span>
@@ -215,13 +213,12 @@ const fmt = (d: Date) =>
       <div class="card licensing reveal">
         <div>
           <span class="label">Licensing</span>
-          <h2>One license, no keys.</h2>
+          <h2>Free to use. No license keys.</h2>
           <p class="lede">
-            Every HotLoop product except Flow is under the HotLoop Free Use License 1.0, and Flow is under the EmberNet Source License 1.0. HotLoop is free to use and it is not
-open source, apart from Flow's source, which is public. Home and lab use is free. A
-business signs up for <a href="https://embernet.ai">EmberNet</a>, free, and runs HotLoop there. There's no key to type in and nothing waiting
-behind a paywall. Want somebody else to own the rollout, SLAs and warranty included? That's our Official
-            Systems Integrator, {' '}<a href="https://fireballz.ai">Fireball Industries</a>.
+            Home and lab use is free. Businesses run HotLoop on <a href="https://embernet.ai">EmberNet</a>, starting with a
+            free Pilot, with no keys to enter and nothing locked behind a paywall. When you want a turnkey rollout with SLAs
+            and a warranty, our Official Systems Integrator, {' '}<a href="https://fireballz.ai">Fireball Industries</a>,
+            designs, installs and supports it.
           </p>
         </div>
         <a class="btn primary" href="/license/">What the license means</a>
