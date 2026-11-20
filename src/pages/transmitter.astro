@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import JsonLd from '../components/JsonLd.astro';
+import LeadCard from '../components/LeadCard.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import { getCollection } from 'astro:content';
 import { TRANSMITTER } from '../lib/products';
@@ -228,7 +229,7 @@ const planned: [string, string][] = [
         <h2>{R ? `What ${TRANSMITTER.version} ships.` : 'What is in the first version.'}</h2>
       </div>
       <div class="grid grid-3">
-        {built.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+        {built.map(([h, b]) => <LeadCard h={h} b={b} />)}
       </div>
     </div>
   </section>
@@ -240,7 +241,7 @@ const planned: [string, string][] = [
         <h2>Four refusals, each on purpose.</h2>
       </div>
       <div class="grid grid-2">
-        {wontDo.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+        {wontDo.map(([h, b]) => <LeadCard h={h} b={b} />)}
       </div>
     </div>
   </section>

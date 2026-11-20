@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+import CardMore from '../components/CardMore.astro';
+import LeadCard from '../components/LeadCard.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import CardDetail from '../components/CardDetail.astro';
@@ -102,7 +104,7 @@ const proven: [string, string][] = [
         </p>
       </div>
       <div class="grid grid-2">
-        {does.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+        {does.map(([h, b]) => <LeadCard h={h} b={b} />)}
       </div>
       <CardDetail>
         {does.filter((r) => r[2]).map(([h, , l]) => <div><h4>{h}</h4><p>{l}</p></div>)}
@@ -153,7 +155,7 @@ const proven: [string, string][] = [
         <h2>Four refusals, and each one is on purpose.</h2>
       </div>
       <div class="grid grid-2">
-        {wontDo.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+        {wontDo.map(([h, b]) => <LeadCard h={h} b={b} />)}
       </div>
     </div>
   </section>
@@ -168,7 +170,7 @@ const proven: [string, string][] = [
         </p>
       </div>
       <div class="grid grid-2">
-        {built.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+        {built.map(([h, b]) => <LeadCard h={h} b={b} />)}
       </div>
       <CardDetail>
         {built.filter((r) => r[2]).map(([h, , l]) => <div><h4>{h}</h4><p>{l}</p></div>)}
@@ -189,19 +191,13 @@ const proven: [string, string][] = [
       <div class="grid grid-2">
         <article class="card reveal">
           <h3>Helm</h3>
-          <pre><code>{helmCmd}</code></pre>
           <p class="muted">
             The profile is one small file: the device, the variables to keep, the alarms, and the screen. Want HotLoop alone,
             to set up by hand? Switch the automatic setup off with one option.
           </p>
+          <CardMore label="The commands"><pre><code>{helmCmd}</code></pre></CardMore>
         </article>
-        <article class="card reveal">
-          <h3>EmberNet</h3>
-          <p>
-            On EmberNet it is an App Store app that the EmberNet team installs on your tenant, and the Store writes the
-            profile for you, so there is nothing to do afterward. Pick the node the runtime is on and it starts beside it.
-          </p>
-        </article>
+        <LeadCard h="EmberNet" b="On EmberNet it is an App Store app that the EmberNet team installs on your tenant, and the Store writes the profile for you, so there is nothing to do afterward. Pick the node the runtime is on and it starts beside it." />
       </div>
       <p class="muted note">
         The steps, the profile's shape, and the sign-in are on the <a href="https://docs.hotloop.io/codesys/install/">install page</a>

@@ -1,0 +1,16 @@
+---
+// One card from a heading and its text: the card shows the heading and a short lead, and
+// the rest of the text sits folded on the same card, so a card never runs past 39 visible
+// words and nothing is cut. scripts/card-words.mjs holds the build to that.
+import { lead } from '../lib/lead';
+import CardMore from './CardMore.astro';
+
+interface Props { h: string; b: string; cls?: string }
+const { h, b, cls } = Astro.props;
+const [short, rest] = lead(b);
+---
+<article class="card reveal">
+  <h3 class={cls}>{h}</h3>
+  <p>{short}</p>
+  {rest && <CardMore>{rest}</CardMore>}
+</article>
