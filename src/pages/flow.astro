@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import LeadCard from '../components/LeadCard.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import Backpressure from '../components/Backpressure.astro';
@@ -427,7 +428,7 @@ const groups: { id: string; label: string; h: string; cols: 3 | 4; cards: Card[]
         </p>
       </div>
       <div class="grid grid-2">
-        <article class="card reveal"><h3 class="t-md">A ceiling on every queue.</h3><p>Every inbox is bounded, with a policy per node: block, drop the newest, drop the oldest, or raise it to a Catch node. A chatty sensor and a slow database can't run the box out of memory.</p></article>
+        <LeadCard cls="t-md" h="A ceiling on every queue." b="Every inbox is bounded, with a policy per node: block, drop the newest, drop the oldest, or raise it to a Catch node. A chatty sensor and a slow database can't run the box out of memory." />
         <article class="card reveal"><h3 class="t-md">A thread for every node.</h3><p>Each node runs on its own thread, in order within the node and in parallel across nodes, so one CPU-heavy Function node never freezes the editor or another flow.</p></article>
         <article class="card reveal"><h3 class="t-md">A Function node sealed off from the host.</h3><p>Function code runs with no access to the host, its files or the network.</p></article>
         <article class="card reveal"><h3 class="t-md">Credentials that detect tampering.</h3><p>Stored credentials use modern authenticated encryption under a proper key derivation, so a file somebody altered fails to decrypt.</p></article>

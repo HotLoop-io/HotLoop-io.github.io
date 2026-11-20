@@ -14,7 +14,7 @@ export function lead(text: string, max = 30): [string, string] {
   const rest = sentences.slice(i).join(' ');
   // One sentence that is itself far too long: break it at the last comma inside the
   // first max words and carry the remainder into the fold, so nothing is cut.
-  if (i === 1 && words(head) > max + 10) {
+  if (i === 1 && words(head) > max) {
     const w = head.split(/\s+/);
     let cut = -1;
     for (let k = 0; k < max && k < w.length; k++) if (w[k].endsWith(',')) cut = k;

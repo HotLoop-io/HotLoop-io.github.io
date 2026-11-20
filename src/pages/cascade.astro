@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import LeadCard from '../components/LeadCard.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { CASCADE } from '../lib/products';
@@ -149,7 +150,7 @@ const planned: [string, string][] = [
         <h2>Four refusals, and each one is on purpose.</h2>
       </div>
       <div class="grid grid-2">
-        {refuses.map(([h, b]) => <article class="card reveal"><h3>{h}</h3><p>{b}</p></article>)}
+        {refuses.map(([h, b]) => <LeadCard h={h} b={b} />)}
       </div>
     </div>
   </section>
