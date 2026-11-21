@@ -13,7 +13,7 @@
 export type Status = 'released' | 'main' | 'building' | 'planned';
 
 // The one published version. Change it here when the next release ships.
-export const CURRENT = '4.22.0';
+export const CURRENT = '4.23.2';
 
 export const STATUS: Record<Status, { label: string; chip: 'ok' | 'info' | 'warn' | 'none' }> = {
   released: { label: 'Available now', chip: 'ok' },
@@ -130,9 +130,9 @@ export const IOT_FEATURES: Feature[] = [
   { name: 'Every protocol driver', status: 'released', note: 'OPC UA, CODESYS, OPC UA PubSub, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, SNMP, BACnet/IP, and UniFi. Protocols don\'t split the products, so nobody runs the Gateway just to reach one PLC.' },
   { name: 'CODESYS, by the names the programmer gave the variables', status: 'released', note: 'A CODESYS runtime is read and written by variable name, like Application.GVL_Line.rTemp, with nothing installed in the PLC. A download or a restart reads bad with the reason and comes back with no hands. Tested on a real runtime and on bare metal, including a program of over a hundred thousand variables read in about two seconds.' },
   { name: 'OPC UA PubSub over UADP', status: 'released', note: 'HotLoop listens for a publisher\'s data over UDP, unicast or multicast, and a lost message marks that publisher\'s tags uncertain until the next full update. You see a gap as a gap.' },
-  { name: 'UniFi, read-only', status: 'released', note: 'Devices, ports, PoE, WAN failover, and clients as tags, and a quiet PLC tells you which switch port it is on. A backup link that has been dead for two days reads dead. Nothing writes to your network from here.' },
+  { name: 'UniFi network', status: 'released', note: 'Devices, ports, PoE, WAN failover, and clients as tags, and a quiet PLC tells you which switch port it is on. A backup link that has been dead for two days reads dead. Every tag is read-only until a person arms it.' },
   { name: 'UniFi screens and events', status: 'released', note: 'An overview with the WAN strip, a topology map that zooms and pinches, switch faceplates with port traffic, clients, networks, and WiFi, one button that makes the usual alarms, and the console\'s event stream so a switch dropping off lands in the logbook in seconds. An agent can ask for the topology and the latest events.' },
-  { name: 'UniFi writes', status: 'planned', note: 'Writes through the gate, starting with the locate LED, then the rest of the UniFi family, each only after it has run on real gear. Nothing writes to a console today.' },
+  { name: 'UniFi commands', status: 'released', note: 'A device\'s locate LED, a device restart, a switch port\'s PoE power cycle, a wireless network on or off, a client block, and a port\'s PoE mode, each through the write gate and each off until you arm that tag. A power cycle waits out a 15 minute cooldown, and a port that carries the network is never cycled. Proven on the lab\'s controller, with one power cycle of an access point on a real network.' },
   { name: 'Hardware access', status: 'released', note: 'A container can share its node\'s network when it has to hear what the node hears, like multicast. The charts also mount the node\'s USB devices and Bluetooth for whatever you plug in later, which makes the container root on the node, and three switches turn that off. Zigbee comes through Zigbee2MQTT.' },
   { name: 'Backups and restore', status: 'released', note: 'One backup works in IoT, Edge, and the Gateway, and it is also how you move between them. A restore either works whole or says no.' },
 ];
