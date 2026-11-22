@@ -24,6 +24,9 @@ export const STATUS: Record<Status, { label: string; chip: 'ok' | 'info' | 'warn
 
 export type Feature = { name: string; status: Status; note: string };
 
+/** The catalog key for a feature, from its English name: ft.<name in lower case with dashes>. */
+export const featureKey = (name: string) => 'ft.' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 export type ProductId = 'iot' | 'edge' | 'gateway' | 'edge-relay';
 
 export type Product = {

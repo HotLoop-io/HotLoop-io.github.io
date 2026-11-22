@@ -6,7 +6,6 @@ import JsonLd from '../components/JsonLd.astro';
 import FeatureList from '../components/FeatureList.astro';
 import { CURRENT, EDGE_FEATURES } from '../lib/products';
 import { forPage } from '../i18n/page';
-import { DEFAULT } from '../i18n/locales';
 
 const { locale, t, rich, to } = forPage(Astro.url.pathname);
 ---
@@ -75,7 +74,6 @@ const { locale, t, rich, to } = forPage(Astro.url.pathname);
         <span class="label">{t('edge.l3')}</span>
         <h2>{t('edge.h2c')}</h2>
         <p class="lede" set:html={rich('edge.lede3', { released: t('st.released'), planned: t('st.planned') })} />
-        {locale !== DEFAULT && <p class="muted">{t('fl.english')}</p>}
       </div>
       <FeatureList features={EDGE_FEATURES} />
     </div>

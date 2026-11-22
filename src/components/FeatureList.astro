@@ -2,23 +2,26 @@
 // A product's features, each with a chip that says whether it is in a published
 // release, merged and waiting, being built, or not started. The chip comes from
 // src/lib/products.ts and nowhere else.
-import { STATUS, type Feature } from '../lib/products';
+import { STATUS, featureKey, type Feature } from '../lib/products';
 import { forPage } from '../i18n/page';
 import { lead } from '../lib/lead';
 import CardMore from './CardMore.astro';
 
 interface Props { features: Feature[] }
 const { features } = Astro.props;
-const { t } = forPage(Astro.url.pathname);
+const { locale, t } = forPage(Astro.url.pathname);
+// English reads the list in src/lib/products.ts; every other language reads the catalog entry for the same feature.
+const name = (f: Feature) => (locale.code === 'en' ? f.name : t(`${featureKey(f.name)}.n`));
+const note = (f: Feature) => (locale.code === 'en' ? f.note : t(`${featureKey(f.name)}.d`));
 ---
 
 <ul class="features">
   {features.map((f) => {
-    const [short, rest] = lead(f.note);
+    const [short, rest] = lead(note(f));
     return (
     <li class="card">
       <div class="cluster head">
-        <h3>{f.name}</h3>
+        <h3>{name(f)}</h3>
         <span class={`chip ${STATUS[f.status].chip}`}>{t(`st.${f.status}`)}</span>
       </div>
       <p>{short}</p>
