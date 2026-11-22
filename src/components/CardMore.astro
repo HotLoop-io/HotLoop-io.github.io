@@ -1,8 +1,11 @@
 ---
 // The rest of one card's text, folded inside the card. A card shows its title and a
 // short lead; this holds everything past that on the same card.
+import { forPage } from '../i18n/page';
+
 interface Props { label?: string }
-const { label = 'More' } = Astro.props;
+const { t } = forPage(Astro.url.pathname);
+const { label = t('c.more') } = Astro.props;
 ---
 <details class="card-more">
   <summary>{label}</summary>

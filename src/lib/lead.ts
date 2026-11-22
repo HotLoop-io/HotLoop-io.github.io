@@ -4,7 +4,7 @@
 const words = (s: string) => s.split(/\s+/).filter(Boolean).length;
 
 export function lead(text: string, max = 30): [string, string] {
-  const sentences = text.split(/(?<=[.!?])\s+(?=[A-Z"'(])/);
+  const sentences = text.split(/(?<=[.!?\u061f\u0964])\s+(?=[\p{Lu}\p{Lo}"'(])|(?<=[\u3002\uff01\uff1f])/u);
   let head = sentences[0];
   let i = 1;
   while (i < sentences.length && words(head) + words(sentences[i]) <= max) {

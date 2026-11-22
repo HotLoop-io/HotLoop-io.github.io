@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+import CardDetail from '../components/CardDetail.astro';
+import CardMore from '../components/CardMore.astro';
+import { lead } from '../lib/lead';
+import { STATUS, type Status } from '../lib/products';
+import { forPage } from '../i18n/page';
+
+const { t, rich } = forPage(Astro.url.pathname);
+
+// In the order it lands, and where each piece stands.
+const states: Status[] = ['released', 'released', 'released', 'released', 'released', 'planned'];
+const order: [string, Status, string][] = states.map((s, i) => [t(`ux.o${i + 1}h`), s, t(`ux.o${i + 1}b`)]);
+const cards = [1, 2, 3, 4, 5, 6];
+const details = [1, 2, 4, 5, 6];
+---
+
+<Base title={t('ux.title')} description={t('ux.desc')} ogAlt={t('ux.ogAlt')}>
+  <section class="page-hero">
+    <div class="wrap stack">
+      <div class="cluster"><span class="label">UniFi</span><span class="chip ok">{t('st.released')}</span></div>
+      <h1>{t('ux.h1')}</h1>
+      <p class="lede">{t('ux.lede')}</p>
+      <div class="notice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+        <div>
+          <strong>{t('ux.nTitle')}</strong>
+          <p set:html={rich('ux.nBody')} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('ux.l1')}</span>
+        <h2>{t('ux.h2a')}</h2>
+        <p class="lede">{t('ux.p1')}</p>
+        <p class="lede">{t('ux.p2')}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('ux.l2')}</span>
+        <h2>{t('ux.h2b')}</h2>
+      </div>
+      <ol class="order">
+        {order.map(([name, status, what]) => {
+          const [short, rest] = lead(what);
+          return (
+          <li class="card reveal">
+            <div class="cluster head"><h3>{name}</h3><span class={`chip ${STATUS[status].chip}`}>{t(`st.${status}`)}</span></div>
+            <p>{short}</p>
+            {rest && <CardMore>{rest}</CardMore>}
+          </li>
+          );
+        })}
+      </ol>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('ux.l3')}</span>
+        <h2>{t('ux.h2c')}</h2>
+        <p class="lede">{t('ux.p3')}</p>
+      </div>
+      <div class="grid grid-3">
+        {cards.map((n) => <article class="card reveal"><h3>{t(`ux.c${n}h`)}</h3><p>{t(`ux.c${n}b`)}</p></article>)}
+      </div>
+      <CardDetail>
+        {details.map((n) => <div><h4>{t(`ux.c${n}h`)}</h4><p>{t(`ux.c${n}d`)}</p></div>)}
+      </CardDetail>
+      <p class="prose muted after">{t('ux.p4')}</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap prose">
+      <p class="muted small">{t('ux.tm')}</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
+  .page-hero h1 { max-width: 20ch; }
+  .page-hero .notice { max-width: 68ch; }
+  ol.order { list-style: none; padding: 0; display: grid; gap: var(--hl-s3); }
+  ol.order li { padding: var(--hl-s5) var(--hl-s6); }
+  ol.order .head { justify-content: space-between; margin-bottom: var(--hl-s2); }
+  ol.order h3 { font-size: var(--hl-fs-md); margin: 0; }
+  .after { margin-top: var(--hl-s6); }
+  .small { font-size: var(--hl-fs-xs); }
+</style>
