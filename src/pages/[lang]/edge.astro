@@ -1,0 +1,11 @@
+---
+// HotLoop Edge in each of the other thirteen languages, at /<language>/edge/.
+import Edge from '../../views/Edge.astro';
+import { OTHERS } from '../../i18n/locales';
+
+export function getStaticPaths() {
+  return OTHERS.map((l) => ({ params: { lang: l.path } }));
+}
+---
+
+<Edge />
