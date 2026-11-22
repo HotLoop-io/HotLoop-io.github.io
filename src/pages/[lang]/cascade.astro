@@ -1,0 +1,11 @@
+---
+// HotLoop Cascade in each of the other thirteen languages, at /<language>/cascade/.
+import Cascade from '../../views/Cascade.astro';
+import { OTHERS } from '../../i18n/locales';
+
+export function getStaticPaths() {
+  return OTHERS.map((l) => ({ params: { lang: l.path } }));
+}
+---
+
+<Cascade />

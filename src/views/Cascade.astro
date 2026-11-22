@@ -1,0 +1,208 @@
+---
+import Base from '../layouts/Base.astro';
+import CardMore from '../components/CardMore.astro';
+import FamilyLine from '../components/FamilyLine.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { CASCADE } from '../lib/products';
+import { forPage } from '../i18n/page';
+
+const { t, rich, to } = forPage(Astro.url.pathname);
+
+const podmanCmd = `podman pull ghcr.io/hotloop-io/hotloop-cascade:${CASCADE}`;
+const helmCmd = `helm install cascade oci://ghcr.io/hotloop-io/charts/hotloop-cascade --version ${CASCADE}`;
+
+// The page reads top to bottom: what it does for you, how it does it, who gets to use it,
+// what it refuses to do, how to install it, and what is not built yet.
+// A card shows its heading and a short lead, and the rest of its text sits folded on the card. The lead
+// and the rest are separate strings in every language, so no language is cut by a rule that only
+// knows where an English sentence ends.
+const refuses = [1, 2, 3, 4].map((n) => ({ h: t(`cs.r${n}h`), p: t(`cs.r${n}p`), m: n <= 2 ? t(`cs.r${n}m`) : '' }));
+const planned = [1, 2, 3].map((n) => [t(`cs.ph${n}`), t(`cs.ph${n}d`)]);
+---
+
+<Base
+  title={t('cs.title')}
+  description={t('cs.desc', { version: CASCADE })}
+  ogAlt={t('cs.ogAlt')}
+>
+  <JsonLd
+    slot="head"
+    data={{
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'HotLoop Cascade',
+      url: 'https://hotloop.io/cascade/',
+      description:
+        'A workflow engine in one small Go program where every step is checkpointed, on SQLite for a Raspberry Pi or Postgres for a cluster, with an editor, SSO, roles, and external secrets.',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Linux',
+      license: 'https://hotloop.io/license/',
+      isAccessibleForFree: true,
+      softwareVersion: CASCADE,
+      publisher: { '@id': 'https://hotloop.io/#organization' },
+    }}
+  />
+
+  <section class="page-hero">
+    <div class="wrap stack">
+      <div class="cluster"><span class="label">HotLoop Cascade</span><span class="chip ok">{t('cs.out', { version: CASCADE })}</span></div>
+      <h1>{t('cs.h1')}</h1>
+      <p class="lede">{t('cs.lede')}</p>
+      <div class="cluster">
+        <a class="btn primary" href="#install">{t('iot.btnInstall')}</a>
+        <a class="btn" href={to('/releases/cascade/')}>{t('fl.notes')}</a>
+        <a class="btn" href="https://docs.hotloop.io/cascade/overview/">{t('fl.docs')}</a>
+        <a class="btn" href={to('/products/')}>{t('cs.btnLineup')}</a>
+      </div>
+      <FamilyLine id="cascade" />
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap grid grid-2 split">
+      <div class="stack">
+        <span class="label">{t('iot.l3')}</span>
+        <h2>{t('cs.h2a')}</h2>
+        <p class="muted">{t('cs.p1')}</p>
+      </div>
+      <div class="stack">
+        <span class="label">{t('cs.l2')}</span>
+        <h2>{t('cs.h2b')}</h2>
+        <p class="muted">{t('cs.p2')}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="editor">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('cs.l3')}</span>
+        <h2>{t('cs.h2c')}</h2>
+        <p class="lede">{t('cs.lede3')}</p>
+      </div>
+      <div class="shots">
+        <figure>
+          <img class="shot light" src="/cascade/workflows.png" width="1440" height="1101" loading="lazy" alt={t('cs.s1Alt')} />
+          <img class="shot dark" src="/cascade/workflows-dark.png" width="1440" height="1101" loading="lazy" alt={t('cs.s1AltD')} />
+          <figcaption>{t('cs.s1Cap')}</figcaption>
+        </figure>
+        <figure>
+          <img class="shot light" src="/cascade/run.png" width="1440" height="1492" loading="lazy" alt={t('cs.s2Alt')} />
+          <img class="shot dark" src="/cascade/run-dark.png" width="1440" height="1492" loading="lazy" alt={t('cs.s2AltD')} />
+          <figcaption>{t('cs.s2Cap')}</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap grid grid-2 split">
+      <div class="stack">
+        <span class="label">{t('cs.l4')}</span>
+        <h2>{t('cs.h2d')}</h2>
+        <p class="muted">{t('cs.p4')}</p>
+      </div>
+      <div class="stack">
+        <span class="label">{t('cs.l5')}</span>
+        <h2>{t('cs.h2e')}</h2>
+        <p class="muted">{t('cs.p5')}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('cs.l6')}</span>
+        <h2>{t('cs.h2f')}</h2>
+      </div>
+      <div class="grid grid-2">
+        {refuses.map((r) => (
+          <article class="card reveal">
+            <h3>{r.h}</h3>
+            <p>{r.p}</p>
+            {r.m && <CardMore label={t('c.more')}>{r.m}</CardMore>}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="install">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('cs.l7')}</span>
+        <h2>{t('cs.h2g', { version: CASCADE })}</h2>
+        <p class="lede" set:html={rich('cs.lede7')} />
+      </div>
+      <div class="grid grid-2">
+        <article class="card reveal">
+          <h3>Podman</h3>
+          <pre><code>{podmanCmd}</code></pre>
+          <p class="muted" set:html={rich('cs.podmanP')} />
+        </article>
+        <article class="card reveal">
+          <h3>{t('cs.k3sH')}</h3>
+          <pre><code>{helmCmd}</code></pre>
+          <p class="muted" set:html={rich('cs.k3sP')} />
+        </article>
+      </div>
+      <p class="muted note" set:html={rich('cs.note7')} />
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('cs.l8')}</span>
+        <h2>{t('cs.h2h', { version: CASCADE })}</h2>
+        <p class="lede">{t('cs.lede8')}</p>
+      </div>
+      <div class="table-wrap">
+        <table class="data stack">
+          <thead><tr><th>{t('cs.thPhase')}</th><th>{t('cs.thAdds')}</th></tr></thead>
+          <tbody>
+            {planned.map(([v, w]) => <tr><td>{v}</td><td data-label={t('cs.thAdds')}>{w}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p class="muted note" set:html={rich('cs.note8')} />
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="card cta reveal">
+        <div class="stack">
+          <span class="label">{t('iot.l6')}</span>
+          <h2>{t('cs.licH')}</h2>
+          <p class="muted" set:html={rich('cs.licP')} />
+        </div>
+        <a class="btn primary" href={to('/license/')}>{t('iot.licBtn')}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
+  .page-hero h1 { max-width: 20ch; }
+  .split { align-items: start; gap: var(--hl-s8); }
+  .note { max-width: 72ch; margin-top: var(--hl-s5); }
+  pre { overflow-x: auto; }
+  .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
+  .cta .stack { max-width: 62ch; }
+  .shots { display: grid; gap: var(--hl-s7); }
+  .shots figure { display: grid; gap: var(--hl-s3); margin: 0; }
+  .shots figcaption { color: var(--hl-ink-soft); max-width: 70ch; }
+  .shot { width: 100%; height: auto; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); }
+  .shot.dark { display: none; }
+</style>
+<style is:global>
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .shot.light { display: none; }
+    :root:not([data-theme="light"]) .shot.dark { display: block; }
+  }
+  :root[data-theme="dark"] .shot.light { display: none; }
+  :root[data-theme="dark"] .shot.dark { display: block; }
+</style>
