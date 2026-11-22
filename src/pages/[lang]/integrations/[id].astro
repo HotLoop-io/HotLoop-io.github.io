@@ -1,0 +1,20 @@
+---
+// Every driver page in each of the other thirteen languages, at /<language>/integrations/<driver>/.
+import { getCollection } from 'astro:content';
+import Driver from '../../../views/IntegrationsDriver.astro';
+import { OTHERS } from '../../../i18n/locales';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('protocols')).sort((a, b) => a.data.order - b.data.order);
+  return OTHERS.flatMap((l) =>
+    all.map((entry, i) => ({
+      params: { lang: l.path, id: entry.id },
+      props: { entry, prev: all[i - 1] ?? null, next: all[i + 1] ?? null },
+    })),
+  );
+}
+
+const { entry, prev, next } = Astro.props;
+---
+
+<Driver entry={entry} prev={prev} next={next} />
