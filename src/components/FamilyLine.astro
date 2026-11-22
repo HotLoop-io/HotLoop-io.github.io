@@ -2,7 +2,10 @@
 // The same strip on all eight product pages: the one family sentence, which release
 // line this product ships on, and its docs, install, release notes and roadmap.
 import { getCollection } from 'astro:content';
-import { FAMILY_SENTENCE, LINES, memberOf, lineOf } from '../lib/family';
+import { LINES, memberOf, lineOf } from '../lib/family';
+import { forPage } from '../i18n/page';
+
+const { t, to } = forPage(Astro.url.pathname);
 
 const { id } = Astro.props as { id: string };
 const m = memberOf(id);
@@ -12,17 +15,17 @@ if (line.id === 'flow') {
   const rel = (await getCollection('releases')).filter((r) => r.data.product === 'flow' && r.data.published);
   version = rel.sort((a, b) => b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0].data.version;
 }
-const shared = line.members.length > 1 ? `Ships with ${line.members.filter((x) => x.id !== id).map((x) => x.name.replace('HotLoop ', '')).join(', ')} on one version.` : '';
+const shared = line.members.length > 1 ? t('fl.shared', { others: line.members.filter((x) => x.id !== id).map((x) => x.name.replace('HotLoop ', '')).join(', ') }) : '';
 ---
 
-<aside class="family" aria-label="Where this product sits in the HotLoop family">
-  <p>{FAMILY_SENTENCE} <a href="/products/">See all eight</a>.</p>
-  <p class="line"><span class="chip ok">{line.label} line, {version}</span> {shared}</p>
+<aside class="family" aria-label={t('fl.aria')}>
+  <p>{t('f.family')} <a href={to('/products/')}>{t('fl.seeAll')}</a>.</p>
+  <p class="line"><span class="chip ok">{t('m.lineRel', { line: line.label, version })}</span> {shared}</p>
   <p class="links">
-    <a href={m.docs}>Docs</a>
-    <a href={m.install}>Install</a>
-    <a href={m.releases}>Release notes</a>
-    <a href={m.roadmap}>Roadmap</a>
+    <a href={m.docs}>{t('fl.docs')}</a>
+    <a href={m.install}>{t('fl.install')}</a>
+    <a href={m.releases}>{t('fl.notes')}</a>
+    <a href={m.roadmap}>{t('fl.roadmap')}</a>
   </p>
 </aside>
 
