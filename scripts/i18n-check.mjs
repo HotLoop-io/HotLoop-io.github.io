@@ -113,6 +113,25 @@ for (const { code } of codes) {
   for (const k of Object.keys(en)) if (/^ft\./.test(k) && !(k in want)) err('en', k, 'is not in products.ts');
 }
 
+// The node notes on the integrations page: src/data/nodes.json in English, the catalogs in every other language, keyed by
+// the node type. The English catalog has to match the file, and a translation keeps every `code` span of its English.
+{
+  const nodes = JSON.parse(readFileSync(join(root, 'src', 'data', 'nodes.json'), 'utf8'));
+  const want = {};
+  for (const n of nodes) if (n.notes && n.notes.trim()) want[`nd.${n.type}`] = n.notes;
+  for (const [k, v] of Object.entries(want)) {
+    if (en[k] === undefined) err('en', k, 'nodes.json has this note and the catalog does not');
+    else if (en[k] !== v) err('en', k, 'differs from nodes.json, update the catalog and every language');
+  }
+  for (const k of Object.keys(en)) if (/^nd\./.test(k) && !(k in want)) err('en', k, 'is not in nodes.json');
+  const spans = (s) => [...s.matchAll(/`[^`]+`/g)].map((m) => m[0]).sort().join('|');
+  for (const { code } of codes) {
+    if (code === 'en') continue;
+    const c = load(code);
+    for (const k of Object.keys(want)) if (c[k] !== undefined && spans(want[k]) !== spans(c[k])) err(code, k, 'its `code` spans differ from the English');
+  }
+}
+
 // Length rules the SEO audit applies to titles and descriptions, checked here too so a catalog fails fast.
 // Chinese, Japanese and Korean carry about twice the meaning per character, so their limits are lower.
 const CJK = new Set(['ja', 'ko', 'zh-Hans']);

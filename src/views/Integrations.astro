@@ -29,6 +29,8 @@ const lv = Object.fromEntries(LEVELS.map(([k, l, c]) => [k, { label: l, chip: c 
 const other = locale !== DEFAULT;
 // A protocol's text comes from the data file in English and from the catalog in every other language.
 const ps = (id: string, field: string, fallback: string) => (other ? t(`pr.${id}.${field}`) : fallback);
+// A node's note comes from the data file in English and from the catalog in every other language.
+const note = (type: string, fallback: string) => (other && fallback ? t(`nd.${type}`) : fallback);
 ---
 
 <Base
@@ -104,7 +106,6 @@ const ps = (id: string, field: string, fallback: string) => (other ? t(`pr.${id}
       <span class="label">HotLoop Flow</span>
       <h2>{t('int.h2b', { nodes: nodes.length })}</h2>
       <p class="lede">{t('int.nodesLede')}</p>
-      {other && <p class="muted">{t('fl.english')}</p>}
     </div>
 
     <div class="scope nodes-scope">
@@ -129,13 +130,13 @@ const ps = (id: string, field: string, fallback: string) => (other ? t(`pr.${id}
           <thead><tr><th>{t('int.thType')}</th><th>{t('int.thCat')}</th><th>{t('int.thLevel')}</th><th>{t('int.thDiff')}</th></tr></thead>
           <tbody>
             {sortedNodes.map((n) => (
-              <tr data-level={n.data.level} data-text={`${n.data.type} ${n.data.category} ${t(`int.cat${n.data.category}`)} ${n.data.notes}`.toLowerCase()}>
+              <tr data-level={n.data.level} data-text={`${n.data.type} ${n.data.category} ${t(`int.cat${n.data.category}`)} ${note(n.data.type, n.data.notes)}`.toLowerCase()}>
                 <td><code>{n.data.type}</code></td>
                 <td data-label={t('int.thCat')}>{t(`int.cat${n.data.category}`)}</td>
                 <td data-label={t('int.thLevel')}><span class={`chip ${lv[n.data.level].chip}`}>{lv[n.data.level].label}</span></td>
                 <td class="notes" data-label={t('int.thDiff')}>
                   {n.data.notes
-                    ? splitCode(n.data.notes).map((s) => (s.code ? <code>{s.text}</code> : s.text))
+                    ? splitCode(note(n.data.type, n.data.notes)).map((s) => (s.code ? <code>{s.text}</code> : s.text))
                     : <span class="muted">{t('int.same')}</span>}
                 </td>
               </tr>
