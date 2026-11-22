@@ -13,7 +13,7 @@
 export type Status = 'released' | 'main' | 'building' | 'planned';
 
 // The one published version. Change it here when the next release ships.
-export const CURRENT = '4.23.2';
+export const CURRENT = '4.23.6';
 
 export const STATUS: Record<Status, { label: string; chip: 'ok' | 'info' | 'warn' | 'none' }> = {
   released: { label: 'Available now', chip: 'ok' },
@@ -158,7 +158,7 @@ export const GATEWAY_FEATURES: Feature[] = [
 // so it lives beside PRODUCTS. 0.1.1 was its first release, 1.0.0 the editor and identity
 // release. A 0.1.0 tag exists and never published anything. The repository is private, the
 // image and chart are public. Change it here when the next release ships.
-export const CASCADE = '1.4.0';
+export const CASCADE = '1.4.1';
 
 // HotLoop Transmitter is its own release line: a CODESYS library (HotLoop-io/hotloop-transmitter)
 // that publishes PLC values as OPC UA PubSub. 1.1.0 shipped on 2026-11-04 (1.0.0 the same day). The repository is private,
