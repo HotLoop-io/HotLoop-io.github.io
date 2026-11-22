@@ -1,0 +1,150 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import FamilyLine from '../components/FamilyLine.astro';
+import JsonLd from '../components/JsonLd.astro';
+import CardDetail from '../components/CardDetail.astro';
+import { product } from '../lib/products';
+import { forPage } from '../i18n/page';
+
+const { t, rich, to } = forPage(Astro.url.pathname);
+const latest = (await getCollection('releases'))
+  .filter((r) => r.data.product === 'core' && r.data.published)
+  .sort((a, b) => b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
+const v = latest.data.version;
+---
+
+<Base
+  title={t('er.title')}
+  description={t('er.desc')}
+  ogAlt={t('er.ogAlt')}
+>
+  <JsonLd
+    slot="head"
+    data={{
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'HotLoop Edge Relay',
+      url: 'https://hotloop.io/edge-relay/',
+      description:
+        'A headless poll-and-forward Sparkplug B edge node with no database, no UI and no write path, using the same protocol drivers as HotLoop Gateway.',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Linux',
+      license: 'https://hotloop.io/license/',
+      isAccessibleForFree: true,
+      softwareVersion: v,
+      publisher: { '@id': 'https://hotloop.io/#organization' },
+    }}
+  />
+  <section class="page-hero">
+    <div class="wrap stack">
+      <div class="cluster"><span class="label">HotLoop Edge Relay</span><span class="chip ok">{t('iot.out', { version: v })}</span></div>
+      <h1>{t('er.h1')}</h1>
+      <p class="lede">{t('er.lede')}</p>
+      <div class="notice info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
+        <div>
+          <strong>{t('er.nTitle', { version: v })}</strong>
+          <p>{t('er.nBody')}</p>
+        </div>
+      </div>
+      <div class="cluster">
+        <a class="btn primary" href="#install">{t('iot.btnInstall')}</a>
+        <a class="btn" href={to('/products/')}>{t('iot.btnCompare')}</a>
+        <a class="btn" href="https://docs.hotloop.io/edge-relay/overview/">{t('fl.docs')}</a>
+      </div>
+      <FamilyLine id="edge-relay" />
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap grid grid-2 split">
+      <div class="stack">
+        <span class="label">{t('er.l1')}</span>
+        <h2>{t('er.h2a')}</h2>
+        <p class="muted">{t('er.p1a')}</p>
+        <p class="muted">{t('er.p1b')}</p>
+      </div>
+      <div class="stack">
+        <span class="label">{t('er.l2')}</span>
+        <h2>{t('er.h2b')}</h2>
+        <p class="muted" set:html={rich('er.p2')} />
+      </div>
+    </div>
+    <div class="wrap">
+      <h3>{t('er.hEach')}</h3>
+      <CardDetail label={t('er.cdLabel')}>
+        <div><h4>{t('er.d1h')}</h4><p>{t('er.d1p')}</p></div>
+        <div><h4>{t('er.d2h')}</h4><p>{t('er.d2p')}</p></div>
+        <div><h4>{t('er.d3h')}</h4><p>{t('er.d3p')}</p></div>
+        <div><h4>{t('er.d4h')}</h4><p>{t('er.d4p')}</p></div>
+        <div><h4>{t('er.d5h')}</h4><p>{t('er.d5p')}</p></div>
+        <div><h4>{t('er.d6h')}</h4><p>{t('er.d6p')}</p></div>
+      </CardDetail>
+    </div>
+  </section>
+
+  <section class="block" id="install">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('iot.l4')}</span>
+        <h2>{t('iot.h2d')}</h2>
+        <p class="lede">{t('er.lede2')}</p>
+      </div>
+      <div class="grid grid-2 split">
+        <div class="stack">
+          <h3>{t('iot.hK8s')}</h3>
+          <p class="muted">{t('er.k8sP1')}</p>
+<pre><code>helm repo add hotloop https://hotloop.io/hotloop
+helm repo update
+helm install press-line-3 hotloop/hotloop-edge-relay \
+  --version {v} --namespace hotloop --create-namespace \
+  --set edgePublish.broker=tcp://gateway.plant.local:1883 \
+  --set edgePublish.group=Plant1 \
+  -f devices.yaml</code></pre>
+          <p class="muted">{t('er.k8sP2')}</p>
+        </div>
+        <div class="stack">
+          <h3>{t('er.hPi')}</h3>
+          <p class="muted">{t('er.piP1')}</p>
+          <p class="muted" set:html={t('er.piP2')} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('iot.l5')}</span>
+        <h2>{t('er.h2e')}</h2>
+        <p class="lede">{t('er.lede3')}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="card cta reveal">
+        <div class="stack">
+          <span class="label">{t('iot.l6')}</span>
+          <h2>{t('iot.h2f')}</h2>
+          <p class="muted" set:html={rich('er.licP')} />
+        </div>
+        <a class="btn primary" href="/license/">{t('iot.licBtn')}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
+  .page-hero h1 { max-width: 20ch; }
+  .page-hero .notice { max-width: 68ch; }
+  .page-hero .notice code { overflow-wrap: anywhere; }
+  .split { align-items: start; gap: var(--hl-s8); }
+  .split h3 { font-size: var(--hl-fs-lg); }
+  pre { max-width: 100%; }
+  .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
+  .cta .stack { max-width: 62ch; }
+</style>
