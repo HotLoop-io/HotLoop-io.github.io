@@ -176,19 +176,19 @@ const fmt = (d: Date) =>
         <h2>{t('h.latestH2')}</h2>
       </div>
       <div class="grid grid-3">
-        <a class="card release reveal" href="/releases/flow/">
+        <a class="card release reveal" href={to('/releases/flow/')}>
           <div class="cluster head">
             <h3>Flow {fl.data.version}</h3><span class="chip ok">{t('h.published')}</span>
           </div>
           <p class="date">{fmt(fl.data.date)}</p>
         </a>
-        <a class="card release reveal" href="/releases/core/">
+        <a class="card release reveal" href={to('/releases/core/')}>
           <div class="cluster head">
             <h3>HotLoop core {gw.data.version}</h3><span class={`chip ${gw.data.published ? 'ok' : 'warn'}`}>{gw.data.published ? t('h.published') : t('h.merged')}</span>
           </div>
           <p class="date">{fmt(gw.data.date)}</p>
         </a>
-        <a class="card release reveal" href="/releases/cascade/">
+        <a class="card release reveal" href={to('/releases/cascade/')}>
           <div class="cluster head">
             <h3>Cascade {ca.data.version}</h3><span class={`chip ${ca.data.published ? 'ok' : 'warn'}`}>{ca.data.published ? t('h.published') : t('h.merged')}</span>
           </div>

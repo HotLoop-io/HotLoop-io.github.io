@@ -1,0 +1,14 @@
+---
+// The release notes in each of the other thirteen languages, at /<language>/releases/ and /<language>/releases/<product>/.
+import Releases from '../../../views/Releases.astro';
+import { OTHERS } from '../../../i18n/locales';
+
+export function getStaticPaths() {
+  const filters = [undefined, 'core', 'flow', 'cascade', 'codesys', 'transmitter'];
+  return OTHERS.flatMap((l) => filters.map((f) => ({ params: { lang: l.path, product: f }, props: { filter: f ?? 'all' } })));
+}
+
+const { filter } = Astro.props;
+---
+
+<Releases filter={filter} />
