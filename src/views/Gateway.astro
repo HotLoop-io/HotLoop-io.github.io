@@ -76,7 +76,6 @@ const { locale, t, rich, to } = forPage(Astro.url.pathname);
       </div>
       <div class="stack">
         <span class="label">{t('gw.l2')}</span>
-        {locale !== DEFAULT && <p class="muted">{t('fl.english')}</p>}
         <FeatureList features={GATEWAY_FEATURES} />
       </div>
     </div>

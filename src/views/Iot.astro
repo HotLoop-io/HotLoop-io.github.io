@@ -6,7 +6,6 @@ import JsonLd from '../components/JsonLd.astro';
 import FeatureList from '../components/FeatureList.astro';
 import { CURRENT, IOT_FEATURES } from '../lib/products';
 import { forPage } from '../i18n/page';
-import { DEFAULT } from '../i18n/locales';
 
 const { locale, t, rich, to } = forPage(Astro.url.pathname);
 ---
@@ -89,7 +88,6 @@ const { locale, t, rich, to } = forPage(Astro.url.pathname);
       </div>
       <CardDetail label={t('iot.cdLabel')}>
         <p class="muted">{t('iot.statusNote', { released: t('st.released'), building: t('st.building'), planned: t('st.planned') })}</p>
-        {locale !== DEFAULT && <p class="muted">{t('fl.english')}</p>}
         <FeatureList features={IOT_FEATURES} />
       </CardDetail>
     </div>

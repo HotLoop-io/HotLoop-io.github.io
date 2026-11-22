@@ -90,6 +90,29 @@ for (const { code } of codes) {
   for (const k of Object.keys(en)) if (/^pr\./.test(k) && !(k in want)) err('en', k, 'is not in protocols.json');
 }
 
+// The feature lists on the IoT, Edge and Gateway pages are in src/lib/products.ts in English and in the catalogs in every
+// other language, keyed by the feature's name. The English catalog has to match the file, or an edit there would leave
+// the translations describing something else, and a feature added there needs its keys in every language.
+{
+  const src = readFileSync(join(root, 'src', 'lib', 'products.ts'), 'utf8');
+  const grab = (name) => {
+    const i = src.indexOf(`export const ${name}: Feature[] = [`);
+    const j = src.indexOf('\n];', i);
+    return new Function(`return [${src.slice(src.indexOf('[', i) + 1, j)}]`)();
+  };
+  const want = {};
+  for (const f of [...grab('IOT_FEATURES'), ...grab('EDGE_FEATURES'), ...grab('GATEWAY_FEATURES')]) {
+    const k = 'ft.' + f.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    want[`${k}.n`] = f.name;
+    want[`${k}.d`] = f.note;
+  }
+  for (const [k, v] of Object.entries(want)) {
+    if (en[k] === undefined) err('en', k, 'products.ts has this feature and the catalog does not');
+    else if (en[k] !== v) err('en', k, 'differs from products.ts, update the catalog and every language');
+  }
+  for (const k of Object.keys(en)) if (/^ft\./.test(k) && !(k in want)) err('en', k, 'is not in products.ts');
+}
+
 // Length rules the SEO audit applies to titles and descriptions, checked here too so a catalog fails fast.
 // Chinese, Japanese and Korean carry about twice the meaning per character, so their limits are lower.
 const CJK = new Set(['ja', 'ko', 'zh-Hans']);
