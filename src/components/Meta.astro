@@ -17,6 +17,7 @@ interface Props {
 }
 
 import { LOCALES, split, href, TRANSLATED } from '../i18n/locales';
+import { useT } from '../i18n/t';
 
 const { title, description, ogImage, ogAlt, type = 'website', noindex = false } = Astro.props;
 
@@ -55,7 +56,7 @@ const alternates = TRANSLATED.includes(rest)
 <link rel="icon" href="/icon-32.png" sizes="32x32" type="image/png" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
-<link rel="alternate" type="application/rss+xml" title="HotLoop release notes" href="/releases/rss.xml" />
+<link rel="alternate" type="application/rss+xml" title={useT(locale).t('rel.rssTitle')} href={href('/releases/rss.xml', locale)} />
 <meta name="theme-color" content="#FBFAF8" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#14120F" media="(prefers-color-scheme: dark)" />
 

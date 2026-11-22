@@ -110,7 +110,7 @@ const groups = [
       <div class="cluster">
         <a class="btn primary" href="https://docs.hotloop.io/flow/install/">{t('iot.btnInstall')}</a>
         <a class="btn" href={to('/integrations/') + '#flow-nodes'}>{t('fw.btnNodes', { n: nodes.length })}</a>
-        <a class="btn" href="/releases/flow/">{t('fl.notes')}</a>
+        <a class="btn" href={to('/releases/flow/')}>{t('fl.notes')}</a>
         <a class="btn" href="https://docs.hotloop.io/flow/overview/">{t('fl.docs')}</a>
       </div>
       <FamilyLine id="flow" />
@@ -347,7 +347,7 @@ const groups = [
         <h2>{t('fw.rh')}</h2>
       </div>
       <div class="cluster">
-        <a class="btn" href="/releases/flow/">{t('fl.notes')}</a>
+        <a class="btn" href={to('/releases/flow/')}>{t('fl.notes')}</a>
         <a class="btn" href="https://docs.hotloop.io/flow/roadmap/">{t('fl.roadmap')}</a>
         <a class="btn" href="https://docs.hotloop.io/flow/migrating-from-node-red/">{t('fw.btnMig')}</a>
         <a class="btn" href="https://docs.hotloop.io/flow/compatibility/">{t('fw.btnMat')}</a>
