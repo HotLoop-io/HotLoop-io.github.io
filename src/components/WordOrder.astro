@@ -1,4 +1,5 @@
 ---
+import { forPage } from '../i18n/page';
 // Modbus word order is the setting people get wrong, and a float read with the
 // wrong order is a plausible number that is not the truth. This makes that
 // visible: type two registers and see all four readings at once.
@@ -29,31 +30,29 @@ function readAll(r0: string, r1: string) {
   });
 }
 const initial = readAll('E979', '42F6');
+const { t } = forPage(Astro.url.pathname);
 ---
 
 <section class="wordorder card" data-wordorder aria-labelledby="wo-title">
-  <h3 id="wo-title">Try it: one pair of registers, four readings</h3>
-  <p class="muted">
-    A float32 spans two 16-bit registers, and vendors disagree about which comes first. Type the two registers exactly
-    as the device sent them. Only one of the four results below is the truth, and nothing on the wire tells you which.
-  </p>
+  <h3 id="wo-title">{t('wo.heading')}</h3>
+  <p class="muted">{t('wo.p')}</p>
 
   <div class="inputs">
-    <label>Register 1, hex <input class="mono" data-r0 value="E979" maxlength="4" inputmode="text" autocomplete="off" spellcheck="false" /></label>
-    <label>Register 2, hex <input class="mono" data-r1 value="42F6" maxlength="4" inputmode="text" autocomplete="off" spellcheck="false" /></label>
+    <label>{t('wo.r1')} <input class="mono" data-r0 value="E979" maxlength="4" inputmode="text" autocomplete="off" spellcheck="false" /></label>
+    <label>{t('wo.r2')} <input class="mono" data-r1 value="42F6" maxlength="4" inputmode="text" autocomplete="off" spellcheck="false" /></label>
   </div>
 
-  <div class="presets" role="group" aria-label="Examples">
-    <button type="button" class="chip" data-preset="E979,42F6">123.456, word-swapped</button>
-    <button type="button" class="chip" data-preset="0000,4248">50.0, word-swapped</button>
-    <button type="button" class="chip" data-preset="42F6,E979">123.456, big-endian</button>
+  <div class="presets" role="group" aria-label={t('wo.examples')}>
+    <button type="button" class="chip" data-preset="E979,42F6">{t('wo.pre1')}</button>
+    <button type="button" class="chip" data-preset="0000,4248">{t('wo.pre2')}</button>
+    <button type="button" class="chip" data-preset="42F6,E979">{t('wo.pre3')}</button>
   </div>
 
   <!-- A grid, not a table. A table forced the result column off the edge of a
        phone, and the result is the whole point of the widget. -->
-  <div class="results" role="table" aria-label="The four readings">
+  <div class="results" role="table" aria-label={t('wo.tAria')}>
     <div class="r head" role="row">
-      <span role="columnheader" class="o">Order</span><span role="columnheader" class="b">Bytes</span><span role="columnheader" class="v">Reads as</span>
+      <span role="columnheader" class="o">{t('wo.order')}</span><span role="columnheader" class="b">{t('wo.bytes')}</span><span role="columnheader" class="v">{t('wo.reads')}</span>
     </div>
     <div data-out role="rowgroup">
       {initial.map((r) => (
@@ -63,7 +62,7 @@ const initial = readAll('E979', '42F6');
       ))}
     </div>
   </div>
-  <p class="err" data-err role="alert" hidden>Enter one to four hexadecimal digits in each box.</p>
+  <p class="err" data-err role="alert" hidden>{t('wo.err')}</p>
 </section>
 
 <style is:global>

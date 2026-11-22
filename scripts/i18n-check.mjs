@@ -69,6 +69,27 @@ for (const { code } of codes) {
   }
 }
 
+// The protocol pages draw their text from src/data/protocols.json in English and from the catalogs in every other
+// language, so the English catalog has to say exactly what the data file says, or a data edit would leave the
+// translations describing something else.
+{
+  const data = JSON.parse(readFileSync(join(root, 'src', 'data', 'protocols.json'), 'utf8'));
+  const want = {};
+  for (const p of data) {
+    p.verifiedAgainst.forEach((v, i) => (want[`pr.${p.id}.va${i + 1}`] = v));
+    want[`pr.${p.id}.sum`] = p.summary;
+    p.body.forEach((v, i) => (want[`pr.${p.id}.b${i + 1}`] = v));
+    if (p.trap) want[`pr.${p.id}.trap`] = p.trap;
+    if ((p.notVerifiedNote || '').trim()) want[`pr.${p.id}.nvn`] = p.notVerifiedNote;
+    if ((p.notVerifiedHeading || '').trim()) want[`pr.${p.id}.nvh`] = p.notVerifiedHeading;
+  }
+  for (const [k, v] of Object.entries(want)) {
+    if (en[k] === undefined) err('en', k, 'protocols.json has this text and the catalog does not');
+    else if (en[k] !== v) err('en', k, 'differs from protocols.json, update the catalog and every language');
+  }
+  for (const k of Object.keys(en)) if (/^pr\./.test(k) && !(k in want)) err('en', k, 'is not in protocols.json');
+}
+
 // Length rules the SEO audit applies to titles and descriptions, checked here too so a catalog fails fast.
 // Chinese, Japanese and Korean carry about twice the meaning per character, so their limits are lower.
 const CJK = new Set(['ja', 'ko', 'zh-Hans']);
