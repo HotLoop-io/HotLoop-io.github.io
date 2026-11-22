@@ -236,6 +236,59 @@ const gw = product('gateway');
   <section class="block" id="install">
     <div class="wrap">
       <div class="section-head">
+        <span class="label">Install on EmberNet</span>
+        <h2>Stupid easy: pick it, deploy it, read data in about a minute.</h2>
+        <p class="lede">
+          If your boxes run EmberNet, the install is the App Store. Pick HotLoop, choose a node, press Deploy.
+          EmberCORE installs it, signs you in when you open it, and the box's own health is already reading. No chart,
+          no values file, no command line. We filmed one take on a real node with the clock on screen: 1 minute 10
+          seconds, App Store to live data.
+        </p>
+      </div>
+      <figure class="embernet-video">
+        <video
+          controls
+          preload="none"
+          playsinline
+          poster="/embernet-install/poster.webp"
+          width="1920"
+          height="1080"
+          aria-label="Installing HotLoop Gateway from the EmberNet App Store, start to live data in 1 minute 10 seconds"
+        >
+          <source src="/embernet-install/install-hotloop-on-embernet.mp4" type="video/mp4" />
+          <source src="/embernet-install/install-hotloop-on-embernet.webm" type="video/webm" />
+          Your browser cannot play this video. <a href="/embernet-install/install-hotloop-on-embernet.mp4">Download it</a>.
+        </video>
+        <figcaption>One take, real time. The clock runs from the moment the App Store opens until HotLoop is reading data. The wait for the install is shown at four times speed.</figcaption>
+      </figure>
+      <ul class="embernet-steps">
+        <li>
+          <img src="/embernet-install/hotloop-install-02-hotloop-apps.webp" width="2400" height="1350" loading="lazy" alt="The EmberCORE App Store filtered to the HotLoop category, with Deploy on every HotLoop app" />
+          <strong>1. Pick HotLoop.</strong>
+          <span>Open the App Store, choose the HotLoop category, press Deploy on the Gateway.</span>
+        </li>
+        <li>
+          <img src="/embernet-install/hotloop-install-03-choose-node.webp" width="2400" height="1350" loading="lazy" alt="The Deploy HotLoop Gateway dialog with a node chosen" />
+          <strong>2. Choose the node.</strong>
+          <span>One dropdown, one button. EmberCORE does the rest.</span>
+        </li>
+        <li>
+          <img src="/embernet-install/hotloop-install-08-board-live.webp" width="2400" height="1350" loading="lazy" alt="The HotLoop board with live gauges for CPU, memory, and disk on the node" />
+          <strong>3. Launch and read.</strong>
+          <span>You are signed in, the box is reporting, and the gauges are live.</span>
+        </li>
+      </ul>
+      <p class="muted embernet-more">
+        Every step with a screenshot is in the <a href="https://docs.hotloop.io/install/#install-from-the-embernet-app-store">install guide</a>,
+        and on the EmberNet side in <a href="https://docs.embernet.ai/docs/app-store/hotloop">HotLoop Gateway on EmberNet</a>.
+        Not on EmberNet? Helm and Podman are right below.
+      </p>
+    </div>
+  </section>
+
+  <section class="block" id="install-helm">
+    <div class="wrap">
+      <div class="section-head">
         <span class="label">Install</span>
         <h2>Helm, from the published chart.</h2>
         <p class="lede">
@@ -354,6 +407,14 @@ run it on {' '}<a href="https://embernet.ai">EmberNet</a>, starting with a free 
   .upgrade ol { padding-left: 1.3em; display: grid; gap: var(--hl-s2); color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); }
   pre { max-width: 100%; }
   .after { margin-top: var(--hl-s6); }
+  .embernet-video { margin: 0 0 var(--hl-s6); display: grid; gap: var(--hl-s2); }
+  .embernet-video video { width: 100%; max-width: 1100px; height: auto; aspect-ratio: 16 / 9; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); background: var(--hl-card); }
+  .embernet-video figcaption { color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); max-width: 72ch; }
+  .embernet-steps { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--hl-s5); grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+  .embernet-steps li { display: grid; gap: var(--hl-s2); align-content: start; }
+  .embernet-steps img { width: 100%; height: auto; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); }
+  .embernet-steps span { color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); }
+  .embernet-more { margin-top: var(--hl-s5); max-width: 72ch; }
 
   .split { align-items: start; gap: var(--hl-s8); }
   .proto { text-decoration: none; color: inherit; display: block; transition: transform var(--hl-transition-fast), border-color var(--hl-transition-fast); }
