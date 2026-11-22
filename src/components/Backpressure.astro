@@ -7,28 +7,28 @@
 //
 // It is an enhancement. The four cards above it make the argument with
 // JavaScript off, so the whole thing stays hidden until the script runs.
+import { forPage } from '../i18n/page';
+const { t } = forPage(Astro.url.pathname);
 const POLICIES: [string, string][] = [
-  ['block', 'block'],
-  ['drop-newest', 'drop newest'],
-  ['drop-oldest', 'drop oldest'],
-  ['error', 'raise to Catch'],
+  ['block', t('bp.pBlock')],
+  ['drop-newest', t('bp.pNewest')],
+  ['drop-oldest', t('bp.pOldest')],
+  ['error', t('bp.pError')],
 ];
+const msgs = JSON.stringify(Object.fromEntries(['lBlock', 'lNewest', 'lOldest', 'lError', 'oom', 'growing', 'keeping', 'sBlock', 'sNewest', 'sOldest', 'sError', 'v1', 'v2', 'v3'].map((k) => [k, t(`bp.${k}`)])));
 ---
 
-<section class="bp card" data-bp hidden aria-labelledby="bp-title">
-  <h3 id="bp-title">Turn the sensor up and watch who dies.</h3>
-  <p class="muted">
-    One sensor, one database insert that can take 100 messages a second. Push the sensor past that and the
-    difference between the two runtimes stops being a table row.
-  </p>
+<section class="bp card" data-bp data-msgs={msgs} hidden aria-labelledby="bp-title">
+  <h3 id="bp-title">{t('bp.heading')}</h3>
+  <p class="muted">{t('bp.intro')}</p>
 
   <div class="controls">
     <label class="rate">
-      <span>Sensor rate <strong class="mono"><span data-rate-val>250</span> msg/s</strong></span>
+      <span>{t('bp.rate')} <strong class="mono"><span data-rate-val>250</span> msg/s</strong></span>
       <input type="range" min="20" max="600" step="10" value="250" data-rate />
     </label>
     <fieldset class="pol">
-      <legend>Flow's overflow policy</legend>
+      <legend>{t('bp.pol')}</legend>
       {POLICIES.map(([v, l], i) => (
         <>
           <input type="radio" name="bp-pol" id={`bp-${v}`} value={v} checked={i === 0} />
@@ -43,30 +43,27 @@ const POLICIES: [string, string][] = [
       <div class="lane-head"><strong>Node-RED</strong><span class="mono" data-mem>55 MB</span></div>
       <div class="bar" aria-hidden="true"><span data-fill></span></div>
       <dl class="stats mono">
-        <div><dt>queued</dt><dd data-queued>0</dd></div>
-        <div><dt>restarts</dt><dd data-restarts>0</dd></div>
-        <div><dt>lost with the pod</dt><dd data-lost>0</dd></div>
+        <div><dt>{t('bp.queued')}</dt><dd data-queued>0</dd></div>
+        <div><dt>{t('bp.restarts')}</dt><dd data-restarts>0</dd></div>
+        <div><dt>{t('bp.lost')}</dt><dd data-lost>0</dd></div>
       </dl>
-      <p class="status" data-status role="status">Unbounded queue. Limit 512 MiB.</p>
+      <p class="status" data-status role="status">{t('bp.nrStatus')}</p>
     </div>
 
     <div class="lane" data-lane="fl">
       <div class="lane-head"><strong>HotLoop Flow</strong><span class="mono" data-mem>5 MB</span></div>
       <div class="bar" aria-hidden="true"><span data-fill></span></div>
       <dl class="stats mono">
-        <div><dt>queued</dt><dd data-queued>0</dd></div>
-        <div><dt data-counter-label>source waited</dt><dd data-counter>0</dd></div>
-        <div><dt>restarts</dt><dd>0</dd></div>
+        <div><dt>{t('bp.queued')}</dt><dd data-queued>0</dd></div>
+        <div><dt data-counter-label>{t('bp.lBlock')}</dt><dd data-counter>0</dd></div>
+        <div><dt>{t('bp.restarts')}</dt><dd>0</dd></div>
       </dl>
-      <p class="status" data-status role="status">Inbox holds 1024.</p>
+      <p class="status" data-status role="status">{t('bp.flStatus')}</p>
     </div>
   </div>
 
   <p class="verdict" data-verdict aria-live="polite"></p>
-  <p class="foot">
-    A simulation in your browser, with a second of it standing in for a minute on the plant. Flow's inbox size and
-    its four policies are the real ones. The memory figures are illustrative. The shape of the failure is not.
-  </p>
+  <p class="foot">{t('bp.foot')}</p>
 </section>
 
 <style>
@@ -117,6 +114,7 @@ const POLICIES: [string, string][] = [
   function bind(root: HTMLElement) {
     if (root.dataset.bound) return;
     root.dataset.bound = '1';
+    const M: Record<string, string> = JSON.parse(root.dataset.msgs || '{}');
     root.hidden = false;
 
     const rateIn = root.querySelector<HTMLInputElement>('[data-rate]')!;
@@ -139,7 +137,7 @@ const POLICIES: [string, string][] = [
     let nrQ = 0, restarts = 0, lost = 0, deadFor = 0;
     let flQ = 0, counter = 0;
 
-    const LABEL: Record<string, string> = { block: 'source waited', 'drop-newest': 'dropped, counted', 'drop-oldest': 'evicted, counted', error: 'raised to Catch' };
+    const LABEL: Record<string, string> = { block: M.lBlock, 'drop-newest': M.lNewest, 'drop-oldest': M.lOldest, error: M.lError };
 
     rateIn.addEventListener('input', () => { rate = Number(rateIn.value); rateVal.textContent = String(rate); });
     root.querySelectorAll<HTMLInputElement>('input[name="bp-pol"]').forEach((r) =>
@@ -182,8 +180,8 @@ const POLICIES: [string, string][] = [
       nrRestarts.textContent = String(restarts);
       nrLost.textContent = fmt(lost);
       nr.status.textContent = deadFor > 0
-        ? 'OOMKilled. Exit code 137. The log says nothing about why.'
-        : nrQ > 0 ? 'Queue growing with no ceiling. Memory follows it.' : 'Keeping up.';
+        ? M.oom
+        : nrQ > 0 ? M.growing : M.keeping;
 
       const flMem = FL_BASE + (flQ * MSG_KB) / 1024;
       fl.mem.textContent = `${Math.round(flMem)} MB`;
@@ -193,16 +191,16 @@ const POLICIES: [string, string][] = [
       fl.queued.textContent = fmt(flQ);
       flCounter.textContent = fmt(counter);
       const full = flQ >= CAP - 0.5;
-      fl.status.textContent = !full ? 'Keeping up.' : ({
-        block: 'Inbox full, so the sender waits for room, up to blockTimeout. The pressure goes upstream, not into memory.',
-        'drop-newest': 'Inbox full, so each arriving message is dropped, counted and announced.',
-        'drop-oldest': 'Inbox full, so the oldest queued message makes room for the newest. The sink always gets fresh values.',
-        error: 'Inbox full, so each send that does not fit goes to a Catch node, and the flow decides.',
+      fl.status.textContent = !full ? M.keeping : ({
+        block: M.sBlock,
+        'drop-newest': M.sNewest,
+        'drop-oldest': M.sOldest,
+        error: M.sError,
       } as Record<string, string>)[p];
 
-      if (rate <= SINK) verdict.textContent = 'At this rate nobody is in trouble. Push the sensor past 100 a second.';
-      else if (restarts === 0) verdict.textContent = 'Node-RED is buffering the difference in memory. Give it a few seconds.';
-      else verdict.textContent = `Node-RED never dropped a message. It dropped ${fmt(lost)} of them at once, with the pod. Flow made you choose what gets lost, ahead of time, and it is still running.`;
+      if (rate <= SINK) verdict.textContent = M.v1;
+      else if (restarts === 0) verdict.textContent = M.v2;
+      else verdict.textContent = M.v3.replace('{n}', fmt(lost));
     }
 
     render();
