@@ -1,0 +1,321 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import CardDetail from '../components/CardDetail.astro';
+import CardMore from '../components/CardMore.astro';
+import FamilyLine from '../components/FamilyLine.astro';
+import JsonLd from '../components/JsonLd.astro';
+import FeatureList from '../components/FeatureList.astro';
+import WriteGate from '../components/WriteGate.astro';
+import BadNotZero from '../components/BadNotZero.astro';
+import { TIERS } from '../lib/tiers';
+import { CURRENT, GATEWAY_FEATURES } from '../lib/products';
+import { forPage } from '../i18n/page';
+import { DEFAULT } from '../i18n/locales';
+
+const protocols = (await getCollection('protocols')).sort((a, b) => a.data.order - b.data.order);
+const native = protocols.filter((p) => p.data.verification !== 'gateway-mode');
+const releases = (await getCollection('releases'))
+  .filter((r) => r.data.product === 'core')
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
+const latest = releases.find((r) => r.data.published)!;
+const { locale, t, rich, to } = forPage(Astro.url.pathname);
+---
+
+<Base
+  title={t('gw.title')}
+  description={t('gw.desc')}
+  ogAlt={t('gw.ogAlt')}
+>
+  <JsonLd
+    slot="head"
+    data={{
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'HotLoop Gateway',
+      url: 'https://hotloop.io/gateway/',
+      description:
+        'An industrial automation gateway that polls equipment over OPC UA, Modbus, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, SNMP, BACnet/IP, and a UniFi network, keeps the history, raises ISA-18.2 alarms, and exposes the plant to agents over MCP.',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Linux',
+      license: 'https://hotloop.io/license/',
+      softwareVersion: CURRENT,
+      isAccessibleForFree: true,
+      publisher: { '@id': 'https://hotloop.io/#organization' },
+    }}
+  />
+  <section class="page-hero">
+    <div class="wrap stack">
+      <div class="cluster"><span class="label">HotLoop Gateway</span><span class="chip ok">{t('iot.out', { version: latest.data.version })}</span></div>
+      <h1>{t('gw.h1')}</h1>
+      <p class="lede">{t('gw.lede')}</p>
+      <div class="notice info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
+        <div>
+          <strong>{t('gw.nTitle', { version: latest.data.version })}</strong>
+          <p set:html={t('gw.nBody')} />
+        </div>
+      </div>
+      <div class="cluster">
+        <a class="btn primary" href="#install">{t('iot.btnInstall')}</a>
+        <a class="btn" href="#the-gate">{t('gw.btnBreak')}</a>
+        <a class="btn" href="/releases/core/">{t('fl.notes')}</a>
+        <a class="btn" href="https://docs.hotloop.io/gateway/overview/">{t('fl.docs')}</a>
+      </div>
+      <FamilyLine id="gateway" />
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap grid grid-2 split">
+      <div class="stack">
+        <span class="label">{t('gw.l1')}</span>
+        <h2>{t('gw.h2a')}</h2>
+        <p class="muted" set:html={rich('gw.p1')} />
+        <p class="muted" set:html={rich('gw.p2', { version: latest.data.version })} />
+      </div>
+      <div class="stack">
+        <span class="label">{t('gw.l2')}</span>
+        {locale !== DEFAULT && <p class="muted">{t('fl.english')}</p>}
+        <FeatureList features={GATEWAY_FEATURES} />
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="the-gate">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('gw.l3')}</span>
+        <h2>{t('gw.h2b')}</h2>
+        <p class="lede">{t('gw.lede3')}</p>
+      </div>
+      <WriteGate />
+      <p class="prose muted after">{t('gw.after')}</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('gw.l4')}</span>
+        <h2>{t('gw.h2c')}</h2>
+        <p class="lede">{t('gw.lede4')}</p>
+      </div>
+      <BadNotZero />
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap grid grid-2 split">
+      <div class="stack">
+        <span class="label">{t('gw.l5')}</span>
+        <h2>{t('gw.h2d')}</h2>
+        <p class="muted">{t('gw.p5a')}</p>
+        <p class="muted">{t('gw.p5b')}</p>
+      </div>
+      <div class="stack">
+        <span class="label">{t('gw.l6')}</span>
+        <h2>{t('gw.h2e')}</h2>
+        <p class="muted">{t('gw.p6a')}</p>
+        <p class="muted">{t('gw.p6b')}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('gw.l7')}</span>
+        <h2>{t('gw.h2f')}</h2>
+      </div>
+      <div class="grid grid-4">
+        {native.map((p) => (
+          <a class="card proto reveal" href={`/integrations/${p.id}/`}>
+            <div class="cluster head">
+              <h3>{p.data.name}</h3>
+              <span class={`chip ${TIERS[p.data.verification].chip}`}>{t(`t.${p.data.verification}.label`)}</span>
+            </div>
+            <p>{p.data.summary}</p>
+          </a>
+        ))}
+      </div>
+      <div class="notice after">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+        <div>
+          <strong>{t('gw.n1t')}</strong>
+          <p>{t('gw.n1p')}</p>
+        </div>
+      </div>
+      <div class="notice after">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
+        <div>
+          <strong>{t('gw.n2t')}</strong>
+          <p>{t('gw.n2p')}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('gw.l8')}</span>
+        <h2>{t('gw.h2g')}</h2>
+        <p class="lede">{t('gw.lede8')}</p>
+      </div>
+      <div class="grid grid-3">
+        <article class="card reveal"><h3>{t('gw.c1h')}</h3><p>{t('gw.c1p')}</p></article>
+        <article class="card reveal"><h3>{t('gw.c2h')}</h3><p>{t('gw.c2p')}</p></article>
+        <article class="card reveal"><h3>{t('gw.c3h')}</h3><p>{t('gw.c3p')}</p></article>
+        <article class="card reveal"><h3>{t('gw.c4h')}</h3><p>{t('gw.c4p')}</p></article>
+        <article class="card reveal"><h3>{t('gw.c5h')}</h3><p>{t('gw.c5p')}</p></article>
+        <article class="card reveal"><h3>{t('gw.c6h')}</h3><p>{t('gw.c6p')}</p></article>
+        <article class="card reveal"><h3>{t('gw.c7h')}</h3><p>{t('gw.c7p')}</p></article>
+        <article class="card reveal"><h3>{t('gw.c8h')}</h3><p>{t('gw.c8p')}</p></article>
+        <article class="card reveal"><h3>{t('gw.c9h')}</h3><p>{t('gw.c9p')}</p></article>
+        <article class="card reveal"><h3>{t('gw.c10h')}</h3><p set:html={rich('gw.c10p')} /></article>
+        <article class="card reveal"><h3>{t('gw.c11h')}</h3><p>{t('gw.c11p')}</p></article>
+        <article class="card reveal"><h3>{t('gw.c12h')}</h3><p>{t('gw.c12p')}</p></article>
+      </div>
+      <CardDetail label={t('c.detail')}>
+        <div><h4>{t('gw.c4h')}</h4><p>{t('gw.d4')}</p></div>
+        <div><h4>{t('gw.c5h')}</h4><p>{t('gw.d5')}</p></div>
+        <div><h4>{t('gw.c7h')}</h4><p>{t('gw.d7')}</p></div>
+        <div><h4>{t('gw.c10h')}</h4><p set:html={rich('gw.d10')} /></div>
+        <div><h4>{t('gw.c11h')}</h4><p>{t('gw.d11')}</p></div>
+      </CardDetail>
+    </div>
+  </section>
+
+  <section class="block" id="install">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('gw.l9')}</span>
+        <h2>{t('gw.h2h')}</h2>
+        <p class="lede">{t('gw.lede9')}</p>
+      </div>
+      <figure class="embernet-video">
+        <video
+          controls
+          preload="none"
+          playsinline
+          poster="/embernet-install/poster.webp"
+          width="1920"
+          height="1080"
+          aria-label={t('gw.vAria')}
+        >
+          <source src="/embernet-install/install-hotloop-on-embernet.mp4" type="video/mp4" />
+          <source src="/embernet-install/install-hotloop-on-embernet.webm" type="video/webm" />
+          <Fragment set:html={t('gw.vFallback')} />
+        </video>
+        <figcaption>{t('gw.vCaption')}{locale !== DEFAULT && ` ${t('gw.vNote')}`}</figcaption>
+      </figure>
+      <ul class="embernet-steps">
+        <li>
+          <img src="/embernet-install/hotloop-install-02-hotloop-apps.webp" width="2400" height="1350" loading="lazy" alt={t('gw.s1a')} />
+          <strong>{t('gw.s1h')}</strong>
+          <span>{t('gw.s1p')}</span>
+        </li>
+        <li>
+          <img src="/embernet-install/hotloop-install-03-choose-node.webp" width="2400" height="1350" loading="lazy" alt={t('gw.s2a')} />
+          <strong>{t('gw.s2h')}</strong>
+          <span>{t('gw.s2p')}</span>
+        </li>
+        <li>
+          <img src="/embernet-install/hotloop-install-08-board-live.webp" width="2400" height="1350" loading="lazy" alt={t('gw.s3a')} />
+          <strong>{t('gw.s3h')}</strong>
+          <span>{t('gw.s3p')}</span>
+        </li>
+      </ul>
+      <p class="muted embernet-more" set:html={t('gw.more9')} />
+    </div>
+  </section>
+
+  <section class="block" id="install-helm">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('iot.l4')}</span>
+        <h2>{t('gw.h2i')}</h2>
+        <p class="lede">{t('gw.lede10')}</p>
+      </div>
+      <div class="grid grid-2 split">
+        <div class="stack">
+<pre><code>helm repo add hotloop https://hotloop.io/hotloop
+helm repo update
+helm install hotloop hotloop/hotloop --version {latest.data.version} \
+  --namespace hotloop --create-namespace</code></pre>
+          <p class="muted">{t('gw.k8sP')}</p>
+        </div>
+        <div class="stack">
+          <p class="muted">{t('gw.p10a')}</p>
+          <p class="muted">{t('gw.p10b')}</p>
+          <p class="muted" set:html={t('gw.p10c')} />
+        </div>
+      </div>
+
+      <div class="card upgrade reveal" id="upgrading">
+        <span class="label">{t('gw.uLabel')}</span>
+        <h3>{t('gw.uH')}</h3>
+        <p>{t('gw.uP')}</p>
+        <CardMore label={t('gw.uMore')}>
+          <p>{t('gw.u1')}</p>
+          <p set:html={t('gw.u2')} />
+          <p set:html={t('gw.u3')} />
+          <p set:html={t('gw.u4')} />
+        </CardMore>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="whats-new">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('gw.l11')}</span>
+        <h2>{t('gw.h2j')}</h2>
+        <p class="lede">{t('gw.lede11', { version: latest.data.version })}</p>
+      </div>
+      <p class="more"><a class="btn" href="/releases/core/">{t('gw.btnNotes')}</a></p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="card cta reveal">
+        <div class="stack">
+          <span class="label">{t('iot.l6')}</span>
+          <h2>{t('gw.h2k')}</h2>
+          <p class="muted" set:html={t('gw.licP')} />
+        </div>
+        <a class="btn primary" href="/license/">{t('iot.licBtn')}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
+  .page-hero h1 { max-width: 20ch; }
+  .page-hero .notice { max-width: 68ch; }
+  .page-hero .notice code { overflow-wrap: anywhere; }
+  .upgrade { margin-top: var(--hl-s7); display: grid; gap: var(--hl-s3); }
+  .upgrade ol { padding-left: 1.3em; display: grid; gap: var(--hl-s2); color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); }
+  pre { max-width: 100%; }
+  .after { margin-top: var(--hl-s6); }
+  .embernet-video { margin: 0 0 var(--hl-s6); display: grid; gap: var(--hl-s2); }
+  .embernet-video video { width: 100%; max-width: 1100px; height: auto; aspect-ratio: 16 / 9; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); background: var(--hl-card); }
+  .embernet-video figcaption { color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); max-width: 72ch; }
+  .embernet-steps { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--hl-s5); grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+  .embernet-steps li { display: grid; gap: var(--hl-s2); align-content: start; }
+  .embernet-steps img { width: 100%; height: auto; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); }
+  .embernet-steps span { color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); }
+  .embernet-more { margin-top: var(--hl-s5); max-width: 72ch; }
+
+  .split { align-items: start; gap: var(--hl-s8); }
+  .proto { text-decoration: none; color: inherit; display: block; transition: transform var(--hl-transition-fast), border-color var(--hl-transition-fast); }
+  .proto:hover { transform: translateY(-2px); border-color: var(--hl-orange); }
+  .proto .head { justify-content: space-between; align-items: start; margin-bottom: var(--hl-s2); }
+  .proto h3 { font-size: var(--hl-fs-md); margin: 0; }
+
+  .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
+  .cta .stack { max-width: 62ch; }
+</style>
