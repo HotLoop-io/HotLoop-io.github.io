@@ -97,6 +97,22 @@ const releases = defineCollection({
   }),
 });
 
+// The release notes in the other thirteen languages: src/content/releases-i18n/<language folder>/<product>/<version>.md,
+// one file per English entry and language, with the same summary, highlights, breaking list and body, translated.
+// scripts/i18n-check.mjs fails the build when an entry has no translation in a language, or a translation drifts from
+// its English (a code span, a link, a heading, a list item or a product name changed).
+const releasesI18n = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: 'src/content/releases-i18n' }),
+  schema: z.object({
+    lang: z.string(),
+    product: z.enum(['core', 'flow', 'cascade', 'codesys', 'transmitter']),
+    version: z.string().regex(/^\d+\.\d+\.\d+$/),
+    summary: z.string().min(10),
+    highlights: z.array(z.string()).min(1),
+    breaking: z.array(z.string()).default([]),
+  }),
+});
+
 // The license text, vendored byte for byte from HotLoop-io/HotLoop-io. CI diffs it
 // against the canonical file and fails the build if they differ, so this page can
 // never show a license the org does not publish.
@@ -104,4 +120,4 @@ const legal = defineCollection({
   loader: glob({ pattern: '*.md', base: 'src/legal' }),
 });
 
-export const collections = { protocols, nodes, releases, legal };
+export const collections = { protocols, nodes, releases, releasesI18n, legal };

@@ -1220,7 +1220,7 @@
   "rel.tabsAria": "التصفية حسب المنتج",
   "rel.tabAll": "الكل",
   "rel.ogAlt": "ملاحظات إصدار HotLoop.",
-  "rel.english": "الملاحظات أدناه مكتوبة بالإنجليزية.",
+  "rel.english": "بعض الملاحظات أدناه لا تزال بالإنجليزية.",
   "rel.tAll": "ملاحظات إصدار HotLoop: المنتجات الثمانية كلها",
   "rel.dAll": "ما الذي تغيّر في HotLoop core وFlow وCascade وHotLoop for CODESYS وTransmitter، إصدارا بعد إصدار، وأي الإصدارات نُشرت.",
   "rel.tCore": "ملاحظات وسجل إصدارات HotLoop core",

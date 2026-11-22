@@ -8,7 +8,7 @@
 //   - the language list in astro.config.mjs and src/i18n/locales.ts disagreeing
 // The glossary the terms come from is the codex term base (work/notes/i18n/glossary), the same one the
 // products use; product and protocol names are the ones in its do-not-translate list.
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -130,6 +130,96 @@ for (const { code } of codes) {
     const c = load(code);
     for (const k of Object.keys(want)) if (c[k] !== undefined && spans(want[k]) !== spans(c[k])) err(code, k, 'its `code` spans differ from the English');
   }
+}
+
+// The release notes. English entries are src/content/releases/<product>/<version>.md; each other language has the same entry,
+// translated, at src/content/releases-i18n/<language folder>/<product>/<version>.md. A new English entry fails the build until
+// its thirteen translations are in the same PR. src/content/releases-i18n/pending.json lists the entries a language has not caught up
+// on yet (the page serves those in English with a note); the list may only shrink: an entry that is translated must come off
+// it, and an entry that is not translated and not on it is an error. `node scripts/rel-pending.mjs` rewrites it from the files.
+{
+  const relDir = join(root, 'src', 'content', 'releases');
+  const trDir = join(root, 'src', 'content', 'releases-i18n');
+  const parse = (text, file) => {
+    const m = /^---\n([\s\S]*?)\n---\n?([\s\S]*)$/.exec(text);
+    if (!m) { errors.push(`${file}: no front matter`); return null; }
+    const fm = { highlights: [], breaking: [] };
+    let list = null;
+    for (const line of m[1].split('\n')) {
+      const item = /^ {2}- (.*)$/.exec(line);
+      if (item && list) { try { fm[list].push(JSON.parse(item[1])); } catch { errors.push(`${file}: ${list} item is not a double-quoted string`); } continue; }
+      const kv = /^(\w+):\s*(.*)$/.exec(line);
+      if (!kv) continue;
+      list = null;
+      if (kv[1] === 'highlights' || kv[1] === 'breaking') { list = kv[1]; if (kv[2] === '[]') list = null; continue; }
+      try { fm[kv[1]] = kv[2].startsWith('"') ? JSON.parse(kv[2]) : kv[2]; } catch { errors.push(`${file}: ${kv[1]} is not a double-quoted string`); }
+    }
+    return { fm, body: m[2] };
+  };
+  const english = [];
+  for (const product of readdirSync(relDir)) {
+    for (const f of readdirSync(join(relDir, product)).filter((f) => f.endsWith('.md'))) {
+      const e = parse(readFileSync(join(relDir, product, f), 'utf8'), `releases/${product}/${f}`);
+      if (e) english.push({ id: `${e.fm.product}/${e.fm.version}`, ...e });
+    }
+  }
+  const fences = (b) => [...b.matchAll(/^```[^\n]*\n[\s\S]*?^```/gm)].map((m) => m[0]);
+  const outside = (b) => b.replace(/^```[^\n]*\n[\s\S]*?^```/gm, '');
+  const all = (e) => [e.fm.summary, ...e.fm.highlights, ...e.fm.breaking, outside(e.body)].join('\n');
+  const spans = (e) => [...all(e).matchAll(/`[^`\n]+`/g)].map((m) => m[0]).sort().join('|');
+  const urls = (e) => [...(all(e) + e.body).matchAll(/https?:\/\/[^\s)>\]"'`]+|\]\(([^)]+)\)/g)].map((m) => m[0]).sort().join('|');
+  const versions = (e) => [...all(e).replace(/`[^`\n]+`/g, '').matchAll(/\b\d+\.\d+\.\d+\b/g)].map((m) => m[0]).sort().join('|');
+  const shape = (e) => {
+    const b = outside(e.body).split('\n');
+    return [
+      e.fm.highlights.length, e.fm.breaking.length,
+      b.filter((l) => /^#{1,6} /.test(l)).map((l) => l.match(/^#+/)[0].length).join(''),
+      b.filter((l) => /^\s*([-*]|\d+\.) /.test(l)).length,
+      b.filter((l) => /^\|/.test(l)).length,
+      fences(e.body).length,
+    ].join('/');
+  };
+  const pendingFile = join(trDir, 'pending.json');
+  const pending = existsSync(pendingFile) ? JSON.parse(readFileSync(pendingFile, 'utf8')) : {};
+  let missing = 0, done = 0;
+  for (const { code, path } of codes) {
+    if (code === 'en') continue;
+    const here = join(trDir, path);
+    const have = new Set();
+    if (existsSync(here)) for (const product of readdirSync(here)) for (const f of readdirSync(join(here, product)).filter((f) => f.endsWith('.md'))) have.add(`${product}/${f.slice(0, -3)}`);
+    const wait = new Set(pending[code] ?? []);
+    const ids = new Set(english.map((e) => e.id));
+    for (const id of have) if (!ids.has(id)) err(code, `releases-i18n/${id}`, 'a translation with no English entry');
+    for (const id of wait) if (!ids.has(id)) err(code, `releases-pending ${id}`, 'is not an English entry');
+    for (const e of english) {
+      const label = `release ${e.id}`;
+      if (!have.has(e.id)) {
+        if (wait.has(e.id)) { missing++; continue; }
+        err(code, label, 'has no translation: add src/content/releases-i18n/' + path + '/' + e.id + '.md in this PR');
+        continue;
+      }
+      if (wait.has(e.id)) err(code, label, 'is translated, take it off pending.json (node scripts/rel-pending.mjs)');
+      done++;
+      const x = parse(readFileSync(join(here, `${e.id}.md`), 'utf8'), `${path}/${e.id}.md`);
+      if (!x) continue;
+      if (x.fm.lang !== path || `${x.fm.product}/${x.fm.version}` !== e.id) err(code, label, 'front matter lang, product or version does not match its path');
+      if (shape(e) !== shape(x)) err(code, label, `structure differs (highlights/breaking/headings/list items/table rows/code blocks): ${shape(e)} vs ${shape(x)}`);
+      if (fences(e.body).join('\n') !== fences(x.body).join('\n')) err(code, label, 'a code block differs from the English');
+      if (spans(e) !== spans(x)) err(code, label, 'its `code` spans differ from the English');
+      if (urls(e) !== urls(x)) err(code, label, 'a link or URL differs from the English');
+      if (versions(e) !== versions(x)) err(code, label, 'a version number differs from the English');
+      const v = [x.fm.summary, ...x.fm.highlights, ...x.fm.breaking, x.body].join('\n');
+      if (/[–—]/.test(v)) err(code, label, 'has an em or en dash');
+      if (!x.fm.summary.trim() || x.fm.highlights.some((h) => !h.trim())) err(code, label, 'has an empty summary or highlight');
+      if (x.fm.summary === e.fm.summary && e.fm.summary.length > 24) err(code, label, 'summary is identical to the English');
+      const ev = all(e), tv = all(x) + '\n' + outside(x.body);
+      for (const n of NAMES) {
+        if (new RegExp(`(^|[^A-Za-z])${norm(n).replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}([^A-Za-z]|$)`).test(norm(ev)) && !has(tv, n) && !has(v, n)) err(code, label, `"${n}" is in the English and gone from the translation`);
+      }
+    }
+  }
+  if (!existsSync(trDir) && english.length) err('releases-i18n', '', 'folder is missing');
+  console.log(`i18n-check: release notes ${english.length} entries, ${done} translations, ${missing} waiting in pending.json`);
 }
 
 // Length rules the SEO audit applies to titles and descriptions, checked here too so a catalog fails fast.

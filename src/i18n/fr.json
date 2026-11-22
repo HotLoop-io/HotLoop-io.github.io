@@ -1220,7 +1220,7 @@
   "rel.tabsAria": "Filtrer par produit",
   "rel.tabAll": "Tous",
   "rel.ogAlt": "Notes de version de HotLoop.",
-  "rel.english": "Les notes ci-dessous sont rédigées en anglais.",
+  "rel.english": "Certaines des notes ci-dessous sont encore en anglais.",
   "rel.tAll": "Notes de version HotLoop : les huit produits",
   "rel.dAll": "Ce qui a changé dans HotLoop core, Flow, Cascade, HotLoop for CODESYS et Transmitter, version par version, et quelles versions sont publiées.",
   "rel.tCore": "Notes et historique des versions de HotLoop core",

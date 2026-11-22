@@ -1220,7 +1220,7 @@
   "rel.tabsAria": "製品で絞り込む",
   "rel.tabAll": "すべて",
   "rel.ogAlt": "HotLoopのリリースノート。",
-  "rel.english": "以下のノートは英語で書かれています。",
+  "rel.english": "以下のノートの一部は、まだ英語のままです。",
   "rel.tAll": "HotLoopのリリースノート: 8製品すべて",
   "rel.dAll": "HotLoop core、Flow、Cascade、HotLoop for CODESYS、Transmitterで何が変わったかをバージョンごとに、どのバージョンが公開済みかとともにまとめています。",
   "rel.tCore": "HotLoop coreのリリースノートとバージョン履歴",
