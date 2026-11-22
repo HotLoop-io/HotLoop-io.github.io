@@ -1,0 +1,11 @@
+---
+// HotLoop Unifi in each of the other thirteen languages, at /<language>/unifi/.
+import Unifi from '../../views/Unifi.astro';
+import { OTHERS } from '../../i18n/locales';
+
+export function getStaticPaths() {
+  return OTHERS.map((l) => ({ params: { lang: l.path } }));
+}
+---
+
+<Unifi />
