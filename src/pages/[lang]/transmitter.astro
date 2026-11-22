@@ -1,0 +1,11 @@
+---
+// HotLoop Transmitter in each of the other thirteen languages, at /<language>/transmitter/.
+import Transmitter from '../../views/Transmitter.astro';
+import { OTHERS } from '../../i18n/locales';
+
+export function getStaticPaths() {
+  return OTHERS.map((l) => ({ params: { lang: l.path } }));
+}
+---
+
+<Transmitter />
