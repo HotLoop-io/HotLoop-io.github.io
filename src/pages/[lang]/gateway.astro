@@ -1,0 +1,11 @@
+---
+// HotLoop Gateway in each of the other thirteen languages, at /<language>/gateway/.
+import Gateway from '../../views/Gateway.astro';
+import { OTHERS } from '../../i18n/locales';
+
+export function getStaticPaths() {
+  return OTHERS.map((l) => ({ params: { lang: l.path } }));
+}
+---
+
+<Gateway />
