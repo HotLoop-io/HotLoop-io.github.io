@@ -16,16 +16,27 @@ interface Props {
   noindex?: boolean;
 }
 
+import { LOCALES, split, href, TRANSLATED } from '../i18n/locales';
+
 const { title, description, ogImage, ogAlt, type = 'website', noindex = false } = Astro.props;
 
 const site = Astro.site!;
 const canonical = new URL(Astro.url.pathname, site).href;
 
 // og:image has to be absolute, or most crawlers will not fetch it.
-const slug = Astro.url.pathname.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'home';
+// A translated page shares the English page's social card; the card is a picture of the brand, and the
+// per-language title, description and alt text carry the language.
+const { locale, rest } = split(Astro.url.pathname);
+const slug = rest.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'home';
 const image = new URL(ogImage ?? `/og/${slug}.png`, site).href;
 
 const full = title.includes('HotLoop') ? title : `${title} · HotLoop`;
+
+// hreflang: every language a page exists in, itself included, and x-default pointing at English.
+// A page that is English only gets none, so no tag ever points at a page that is not there.
+const alternates = TRANSLATED.includes(rest)
+  ? LOCALES.map((l) => ({ tag: l.tag, url: new URL(href(rest, l), site).href }))
+  : [];
 ---
 
 <meta charset="utf-8" />
@@ -33,6 +44,8 @@ const full = title.includes('HotLoop') ? title : `${title} · HotLoop`;
 <title>{full}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+{alternates.map((a) => <link rel="alternate" hreflang={a.tag} href={a.url} />)}
+{alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={alternates[0].url} />}
 <meta
   name="robots"
   content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'}
@@ -55,7 +68,8 @@ const full = title.includes('HotLoop') ? title : `${title} · HotLoop`;
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content={ogAlt ?? title} />
-<meta property="og:locale" content="en_US" />
+<meta property="og:locale" content={locale.og} />
+{alternates.filter((a) => a.tag !== locale.tag).map((a) => <meta property="og:locale:alternate" content={LOCALES.find((l) => l.tag === a.tag)!.og} />)}
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={full} />

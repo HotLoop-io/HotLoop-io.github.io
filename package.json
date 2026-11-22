@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "astro dev",
     "og": "node scripts/og.mjs",
-    "build": "node scripts/og.mjs && astro build && node scripts/seo-audit.mjs dist && node scripts/sales-lens-check.mjs dist && node scripts/card-words.mjs dist",
+    "build": "node scripts/i18n-check.mjs && node scripts/og.mjs && astro build && node scripts/seo-audit.mjs dist && node scripts/sales-lens-check.mjs dist && node scripts/card-words.mjs dist",
     "preview": "astro preview",
     "audit": "node scripts/seo-audit.mjs dist && node scripts/sales-lens-check.mjs dist && node scripts/card-words.mjs dist"
   },

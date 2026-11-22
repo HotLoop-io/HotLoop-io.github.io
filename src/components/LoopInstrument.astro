@@ -2,16 +2,22 @@
 // The product's own metaphor, running: sense, decide, act, and around again.
 // It is a simulation in the visitor's browser and says so. Nothing on this page
 // is connected to anything.
+import { forPage } from '../i18n/page';
+const { locale, t } = forPage(Astro.url.pathname);
+// English has always said degC here; the other languages use the unit sign.
+const deg = locale.code === 'en' ? 'degC' : '°C';
+const up = (s: string) => s.toLocaleUpperCase(locale.tag);
+const states = { ok: [t('i.ok'), t('i.okNote')], warn: [t('i.warn'), t('i.warnNote')], danger: [t('i.danger'), t('i.dangerNote')] };
 ---
 
-<section class="instrument card" data-loop aria-labelledby="loop-title">
+<section class="instrument card" data-loop data-states={JSON.stringify(states)} aria-labelledby="loop-title">
   <div class="top">
-    <h2 id="loop-title" class="label">A loop, running</h2>
+    <h2 id="loop-title" class="label">{t('i.title')}</h2>
     <span class="mono tag">TT-101 &middot; modbus tcp &middot; holding:40001</span>
   </div>
 
   <div class="body">
-    <svg class="ring" viewBox="0 0 300 268" role="img" aria-label="A control loop cycling through sense, decide, and act">
+    <svg class="ring" viewBox="0 0 300 268" role="img" aria-label={t('i.aria')}>
       <defs>
         <linearGradient id="hl-loop-grad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" style="stop-color: var(--hl-amber)"></stop>
@@ -28,43 +34,39 @@
 
       <g class="node" text-anchor="middle">
         <circle cx="150" cy="34" r="27"></circle>
-        <text x="150" y="31" class="n-name">SENSE</text><text x="150" y="43" class="n-sub">poll</text>
+        <text x="150" y="31" class="n-name">{up(t('h.sense'))}</text><text x="150" y="43" class="n-sub">{t('i.subSense')}</text>
         <circle cx="250" cy="208" r="27"></circle>
-        <text x="250" y="205" class="n-name">DECIDE</text><text x="250" y="217" class="n-sub">vs SP</text>
+        <text x="250" y="205" class="n-name">{up(t('h.decide'))}</text><text x="250" y="217" class="n-sub">{t('i.subDecide')}</text>
         <circle cx="50" cy="208" r="27"></circle>
-        <text x="50" y="205" class="n-name">ACT</text><text x="50" y="217" class="n-sub">gated</text>
+        <text x="50" y="205" class="n-name">{up(t('h.act'))}</text><text x="50" y="217" class="n-sub">{t('i.subAct')}</text>
       </g>
 
       <text x="150" y="140" text-anchor="middle" class="pv" data-pv>61.4</text>
-      <text x="150" y="162" text-anchor="middle" class="unit">degC process value</text>
-      <text x="150" y="187" text-anchor="middle" class="quality">quality: good</text>
+      <text x="150" y="162" text-anchor="middle" class="unit">{t('i.unit')}</text>
+      <text x="150" y="187" text-anchor="middle" class="quality">{t('i.quality')}</text>
     </svg>
 
     <div class="readout">
       <div>
         <label for="sp" class="sp-label">
-          Setpoint <span class="mono strong"><span data-sp-val>72</span> degC</span>
+          {t('i.sp')} <span class="mono strong"><span data-sp-val>72</span> {deg}</span>
         </label>
         <input id="sp" type="range" min="40" max="90" step="1" value="72" data-sp />
       </div>
 
       <dl class="pair">
-        <div><dt>Error</dt><dd class="mono" data-err>+0.00</dd></div>
-        <div><dt>Output</dt><dd class="mono"><span data-out>50</span>%</dd></div>
+        <div><dt>{t('i.err')}</dt><dd class="mono" data-err>+0.00</dd></div>
+        <div><dt>{t('i.out')}</dt><dd class="mono"><span data-out>50</span>%</dd></div>
       </dl>
 
       <div class="alarm ok" data-alarm role="status" aria-live="polite">
-        <div class="a-row"><span class="dot"></span><span data-alarm-text>Normal</span></div>
-        <p data-alarm-note>Inside deadband. No alarm raised, nothing paged.</p>
+        <div class="a-row"><span class="dot"></span><span data-alarm-text>{states.ok[0]}</span></div>
+        <p data-alarm-note>{states.ok[1]}</p>
       </div>
     </div>
   </div>
 
-  <p class="foot">
-    A simulation in your browser. Drag the setpoint and watch the loop decide whether this is worth waking
-    somebody up for. In the Gateway, the write that moves it crosses one gate. Out of range is refused and never
-    clamped, and the refusal is written down.
-  </p>
+  <p class="foot">{t('i.foot')}</p>
 </section>
 
 <style>
@@ -142,6 +144,8 @@
     const alarm = $<HTMLElement>('[data-alarm]');
     const aText = $<HTMLElement>('[data-alarm-text]');
     const aNote = $<HTMLElement>('[data-alarm-note]');
+    // The sentences for each state are written into the page in the page's own language.
+    const words = JSON.parse(root.dataset.states || '{}') as Record<'ok' | 'warn' | 'danger', [string, string]>;
 
     let pv = 61.4;
     let sp = Number(spIn.value);
@@ -160,14 +164,11 @@
 
       let state: 'ok' | 'warn' | 'danger', text: string, note: string;
       if (abs <= 1.5) {
-        state = 'ok'; text = 'Normal';
-        note = 'Inside deadband. No alarm raised, nothing paged.';
+        state = 'ok'; [text, note] = words.ok;
       } else if (abs <= 6) {
-        state = 'warn'; text = 'Deviation, low priority';
-        note = 'Outside the deadband, still under the on-delay. Not a page.';
+        state = 'warn'; [text, note] = words.warn;
       } else {
-        state = 'danger'; text = 'Deviation, high priority';
-        note = 'This is the one that wakes somebody at 03:00.';
+        state = 'danger'; [text, note] = words.danger;
       }
       alarm.className = 'alarm ' + state;
       if (aText.textContent !== text) { aText.textContent = text; aNote.textContent = note; }

@@ -92,7 +92,7 @@
   ::selection { background: var(--hl-orange-tint); }
 
   .skip {
-    position: absolute; left: var(--hl-s4); top: -100px; z-index: 100;
+    position: absolute; inset-inline-start: var(--hl-s4); top: -100px; z-index: 100;
     background: var(--hl-card); border: 1px solid var(--hl-line-strong);
     padding: var(--hl-s2) var(--hl-s4); border-radius: var(--hl-r-sm);
   }
@@ -176,7 +176,7 @@
   .card h3 { margin-bottom: var(--hl-s2); }
   .card h3.t-md { font-size: var(--hl-fs-md); }
   .card p { color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); }
-  .card ul { padding-left: 1.2em; color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); display: grid; gap: var(--hl-s2); }
+  .card ul { padding-inline-start: 1.2em; color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); display: grid; gap: var(--hl-s2); }
 
   /* a chip that carries a fact, never a decoration */
   .chip {
@@ -228,7 +228,7 @@
   .table-wrap { overflow-x: auto; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); background: var(--hl-card); }
   table.data { width: 100%; font-size: var(--hl-fs-sm); }
   table.data th {
-    text-align: left; padding: var(--hl-s3) var(--hl-s4);
+    text-align: start; padding: var(--hl-s3) var(--hl-s4);
     font-size: var(--hl-fs-2xs); letter-spacing: var(--hl-ls-label); text-transform: uppercase;
     color: var(--hl-ink-soft); border-bottom: 1px solid var(--hl-border); background: var(--hl-sunken);
     white-space: nowrap;
@@ -295,3 +295,6 @@
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
 }
+
+/* Numbers, tag paths and code read left to right in every language, so "66.4" stays 66.4 inside right-to-left text. */
+.mono, .pv { direction: ltr; unicode-bidi: isolate; }

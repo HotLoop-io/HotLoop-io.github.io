@@ -1,0 +1,11 @@
+---
+// The products page in each of the other thirteen languages, at /<language>/products/.
+import Products from '../../views/Products.astro';
+import { OTHERS } from '../../i18n/locales';
+
+export function getStaticPaths() {
+  return OTHERS.map((l) => ({ params: { lang: l.path } }));
+}
+---
+
+<Products />

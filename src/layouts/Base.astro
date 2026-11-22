@@ -4,6 +4,8 @@ import Meta from '../components/Meta.astro';
 import JsonLd from '../components/JsonLd.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import LangRedirect from '../components/LangRedirect.astro';
+import { forPage } from '../i18n/page';
 
 // Self-hosted, bundled and fingerprinted by the build. Never a CDN: the family
 // names below are the ones tokens.css declares, so nothing names a font it does
@@ -31,6 +33,7 @@ interface Props {
 const props = Astro.props;
 
 const site = Astro.site!.href.replace(/\/$/, '');
+const { locale, t } = forPage(Astro.url.pathname);
 
 // Site-wide structured data. It states what HotLoop is and where it lives, and
 // nothing that cannot be verified from the page.
@@ -52,12 +55,12 @@ const website = {
   name: 'HotLoop',
   url: `${site}/`,
   publisher: { '@id': `${site}/#organization` },
-  inLanguage: 'en',
+  inLanguage: locale.tag,
 };
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale.tag} dir={locale.dir}>
   <head>
     <Meta {...props} />
     <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
@@ -73,11 +76,12 @@ const website = {
       } catch (e) {}
     </script>
     <JsonLd data={[organization, website]} />
+    <LangRedirect />
     <slot name="head" />
     <ClientRouter />
   </head>
   <body>
-    <a class="skip" href="#main">Skip to content</a>
+    <a class="skip" href="#main">{t('c.skip')}</a>
     <Header />
     <main id="main">
       <slot />

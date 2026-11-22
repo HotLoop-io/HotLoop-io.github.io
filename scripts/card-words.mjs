@@ -11,6 +11,11 @@ import { join } from 'node:path';
 import { parse } from 'node-html-parser';
 
 const MAX = 39;
+// A translated page is read in its own language: Vietnamese spends a word on every syllable, Spanish and
+// Greek run a third longer than English for the same sentence. The same card, said in the same space, is
+// allowed half again as many words.
+const LANG_FOLDERS = ['es', 'fr', 'it', 'de', 'nb', 'bg', 'el', 'ko', 'ja', 'vi', 'hi', 'zh-hans', 'ar'];
+const MAX_TRANSLATED = Math.round(MAX * 1.5);
 const args = process.argv.slice(2);
 const report = args.includes('--report');
 const dist = args.find((a) => !a.startsWith('--')) || 'dist';
@@ -43,7 +48,8 @@ for (const f of walk(dist).filter((p) => p.endsWith('.html'))) {
     total++;
     const title = (card.querySelector('h2, h3, h4, summary, strong')?.text || card.text).trim().replace(/\s+/g, ' ').slice(0, 50);
     const n = words(parse(card.outerHTML));
-    if (n > MAX) over.push({ page: f.replace(dist, '').replace('/index.html', '/'), n, title });
+    const limit = LANG_FOLDERS.includes(f.replace(dist, '').split('/')[1]) ? MAX_TRANSLATED : MAX;
+    if (n > limit) over.push({ page: f.replace(dist, '').replace('/index.html', '/'), n, title });
   }
 }
 over.sort((a, b) => b.n - a.n);

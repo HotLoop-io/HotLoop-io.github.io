@@ -1,0 +1,81 @@
+---
+// First landing on an English page: if the browser's preferred languages name one of ours, go there.
+// Astro's own Astro.preferredLocale reads Accept-Language, which exists only when pages are rendered on
+// request (https://docs.astro.build/en/reference/api-reference/#preferredlocale); this site is static on
+// GitHub Pages, so the same decision is made in the browser from navigator.languages.
+//
+// What it will not do:
+//  - It never runs on a page that is already in another language, so a direct link to /es/... stays put.
+//  - It never overrides a choice made with the language switcher: that choice is saved in localStorage
+//    ("hl-lang") and wins over the browser's list, English included.
+//  - It never redirects a crawler. Search bots send no language preference, and the user agent test is a
+//    second guard. Every language page is reachable by plain links and hreflang, so nothing depends on it.
+//  - It only goes to a page that exists: the target is read from the <link rel="alternate" hreflang>
+//    tags the page already carries, which are only written for translated pages.
+//  - It uses location.replace, so the Back button does not bounce the visitor into the redirect again.
+// Storage is wrapped in try/catch: private windows and blocked site data fall back to the browser's list.
+import { split } from '../i18n/locales';
+const { locale } = split(Astro.url.pathname);
+---
+
+<script is:inline>
+  (function () {
+    var KEY = 'hl-lang';
+    function get() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+    function set(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+
+    // A click on the switcher is a choice. Delegated, so it works for every page the router swaps in.
+    if (!window.__hlLangClick) {
+      window.__hlLangClick = true;
+      document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a[data-hl-lang]') : null;
+        if (a) set(a.getAttribute('data-hl-lang'));
+      });
+    }
+  })();
+</script>
+
+{locale.code === 'en' && (
+  <script is:inline>
+    (function () {
+      var KEY = 'hl-lang';
+      // Which browser language tags map to which of our hreflang tags.
+      function ours(tag) {
+        tag = String(tag || '').toLowerCase();
+        if (!tag) return null;
+        if (tag === 'zh' || tag.indexOf('zh-hans') === 0 || tag === 'zh-cn' || tag === 'zh-sg') return 'zh-Hans';
+        if (tag.indexOf('zh') === 0) return null; // Traditional Chinese is not one of the fourteen
+        var base = tag.split('-')[0];
+        if (base === 'no' || base === 'nn' || base === 'nb') return 'nb';
+        return ['en', 'es', 'fr', 'it', 'de', 'bg', 'el', 'ko', 'ja', 'vi', 'hi', 'ar'].indexOf(base) >= 0 ? base : null;
+      }
+      function run() {
+        try {
+          if (window.__hlLangDone) return;
+          window.__hlLangDone = true;
+          if (/bot|crawl|spider|slurp|bingpreview|facebookexternalhit|embedly|quora|pinterest|lighthouse|headlesschrome\/.*pagespeed/i.test(navigator.userAgent || '')) return;
+          var want = null, saved = null;
+          try { saved = localStorage.getItem(KEY); } catch (e) {}
+          if (saved) want = saved;
+          else {
+            var list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
+            for (var i = 0; i < list.length && !want; i++) want = ours(list[i]);
+          }
+          if (!want || want === 'en') return;
+          var link = document.querySelector('link[rel="alternate"][hreflang="' + want + '"]');
+          if (!link) return;
+          var to = new URL(link.href);
+          // Only the path is used, so a preview or mirror of the site redirects within itself.
+          if (to.pathname === location.pathname) return;
+          location.replace(to.pathname + location.search + location.hash);
+        } catch (e) {}
+      }
+      run();
+      // The router swaps pages without a reload, so look again each time an English page arrives.
+      document.addEventListener('astro:page-load', function () {
+        window.__hlLangDone = false;
+        if (document.documentElement.lang === 'en') run();
+      });
+    })();
+  </script>
+)}
