@@ -72,8 +72,8 @@ for (const { code } of codes) {
 const CJK = new Set(['ja', 'ko', 'zh-Hans']);
 for (const { code } of codes) {
   const c = load(code);
-  for (const k of Object.keys(c).filter((k) => /^[hp]\.(title|desc)$/.test(k))) {
-    const n = [...c[k]].length;
+  for (const k of Object.keys(c).filter((k) => /\.(title|desc)$/.test(k) && k !== 'i.title')) {
+    const n = [...c[k].replace(/\{version\}/g, '4.23.6')].length;
     const title = k.endsWith('.title');
     const [lo, hi] = title ? [15, CJK.has(code) ? 40 : 60] : CJK.has(code) ? [30, 110] : [70, 160];
     if (n < lo || n > hi) err(code, k, `${title ? 'title' : 'description'} is ${n} characters, wants ${lo} to ${hi}`);
