@@ -1220,7 +1220,7 @@
   "rel.tabsAria": "제품별 필터",
   "rel.tabAll": "전체",
   "rel.ogAlt": "HotLoop 릴리스 노트.",
-  "rel.english": "아래 노트는 영어로 작성되어 있습니다.",
+  "rel.english": "아래 노트 중 일부는 아직 영어로 되어 있습니다.",
   "rel.tAll": "HotLoop 릴리스 노트: 8개 제품 전체",
   "rel.dAll": "HotLoop core, Flow, Cascade, HotLoop for CODESYS, Transmitter에서 무엇이 바뀌었는지 버전별로, 그리고 어떤 버전이 배포되었는지 정리했습니다.",
   "rel.tCore": "HotLoop core 릴리스 노트와 버전 이력",

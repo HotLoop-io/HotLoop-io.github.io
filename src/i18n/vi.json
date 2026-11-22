@@ -1220,7 +1220,7 @@
   "rel.tabsAria": "Lọc theo sản phẩm",
   "rel.tabAll": "Tất cả",
   "rel.ogAlt": "Ghi chú phát hành của HotLoop.",
-  "rel.english": "Các ghi chú bên dưới được viết bằng tiếng Anh.",
+  "rel.english": "Một số ghi chú bên dưới vẫn còn bằng tiếng Anh.",
   "rel.tAll": "Ghi chú phát hành HotLoop: cả tám sản phẩm",
   "rel.dAll": "Những gì đã thay đổi trong HotLoop core, Flow, Cascade, HotLoop for CODESYS và Transmitter, từng phiên bản một, và phiên bản nào đã được công bố.",
   "rel.tCore": "Ghi chú phát hành và lịch sử phiên bản HotLoop core",

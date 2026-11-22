@@ -8,7 +8,24 @@ const { locale, t, to } = forPage(Astro.url.pathname);
 const all = (await getCollection('releases')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }));
 const shown = filter === 'all' ? all : all.filter((r) => r.data.product === filter);
 // The notes are markdown, so they are rendered, not printed with their pound signs.
-const releases = await Promise.all(shown.map(async (r) => ({ ...r, Body: r.body && r.body.trim() ? (await render(r)).Content : null })));
+// In another language an entry reads from its translation (src/content/releases-i18n); one that has none yet is
+// the English entry with a note, so no entry ever goes missing from a page.
+const translated = locale.code === 'en' ? [] : (await getCollection('releasesI18n')).filter((e) => e.data.lang === locale.path);
+const tr = new Map(translated.map((e) => [`${e.data.product}/${e.data.version}`, e]));
+const releases = await Promise.all(
+  shown.map(async (r) => {
+    const x = tr.get(`${r.data.product}/${r.data.version}`);
+    const src = x ?? r;
+    return {
+      ...r,
+      english: locale.code !== 'en' && !x,
+      summary: x ? x.data.summary : r.data.summary,
+      highlights: x ? x.data.highlights : r.data.highlights,
+      breaking: x ? x.data.breaking : r.data.breaking,
+      Body: src.body && src.body.trim() ? (await render(src)).Content : null,
+    };
+  }),
+);
 
 const NAME = { core: 'HotLoop core', flow: 'Flow', cascade: 'Cascade', codesys: 'HotLoop for CODESYS', transmitter: 'HotLoop Transmitter' } as const;
 // Western digits in every language, as the Arabic style sheet asks.
@@ -77,7 +94,7 @@ const seo = {
   </section>
 
   <section class="wrap feed">
-    {locale.code !== 'en' && <p class="muted">{t('rel.english')}</p>}
+    {releases.some((r) => r.english) && <p class="muted">{t('rel.english')}</p>}
     {releases.map((r) => {
       return (
         <article class="entry" id={`${r.data.product}-${r.data.version}`}>
@@ -88,15 +105,15 @@ const seo = {
             </div>
             <time class="mono" datetime={r.data.date.toISOString().slice(0, 10)}>{fmt(r.data.date)}</time>
           </header>
-          <p class="summary">{r.data.summary}</p>
-          <ul>{r.data.highlights.map((h) => <li>{h}</li>)}</ul>
-          {r.data.breaking.length > 0 && (
+          <p class="summary" lang={r.english ? 'en' : undefined}>{r.summary}</p>
+          <ul lang={r.english ? 'en' : undefined}>{r.highlights.map((h) => <li>{h}</li>)}</ul>
+          {r.breaking.length > 0 && (
             <div class="notice">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
-              <div><strong>{t('rel.breaking')}</strong><ul>{r.data.breaking.map((b) => <li>{b}</li>)}</ul></div>
+              <div><strong>{t('rel.breaking')}</strong><ul lang={r.english ? 'en' : undefined}>{r.breaking.map((b) => <li>{b}</li>)}</ul></div>
             </div>
           )}
-          {r.Body && <div class="note"><r.Body /></div>}
+          {r.Body && <div class="note" lang={r.english ? 'en' : undefined}><r.Body /></div>}
         </article>
       );
     })}
