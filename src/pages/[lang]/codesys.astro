@@ -1,0 +1,11 @@
+---
+// HotLoop for CODESYS in each of the other thirteen languages, at /<language>/codesys/.
+import Codesys from '../../views/Codesys.astro';
+import { OTHERS } from '../../i18n/locales';
+
+export function getStaticPaths() {
+  return OTHERS.map((l) => ({ params: { lang: l.path } }));
+}
+---
+
+<Codesys />
