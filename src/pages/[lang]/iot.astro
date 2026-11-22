@@ -1,0 +1,11 @@
+---
+// HotLoop IoT in each of the other thirteen languages, at /<language>/iot/.
+import Iot from '../../views/Iot.astro';
+import { OTHERS } from '../../i18n/locales';
+
+export function getStaticPaths() {
+  return OTHERS.map((l) => ({ params: { lang: l.path } }));
+}
+---
+
+<Iot />
