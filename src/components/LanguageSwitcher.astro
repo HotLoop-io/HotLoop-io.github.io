@@ -1,0 +1,67 @@
+---
+// The language switcher. A <details> menu, so it works with JavaScript off, and every entry is a plain
+// link to the same page in that language (or to that language's home when the page is English only).
+// Each name is written in its own language and carries lang and hreflang, so a screen reader says it
+// right. data-hl-lang is how LangRedirect learns the visitor made a choice.
+import { LOCALES, TRANSLATED, href } from '../i18n/locales';
+import { forPage } from '../i18n/page';
+
+interface Props { variant?: 'header' | 'footer' }
+const { variant = 'header' } = Astro.props;
+const { locale, route, t } = forPage(Astro.url.pathname);
+const target = (l: (typeof LOCALES)[number]) => href(TRANSLATED.includes(route) ? route : '/', l);
+---
+
+{variant === 'header' ? (
+  <details class="lang">
+    <summary aria-label={`${t('c.language')}: ${locale.name}`}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>
+      <span class="cur" lang={locale.tag}>{locale.name}</span>
+    </summary>
+    <ul class="list" aria-label={t('c.languageList')}>
+      {LOCALES.map((l) => (
+        <li>
+          <a href={target(l)} lang={l.tag} hreflang={l.tag} data-hl-lang={l.code} aria-current={l === locale ? 'true' : undefined}>{l.name}</a>
+        </li>
+      ))}
+    </ul>
+  </details>
+) : (
+  <nav class="langs" aria-label={t('c.languageList')}>
+    <h2>{t('c.language')}</h2>
+    <ul>
+      {LOCALES.map((l) => (
+        <li><a href={target(l)} lang={l.tag} hreflang={l.tag} data-hl-lang={l.code} aria-current={l === locale ? 'true' : undefined}>{l.name}</a></li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<style>
+  .lang { position: relative; }
+  .lang summary {
+    list-style: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    height: 40px; padding: 0 14px; border-radius: var(--hl-r-pill);
+    border: 1px solid var(--hl-border); background: var(--hl-card); color: var(--hl-ink);
+    font-size: var(--hl-fs-sm); font-weight: 600; white-space: nowrap;
+  }
+  .lang summary::-webkit-details-marker { display: none; }
+  .lang summary:hover { border-color: var(--hl-line-strong); }
+  .lang svg { width: 18px; height: 18px; flex: none; }
+  .list {
+    position: absolute; inset-inline-end: 0; top: 48px; z-index: 60; min-width: 200px; max-height: min(70vh, 480px); overflow: auto;
+    margin: 0; padding: var(--hl-s2); list-style: none; display: grid;
+    background: var(--hl-card); border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); box-shadow: var(--hl-sh-2);
+  }
+  .list a { display: block; padding: 0.6em 1em; border-radius: var(--hl-r-sm); color: var(--hl-ink); text-decoration: none; font-weight: 500; }
+  .list a:hover { background: var(--hl-sunken); }
+  .list a[aria-current] { font-weight: 700; color: var(--hl-link); }
+  @media (max-width: 600px) { .lang .cur { display: none; } .lang summary { padding: 0 11px; } }
+
+  .langs { display: grid; gap: var(--hl-s2); align-content: start; }
+  .langs h2 { font-size: var(--hl-fs-2xs); font-weight: 600; letter-spacing: var(--hl-ls-label); text-transform: uppercase; color: var(--hl-ink-soft); margin: 0 0 var(--hl-s2); }
+  .langs ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--hl-s2) var(--hl-s4); }
+  .langs a { color: var(--hl-ink); text-decoration: none; font-size: var(--hl-fs-sm); }
+  .langs a:hover { color: var(--hl-link); text-decoration: underline; }
+  .langs a[aria-current] { font-weight: 700; }
+</style>

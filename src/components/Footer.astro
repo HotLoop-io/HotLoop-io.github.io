@@ -1,21 +1,23 @@
 ---
-import { FAMILY_SENTENCE } from '../lib/family';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { forPage } from '../i18n/page';
+const { t, rich, to } = forPage(Astro.url.pathname);
 const year = new Date().getFullYear();
 ---
 
 <footer class="site">
   <div class="wrap-wide top">
     <div class="about">
-      <a class="brand" href="/" aria-label="HotLoop, home">
+      <a class="brand" href={to('/')} aria-label={t('c.home')}>
         <img src="/brand/logo-mark.svg" alt="" width="28" height="28" />
         <span class="word">hot<span>loop</span></span>
       </a>
-      <p>Automation loops for the real world. {FAMILY_SENTENCE}</p>
+      <p>{t('f.tagline')} {t('f.family')}</p>
     </div>
 
-    <nav aria-label="Products">
-      <h2>Products</h2>
-      <a href="/products/">The lineup</a>
+    <nav aria-label={t('f.products')}>
+      <h2>{t('f.products')}</h2>
+      <a href={to('/products/')}>{t('f.lineup')}</a>
       <a href="/iot/">HotLoop IoT</a>
       <a href="/edge/">HotLoop Edge</a>
       <a href="/gateway/">HotLoop Gateway</a>
@@ -24,37 +26,37 @@ const year = new Date().getFullYear();
       <a href="/cascade/">HotLoop Cascade</a>
       <a href="/codesys/">HotLoop for CODESYS</a>
       <a href="/transmitter/">HotLoop Transmitter</a>
-      <a href="/unifi/">UniFi, read-only</a>
-      <a href="/integrations/">Integrations</a>
-      <a href="/releases/">Release notes</a>
+      <a href="/unifi/">{t('f.unifi')}</a>
+      <a href="/integrations/">{t('f.integrations')}</a>
+      <a href="/releases/">{t('f.releases')}</a>
     </nav>
 
-    <nav aria-label="Resources">
-      <h2>Resources</h2>
-      <a href="https://docs.hotloop.io">Documentation (docs.hotloop.io)</a>
-      <a href="https://docs.hotloop.io/roadmap/">HotLoop roadmap</a>
-      <a href="https://docs.hotloop.io/flow/roadmap/">Flow roadmap</a>
-      <a href="https://docs.hotloop.io/cascade/roadmap/">Cascade roadmap</a>
-      <a href="https://docs.hotloop.io/codesys/roadmap/">HotLoop for CODESYS roadmap</a>
-      <a href="https://docs.hotloop.io/transmitter/roadmap/">Transmitter roadmap</a>
-      <a href="/license/">License</a>
-      <a href="/terms/">Terms of Service</a>
-      <a href="/releases/rss.xml">Release feed (RSS)</a>
+    <nav aria-label={t('f.resources')}>
+      <h2>{t('f.resources')}</h2>
+      <a href="https://docs.hotloop.io">{t('f.docs')}</a>
+      <a href="https://docs.hotloop.io/roadmap/">{t('f.roadmap')}</a>
+      <a href="https://docs.hotloop.io/flow/roadmap/">{t('f.flowRoadmap')}</a>
+      <a href="https://docs.hotloop.io/cascade/roadmap/">{t('f.cascadeRoadmap')}</a>
+      <a href="https://docs.hotloop.io/codesys/roadmap/">{t('f.codesysRoadmap')}</a>
+      <a href="https://docs.hotloop.io/transmitter/roadmap/">{t('f.transmitterRoadmap')}</a>
+      <a href="/license/">{t('f.license')}</a>
+      <a href="/terms/">{t('f.terms')}</a>
+      <a href="/releases/rss.xml">{t('f.rss')}</a>
     </nav>
 
-    <nav aria-label="Community">
-      <h2>Community</h2>
+    <nav aria-label={t('f.community')}>
+      <h2>{t('f.community')}</h2>
       <a href="https://github.com/HotLoop-io">GitHub</a>
-      <a href="https://github.com/orgs/HotLoop-io/discussions">Discussions</a>
-      <a href="https://www.reddit.com/r/HotLoop/">Reddit, r/HotLoop</a>
-      <a href="mailto:helpdesk@fireballz.ai">Support by EmberNet</a>
+      <a href="https://github.com/orgs/HotLoop-io/discussions">{t('f.discussions')}</a>
+      <a href="https://www.reddit.com/r/HotLoop/">{t('f.reddit')}</a>
+      <a href="mailto:helpdesk@fireballz.ai">{t('f.support')}</a>
     </nav>
   </div>
 
+  <div class="wrap-wide langrow"><LanguageSwitcher variant="footer" /></div>
+
   <div class="wrap-wide bottom">
-    <p>
-      Every HotLoop product is under the HotLoop Source License Agreement 1.0. Free for home and lab. <a href="/license/">What the license means for you</a>.
-    </p>
+    <p set:html={rich('f.licenseLine')} />
     <p class="small">&copy; {year} HotLoop LLC</p>
   </div>
 </footer>
@@ -74,6 +76,7 @@ const year = new Date().getFullYear();
   }
   nav a { color: var(--hl-ink); text-decoration: none; font-size: var(--hl-fs-sm); }
   nav a:hover { color: var(--hl-link); text-decoration: underline; }
+  .langrow { padding-bottom: var(--hl-s5); }
   .bottom {
     display: flex; flex-wrap: wrap; gap: var(--hl-s3) var(--hl-s6); justify-content: space-between;
     padding-block: var(--hl-s5); border-top: 1px solid var(--hl-border);

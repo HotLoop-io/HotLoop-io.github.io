@@ -17,6 +17,10 @@ const TITLE_MAX = 60;       // Google truncates around 600px, roughly 60 charact
 const TITLE_MIN = 15;
 const DESC_MIN = 70;
 const DESC_MAX = 160;       // truncated around 155 to 160
+// Chinese, Japanese and Korean carry about twice the meaning per character and Google counts them by
+// pixel width, so their windows are lower. These are the limits scripts/i18n-check.mjs applies to the catalogs.
+const CJK = /^(ja|ko|zh)/i;
+const limits = (lang) => (CJK.test(lang || '') ? { tMax: 40, tMin: 15, dMin: 30, dMax: 110 } : { tMax: TITLE_MAX, tMin: TITLE_MIN, dMin: DESC_MIN, dMax: DESC_MAX });
 
 function walk(dir, out = []) {
   for (const e of readdirSync(dir)) {
@@ -99,6 +103,7 @@ const warn = (route, msg) => warnings.push(`${route}  ${msg}`);
   pin('TRANSMITTER.version', /export const TRANSMITTER = \{[^}]*?version: '([\d.]+)'/, newest.transmitter);
 }
 
+const alternatesByRoute = new Map();
 const titles = new Map();
 const descs = new Map();
 const idsByRoute = new Map();
@@ -131,8 +136,9 @@ for (const f of htmlFiles) {
   const title = root.querySelector('title')?.text.trim();
   if (!title) err(route, 'missing <title>');
   else {
-    if (title.length > TITLE_MAX) err(route, `title is ${title.length} chars, over ${TITLE_MAX}: "${title}"`);
-    if (title.length < TITLE_MIN) warn(route, `title is only ${title.length} chars: "${title}"`);
+    const L = limits(lang);
+    if ([...title].length > L.tMax) err(route, `title is ${title.length} chars, over ${L.tMax}: "${title}"`);
+    if ([...title].length < L.tMin) warn(route, `title is only ${title.length} chars: "${title}"`);
     if (!is404) {
       if (titles.has(title)) err(route, `duplicate title with ${titles.get(title)}: "${title}"`);
       titles.set(title, route);
@@ -143,8 +149,9 @@ for (const f of htmlFiles) {
   const desc = root.querySelector('meta[name="description"]')?.getAttribute('content')?.trim();
   if (!desc) { if (!is404) err(route, 'missing meta description'); }
   else {
-    if (desc.length > DESC_MAX) err(route, `description is ${desc.length} chars, over ${DESC_MAX}`);
-    if (desc.length < DESC_MIN) err(route, `description is only ${desc.length} chars, under ${DESC_MIN}`);
+    const L = limits(lang);
+    if ([...desc].length > L.dMax) err(route, `description is ${desc.length} chars, over ${L.dMax}`);
+    if ([...desc].length < L.dMin) err(route, `description is only ${desc.length} chars, under ${L.dMin}`);
     if (descs.has(desc)) err(route, `duplicate description with ${descs.get(desc)}`);
     descs.set(desc, route);
   }
@@ -181,6 +188,20 @@ for (const f of htmlFiles) {
     if (SITE && !canon.startsWith(SITE)) err(route, `canonical is not on ${SITE}: ${canon}`);
   }
 
+  // language: the folder a page sits in says which language it is, and <html lang> and dir have to agree
+  {
+    const folder = /^\/([a-z]{2}(?:-[a-z]+)?)\//.exec(route)?.[1];
+    const tagOf = { 'zh-hans': 'zh-Hans' };
+    const LANG_FOLDERS = ['es', 'fr', 'it', 'de', 'nb', 'bg', 'el', 'ko', 'ja', 'vi', 'hi', 'zh-hans', 'ar'];
+    const want = folder && LANG_FOLDERS.includes(folder) ? (tagOf[folder] || folder) : 'en';
+    if (lang && lang !== want) err(route, `<html lang="${lang}"> on a page that should be ${want}`);
+    const dir = root.querySelector('html')?.getAttribute('dir');
+    if (want === 'ar' && dir !== 'rtl') err(route, 'Arabic page without dir="rtl"');
+    if (want !== 'ar' && dir && dir !== 'ltr') err(route, `dir="${dir}" on a left-to-right page`);
+    const alts = root.querySelectorAll('link[rel="alternate"][hreflang]').map((l) => [l.getAttribute('hreflang'), l.getAttribute('href')]);
+    alternatesByRoute.set(route, { want, alts });
+  }
+
   // social
   for (const p of ['og:title', 'og:description', 'og:image', 'og:url']) {
     if (!root.querySelector(`meta[property="${p}"]`)) { if (!is404) err(route, `missing ${p}`); }
@@ -213,6 +234,29 @@ for (const f of htmlFiles) {
   // it should never be noindex by accident on a real page
   if (!is404 && /noindex/i.test(root.querySelector('meta[name="robots"]')?.getAttribute('content') || '')) {
     err(route, 'a real page is marked noindex');
+  }
+}
+
+// hreflang: every language version lists all the others and itself, the lists agree, every target is a real
+// page, and x-default is the English one. A page that is English only carries none.
+{
+  const ALL = ['en', 'es', 'fr', 'it', 'de', 'nb', 'bg', 'el', 'ko', 'ja', 'vi', 'hi', 'zh-Hans', 'ar'];
+  for (const [route, { want, alts }] of alternatesByRoute) {
+    if (!alts.length) continue;
+    const map = new Map(alts);
+    for (const tag of [...ALL, 'x-default']) if (!map.has(tag)) err(route, `hreflang is missing ${tag}`);
+    for (const [tag, url] of alts) {
+      let path;
+      try { path = new URL(url).pathname; } catch { err(route, `hreflang ${tag} is not an absolute URL: ${url}`); continue; }
+      if (!url.startsWith('https://')) err(route, `hreflang ${tag} is not https: ${url}`);
+      if (!alternatesByRoute.has(path)) { err(route, `hreflang ${tag} points at a page that is not in the build: ${path}`); continue; }
+      const back = alternatesByRoute.get(path);
+      if (back.want !== (tag === 'x-default' ? 'en' : tag)) err(route, `hreflang ${tag} points at ${path}, which is ${back.want}`);
+      // reciprocal: the page it points at must point back at this one
+      const rev = back.alts.find(([, u]) => new URL(u).pathname === route);
+      if (!rev) err(route, `hreflang ${tag} (${path}) does not link back`);
+    }
+    if (map.get(want) && new URL(map.get(want)).pathname !== route) err(route, `hreflang ${want} is not this page`);
   }
 }
 

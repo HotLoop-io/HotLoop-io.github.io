@@ -1,0 +1,292 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import LoopInstrument from '../components/LoopInstrument.astro';
+import CardDetail from '../components/CardDetail.astro';
+import { TIERS, TIER_ORDER } from '../lib/tiers';
+import { LINES } from '../lib/family';
+import { forPage } from '../i18n/page';
+
+const { locale, t, rich, to } = forPage(Astro.url.pathname);
+import { latestPublished } from '../lib/released';
+
+const protocols = await getCollection('protocols');
+const nodes = await getCollection('nodes');
+const releases = await getCollection('releases');
+
+const counts = Object.fromEntries(
+  TIER_ORDER.map((t) => [
+    t,
+    // The gateway-mode entry stands for eight protocols, so count what it lists.
+    protocols
+      .filter((p) => p.data.verification === t)
+      .reduce((n, p) => n + (t === 'gateway-mode' ? p.data.aka.length : 1), 0),
+  ]),
+) as Record<string, number>;
+
+const newest = (product: string) =>
+  releases
+    .filter((r) => r.data.product === product)
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime() || b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
+const gw = newest('core');
+const gwOut = releases.filter((r) => r.data.product === 'core' && r.data.published).sort((a, b) => b.data.version.localeCompare(a.data.version, undefined, { numeric: true }))[0];
+const fl = newest('flow');
+const ca = newest('cascade');
+const nativeCount = protocols.filter((p) => p.data.verification !== 'gateway-mode').length;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString(locale.tag, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+---
+
+<Base
+  title={t('h.title')}
+  description={t('h.desc')}
+  ogAlt={t('h.ogAlt')}
+>
+  <section class="hero">
+    <div class="wrap-wide grid-hero">
+      <div class="copy stack">
+        <span class="chip ok">{t('h.chip', { version: gwOut.data.version })}</span>
+        <h1>{t('h.h1')}</h1>
+        <p class="lede">{t('h.lede')}</p>
+        <div class="cluster">
+          <a class="btn primary" href="/gateway/">
+            {t('h.cta.gateway')}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+          </a>
+          <a class="btn" href={to('/products/')}>{t('h.cta.lineup')}</a>
+          <a class="btn" href="/flow/">{t('h.cta.flow')}</a>
+          <a class="btn" href="https://fireballz.ai/get-a-quote/">{t('h.cta.fireball')}</a>
+        </div>
+      </div>
+      <LoopInstrument />
+    </div>
+
+    <div class="wrap-wide stats">
+      <div class="stat">
+        <div class="n mono">{nativeCount}</div>
+        <p>{t('h.stat1')}</p>
+      </div>
+      <div class="stat">
+        <div class="n mono">{nodes.length}</div>
+        <p>{t('h.stat2')}</p>
+      </div>
+      <div class="stat">
+        <div class="n mono">45.6<small>MB</small></div>
+        <p set:html={rich('h.stat3')} />
+      </div>
+    </div>
+  </section>
+
+  <section class="block running" aria-labelledby="running-at">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label" id="running-at">{t('h.prodLabel')}</span>
+        <p class="lede">{t('h.prodText')}</p>
+      </div>
+      <ul class="logos">
+        <li><a class="plate" href="https://shepherdboyfarms.com" rel="noopener" aria-label="Shepherd Boy Farms"><img src="/customers/shepherd-boy-farms-logo.png" alt="Shepherd Boy Farms" width="2472" height="1238" loading="lazy" decoding="async" /></a></li>
+        <li><a class="plate" href="https://www.dayglo.com" rel="noopener" aria-label="DayGlo"><img class="on-light" src="/customers/dayglo-logo-standard-transparent.png" alt="DayGlo" width="279" height="69" loading="lazy" decoding="async" /><img class="on-dark" src="/customers/dayglo-logo.svg" alt="DayGlo" width="648" height="180" loading="lazy" decoding="async" /></a></li>
+        <li><a class="plate" href="https://www.tranetechnologies.com" rel="noopener" aria-label="Trane Technologies"><img class="on-light" src="/customers/trane-technologies-logo.svg" alt="Trane Technologies" width="626" height="175" loading="lazy" decoding="async" /><img class="on-dark blend" src="/customers/trane-technologies-logo-reversed.png" alt="Trane Technologies" width="1310" height="730" loading="lazy" decoding="async" /></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('h.loopLabel')}</span>
+        <h2>{t('h.loopH2')}</h2>
+        <p class="lede">{t('h.loopLede')}</p>
+      </div>
+      <div class="grid grid-3">
+        <article class="card reveal">
+          <h3>{t('h.sense')}</h3>
+          <p>{t('h.senseP')}</p>
+        </article>
+        <article class="card reveal">
+          <h3>{t('h.decide')}</h3>
+          <p>{t('h.decideP')}</p>
+        </article>
+        <article class="card reveal">
+          <h3>{t('h.act')}</h3>
+          <p set:html={rich('h.actP')} />
+        </article>
+      </div>
+      <CardDetail label={t('c.detail')}>
+        <div><h4>{t('h.sense')}</h4><p>{t('h.senseD')}</p></div>
+        <div><h4>{t('h.decide')}</h4><p>{t('h.decideD')}</p></div>
+        <div><h4>{t('h.act')}</h4><p set:html={rich('h.actD')} /></div>
+      </CardDetail>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('h.prodsLabel')}</span>
+        <h2>{t('h.prodsH2')}</h2>
+        <p class="lede">{t('f.family')}</p>
+      </div>
+      <div class="lines">
+        {LINES.map((l) => (
+          <div class="line">
+            <p class="line-head">{latestPublished(releases, l.id) ? <span class="chip ok">{t('m.lineRel', { line: l.label, version: latestPublished(releases, l.id)!.data.version })}</span> : <span class="chip warn">{t('m.lineSoon', { line: l.label })}</span>}</p>
+            <div class="grid grid-4 lineup">
+              {l.members.map((m) => (
+                <a class="card mini reveal" href={m.href}>
+                  <h3>{m.name.replace('HotLoop ', '')}</h3>
+                  <p>{t(`m.${m.id}`)}</p>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <p class="more"><a class="btn" href={to('/products/')}>{t('h.compare')}</a></p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('h.intLabel')}</span>
+        <h2>{t('h.intH2')}</h2>
+        <p class="lede">{t('h.intLede')}</p>
+      </div>
+      <div class="grid grid-4 tiers">
+        {TIER_ORDER.filter((x) => counts[x] > 0).map((tier) => (
+          <div class="card tier reveal">
+            <div class="cluster head">
+              <span class={`chip ${TIERS[tier].chip}`}>{t(`t.${tier}.label`)}</span>
+              <span class="count mono">{counts[tier]}</span>
+            </div>
+            <p>{t(`t.${tier}.blurb`)}</p>
+          </div>
+        ))}
+      </div>
+      <p class="more"><a class="btn" href="/integrations/">{t('h.intAll')}</a></p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('h.latestLabel')}</span>
+        <h2>{t('h.latestH2')}</h2>
+      </div>
+      <div class="grid grid-3">
+        <a class="card release reveal" href="/releases/flow/">
+          <div class="cluster head">
+            <h3>Flow {fl.data.version}</h3><span class="chip ok">{t('h.published')}</span>
+          </div>
+          <p class="date">{fmt(fl.data.date)}</p>
+        </a>
+        <a class="card release reveal" href="/releases/core/">
+          <div class="cluster head">
+            <h3>HotLoop core {gw.data.version}</h3><span class={`chip ${gw.data.published ? 'ok' : 'warn'}`}>{gw.data.published ? t('h.published') : t('h.merged')}</span>
+          </div>
+          <p class="date">{fmt(gw.data.date)}</p>
+        </a>
+        <a class="card release reveal" href="/releases/cascade/">
+          <div class="cluster head">
+            <h3>Cascade {ca.data.version}</h3><span class={`chip ${ca.data.published ? 'ok' : 'warn'}`}>{ca.data.published ? t('h.published') : t('h.merged')}</span>
+          </div>
+          <p class="date">{fmt(ca.data.date)}</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="card licensing reveal">
+        <div>
+          <span class="label">{t('h.licLabel')}</span>
+          <h2>{t('h.licH2')}</h2>
+          <p class="lede" set:html={rich('h.licLede')} />
+        </div>
+        <div class="cluster">
+          <a class="btn primary" href="/license/">{t('h.licBtn')}</a>
+          <a class="btn" href="https://fireballz.ai/get-a-quote/">{t('h.talk')}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Customer logos are the companies' own files, never recolored or redrawn. Every plate is the page's own
+     surface, and where a company publishes a standard and a reversed mark the page shows the standard one
+     in light and the reversed one in dark. The plates span the content width and share one size. */
+  .running .section-head { margin-bottom: var(--hl-s5); }
+  .logos { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: var(--hl-s4); }
+  .plate { display: flex; align-items: center; justify-content: center; height: 120px; padding: var(--hl-s4) var(--hl-s6); box-sizing: border-box; background: var(--hl-card); border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); transition: border-color var(--hl-transition-fast); }
+  .plate:hover { border-color: var(--hl-orange); }
+  .plate img { height: auto; width: auto; max-height: 64px; max-width: 100%; display: block; object-fit: contain; }
+  .plate .on-dark { display: none; }
+  /* Trane's reversed logo is a 1310 by 730 picture with a wide black margin around the mark, so it is drawn
+     larger to make the mark the same size as the standard one, and the black margin is blended into the surface. */
+  .plate .blend { max-height: none; width: 273px; height: 152px; margin-block: -44px; }
+  .hero { padding-top: clamp(var(--hl-s7), 6vw, var(--hl-s8)); }
+  .grid-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 620px); gap: clamp(var(--hl-s6), 5vw, var(--hl-s8)); align-items: center; }
+  /* Side by side, the copy column gets about 250px at 1024 and the h1 broke
+     "Automation" in the middle of the word. Stack until there's room. */
+  @media (max-width: 1100px) { .grid-hero { grid-template-columns: 1fr; } }
+  .copy > .chip { justify-self: start; }
+  /* A grid item defaults to min-width:auto, so its widest child sets the column. */
+  .grid-hero > * { min-width: 0; }
+  .copy h1 { max-width: 14ch; }
+  /* Other languages break words in other places, so the English measure would split them mid-word. */
+  .copy h1:not(:lang(en)) { max-width: 22ch; overflow-wrap: break-word; hyphens: auto; }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: var(--hl-s5); margin-top: clamp(var(--hl-s7), 6vw, var(--hl-s8));
+    padding-top: var(--hl-s6); border-top: 1px solid var(--hl-border);
+  }
+  .stat .n { font-size: var(--hl-fs-2xl); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+  .stat .n small { font-size: 0.45em; margin-left: 0.2em; color: var(--hl-ink-soft); font-weight: 700; }
+  .stat p { color: var(--hl-ink-soft); font-size: var(--hl-fs-sm); margin-top: var(--hl-s2); max-width: 40ch; }
+
+  .product { display: grid; gap: var(--hl-s4); align-content: start; }
+  .product .head { justify-content: space-between; }
+  .product .head h3 { margin: 0; }
+  .product .what { color: var(--hl-ink); font-size: var(--hl-fs-base); }
+  .product .license { padding-top: var(--hl-s3); border-top: 1px solid var(--hl-border); font-size: var(--hl-fs-xs); }
+  .product .btn { justify-self: start; }
+
+  .lines { display: grid; gap: var(--hl-s6); }
+  .line-head { margin: 0 0 var(--hl-s3); }
+  .lineup { margin-top: 0; }
+  a.mini { display: grid; gap: var(--hl-s2); align-content: start; text-decoration: none; color: inherit; padding: var(--hl-s5); transition: transform var(--hl-transition-fast), border-color var(--hl-transition-fast); }
+  a.mini:hover { transform: translateY(-2px); border-color: var(--hl-orange); }
+  .mini .head { justify-content: space-between; }
+  .mini h3 { margin: 0; font-size: var(--hl-fs-md); }
+  .mini p { font-size: var(--hl-fs-sm); color: var(--hl-ink-soft); }
+
+  .tier .head { justify-content: space-between; margin-bottom: var(--hl-s3); }
+  .tier .count { font-size: var(--hl-fs-xl); font-weight: 800; }
+  .more { margin-top: var(--hl-s6); }
+
+  a.release { display: block; text-decoration: none; color: inherit; transition: transform var(--hl-transition-fast), box-shadow var(--hl-transition-fast), border-color var(--hl-transition-fast); }
+  a.release:hover { transform: translateY(-2px); box-shadow: var(--hl-sh-2); border-color: var(--hl-orange); }
+  .release .head { justify-content: space-between; margin-bottom: var(--hl-s1); }
+  .release .head h3 { margin: 0; }
+  .release .date { font-size: var(--hl-fs-xs); margin-bottom: var(--hl-s3); }
+
+  .licensing { display: flex; flex-wrap: wrap; gap: var(--hl-s6); align-items: center; justify-content: space-between; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
+  .licensing > div { display: grid; gap: var(--hl-s3); max-width: 60ch; }
+  .licensing .lede { font-size: var(--hl-fs-md); }
+  .licensing > .cluster { display: flex; max-width: none; }
+</style>
+<style is:global>
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .plate .on-light { display: none; }
+    :root:not([data-theme="light"]) .plate .on-dark { display: block; }
+    :root:not([data-theme="light"]) .plate .blend { mix-blend-mode: lighten; }
+  }
+  :root[data-theme="dark"] .plate .on-light { display: none; }
+  :root[data-theme="dark"] .plate .on-dark { display: block; }
+  :root[data-theme="dark"] .plate .blend { mix-blend-mode: lighten; }
+</style>

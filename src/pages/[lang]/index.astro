@@ -1,0 +1,11 @@
+---
+// The home page in each of the other thirteen languages, at /<language>/. English stays at /.
+import Home from '../../views/Home.astro';
+import { OTHERS } from '../../i18n/locales';
+
+export function getStaticPaths() {
+  return OTHERS.map((l) => ({ params: { lang: l.path } }));
+}
+---
+
+<Home />
