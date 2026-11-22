@@ -36,7 +36,7 @@ export const byCode = (code: string) => LOCALES.find((l) => l.code === code) ?? 
 // Pages that exist in every language. A page not listed here is English only, and a link to it
 // from a translated page goes to the English page, so no link in any language is ever broken.
 // These are route paths without the language folder.
-export const TRANSLATED = ['/', '/products/', '/iot/', '/edge/', '/edge-relay/', '/gateway/', '/transmitter/', '/cascade/', '/unifi/', '/codesys/'];
+export const TRANSLATED = ['/', '/products/', '/iot/', '/edge/', '/edge-relay/', '/gateway/', '/transmitter/', '/cascade/', '/unifi/', '/codesys/', '/flow/'];
 
 /** Which language a pathname is in, and the same path with the language folder taken off. */
 export function split(pathname: string): { locale: Locale; rest: string } {
