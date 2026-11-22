@@ -1,0 +1,430 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import LeadCard from '../components/LeadCard.astro';
+import FamilyLine from '../components/FamilyLine.astro';
+import JsonLd from '../components/JsonLd.astro';
+import Backpressure from '../components/Backpressure.astro';
+import CardDetail from '../components/CardDetail.astro';
+import { forPage } from '../i18n/page';
+
+const { t, rich, to } = forPage(Astro.url.pathname);
+
+// The Flow version the page announces, and the one arm64 stays on until the follow-up bump.
+const FLOW_VERSION = '2.16.8';
+const FLOW_ARM64 = '2.16.1';
+
+const nodes = await getCollection('nodes');
+const helmFlow = `helm repo add hotloop-flow https://hotloop.io/hotloop-flow/
+helm install line3-flows hotloop-flow/hotloop-flow`;
+const level = (l: string) => nodes.filter((n) => n.data.level === l).length;
+
+// Absolute numbers only: a side-by-side table moves every time the box changes.
+const bench = [
+  [t('fw.b1'), '41.7 MB'],
+  [t('fw.b2'), '45.6 MB'],
+  [t('fw.b3'), '0.05 s'],
+  [t('fw.b4'), t('fw.v4')],
+  [t('fw.b5'), t('fw.v5')],
+  [t('fw.b6'), t('fw.v6')],
+  [t('fw.b7'), t('fw.v7')],
+  [t('fw.b8'), t('fw.v8')],
+];
+
+// The head-to-head from 2026-08-08: same flow file, same load, same machine.
+const versus = [
+  [t('fw.s1'), '45.64 MB', '717 MB', '16×'],
+  [t('fw.s2'), '3,460 req/s', '1,290 req/s', '2.7×'],
+  [t('fw.s3'), '1.03 ms', '4.61 ms', '4.5×'],
+  [t('fw.s4'), '16.72 ms', '23.14 ms', '1.4×'],
+  [t('fw.s5'), t('fw.rangeS', { a: '2.1', b: '2.3' }), t('fw.rangeS', { a: '4.6', b: '5.5' }), '~2.3×'],
+];
+
+// The published arm64 image as a pod on one Raspberry Pi 5, measured 2026-10-22.
+const pi5 = [
+  [t('fw.b3'), t('fw.p3v')],
+  [t('fw.b4'), t('fw.p4v')],
+  [t('fw.b6'), t('fw.v6')],
+  [t('fw.b7'), t('fw.p7v')],
+  [t('fw.b8'), t('fw.p8v')],
+  [t('fw.p9'), t('fw.p9v')],
+];
+
+const different = Array.from({ length: 14 }, (_, i) => [t(`fw.d${i + 1}k`), t(`fw.d${i + 1}a`), t(`fw.d${i + 1}b`)]);
+
+const notDone = [1, 2, 3, 4, 5].map((i) => [t(`fw.n${i}h`), t(`fw.n${i}b`)]);
+
+// What Flow does, grouped by the question a plant person asks. Every card is a title
+// and a sentence or two. The long form of each is in the detail block under the groups,
+// and in Flow's own README and docs.
+const groups = [
+  { id: 'ship', k: 'g1', n: 4 },
+  { id: 'see', k: 'g2', n: 3 },
+  { id: 'ride-out', k: 'g3', n: 4 },
+  { id: 'plant', k: 'g4', n: 4 },
+  { id: 'reach', k: 'g5', n: 4 },
+  { id: 'flowlab', k: 'g6', n: 3 },
+  { id: 'locked', k: 'g7', n: 6 }
+].map((g) => ({
+  id: g.id,
+  label: t(`fw.${g.k}.l`),
+  h: t(`fw.${g.k}.h`),
+  cards: Array.from({ length: g.n }, (_, i) => ({ h: t(`fw.${g.k}.${i + 1}h`), b: t(`fw.${g.k}.${i + 1}b`) })),
+}));
+---
+
+<Base
+  title={t('fw.title')}
+  description={t('fw.desc')}
+  ogAlt={t('fw.ogAlt')}
+>
+  <JsonLd
+    slot="head"
+    data={{
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'HotLoop Flow',
+      url: 'https://hotloop.io/flow/',
+      description:
+        'A flow engine in one static Go binary that reads Node-RED v1 flow files, with bounded queues, a thread per node, and a security posture built for plant floors.',
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Linux',
+      license: 'https://hotloop.io/license/',
+      isAccessibleForFree: true,
+      softwareVersion: FLOW_VERSION,
+      publisher: { '@id': 'https://hotloop.io/#organization' },
+    }}
+  />
+  <section class="page-hero">
+    <div class="wrap stack">
+      <div class="cluster"><span class="label">HotLoop Flow</span><span class="chip ok">{t('fw.chip')}</span></div>
+      <h1>{t('fw.h1')}</h1>
+      <p class="lede" set:html={t('fw.lede')} />
+      <div class="notice info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 8h.01M11 12h1v5h1" /></svg>
+        <div>
+          <strong>{t('fw.nStrong', { version: FLOW_VERSION })}</strong>
+          <p set:html={rich('fw.nBody', { version: FLOW_VERSION, stay: FLOW_ARM64 })} />
+        </div>
+      </div>
+      <div class="cluster">
+        <a class="btn primary" href="https://docs.hotloop.io/flow/install/">{t('iot.btnInstall')}</a>
+        <a class="btn" href={to('/integrations/') + '#flow-nodes'}>{t('fw.btnNodes', { n: nodes.length })}</a>
+        <a class="btn" href="/releases/flow/">{t('fl.notes')}</a>
+        <a class="btn" href="https://docs.hotloop.io/flow/overview/">{t('fl.docs')}</a>
+      </div>
+      <FamilyLine id="flow" />
+    </div>
+  </section>
+
+  <section class="block" id="what-it-does">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('fw.wl')}</span>
+        <h2>{t('fw.wh')}</h2>
+        <p class="lede" set:html={rich('fw.wlede')} />
+      </div>
+      {groups.map((g) => (
+        <div class="group" id={g.id}>
+          <h3 class="group-title">{g.label}</h3>
+          <p class="group-sub">{g.h}</p>
+          <ul class="rows">
+            {g.cards.map((c) => (
+              <li>
+                <div class="rh"><strong>{c.h}</strong></div>
+                <p set:html={c.b} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="block" id="editor">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('fw.el')}</span>
+        <h2>{t('fw.eh')}</h2>
+        <p class="lede">{t('fw.elede')}</p>
+      </div>
+      <div class="flow-shots">
+        <figure>
+          <img class="flow-shot light" src="/flow/editor.png" width="1440" height="1000" loading="lazy" alt={t('fw.e1a')} />
+          <img class="flow-shot dark" src="/flow/editor-dark.png" width="1440" height="1000" loading="lazy" alt={t('fw.e1d')} />
+          <figcaption>{t('fw.e1c')}</figcaption>
+        </figure>
+        <figure>
+          <img class="flow-shot light" src="/flow/review.png" width="1440" height="1000" loading="lazy" alt={t('fw.e2a')} />
+          <img class="flow-shot dark" src="/flow/review-dark.png" width="1440" height="1000" loading="lazy" alt={t('fw.e2d')} />
+          <figcaption>{t('fw.e2c')}</figcaption>
+        </figure>
+        <figure>
+          <img class="flow-shot light" src="/flow/debug.png" width="1440" height="1000" loading="lazy" alt={t('fw.e3a')} />
+          <img class="flow-shot dark" src="/flow/debug-dark.png" width="1440" height="1000" loading="lazy" alt={t('fw.e3d')} />
+          <figcaption>{t('fw.e3c')}</figcaption>
+        </figure>
+        <figure>
+          <img class="flow-shot light" src="/flow/signin.png" width="800" height="500" loading="lazy" alt={t('fw.e4a')} />
+          <img class="flow-shot dark" src="/flow/signin-dark.png" width="800" height="500" loading="lazy" alt={t('fw.e4d')} />
+          <img class="flow-shot light" src="/flow/dashboard-signin.png" width="800" height="500" loading="lazy" alt={t('fw.e4e')} />
+          <img class="flow-shot dark" src="/flow/dashboard-signin-dark.png" width="800" height="500" loading="lazy" alt={t('fw.e4f')} />
+          <figcaption>{t('fw.e4c')}</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="install">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('fw.il')}</span>
+        <h2>{t('fw.ih')}</h2>
+        <p class="lede">{t('fw.ilede')}</p>
+      </div>
+      <div class="grid grid-2">
+        <article class="card reveal">
+          <h3>Podman</h3>
+          <p class="muted" set:html={t('fw.podP')} />
+        </article>
+        <article class="card reveal">
+          <h3>k3s with Helm</h3>
+          <pre><code>{helmFlow}</code></pre>
+          <p class="muted">{t('fw.k8sP')}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="numbers">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('fw.nl')}</span>
+        <h2>{t('fw.nh')}</h2>
+        <p class="lede">{t('fw.nlede')}</p>
+      </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>{t('fw.tMeasure')}</th><th>Flow</th></tr></thead>
+          <tbody>
+            {bench.map(([k, a]) => (
+              <tr><td>{k}</td><td class="num win">{a}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pi5" id="pi5">
+        <h3>{t('fw.pi5h')}</h3>
+        <p class="muted">{t('fw.pi5p')}</p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>{t('fw.tMeasure')}</th><th>{t('fw.pi5col')}</th></tr></thead>
+            <tbody>
+              {pi5.map(([k, a]) => (
+                <tr><td>{k}</td><td class="num win">{a}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="muted" set:html={t('fw.pi5n')} />
+      </div>
+
+      <div class="caveats">
+        <h3>{t('fw.cvH')}</h3>
+        <p class="muted">{t('fw.cvI')}</p>
+        <ol>
+          <li set:html={t('fw.cv1')} />
+          <li set:html={t('fw.cv2')} />
+          <li set:html={t('fw.cv3')} />
+          <li set:html={t('fw.cv4')} />
+        </ol>
+        <p class="muted">{t('fw.cvF')}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="head-to-head">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('fw.hl')}</span>
+        <h2>{t('fw.hh')}</h2>
+        <p class="lede">{t('fw.hlede')}</p>
+      </div>
+      <CardDetail label={t('fw.hDetail')}>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>{t('fw.tMeasure')}</th><th>Flow</th><th>Node-RED</th><th>{t('fw.hRatio')}</th></tr></thead>
+          <tbody>
+            {versus.map(([k, a, b, r]) => (
+              <tr><td>{k}</td><td class="num win">{a}</td><td class="num">{b}</td><td class="num">{r}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div class="caveats">
+        <h3>{t('fw.hcH')}</h3>
+        <ol>
+          <li set:html={t('fw.hc1')} />
+          <li set:html={t('fw.hc2')} />
+          <li set:html={t('fw.hc3')} />
+        </ol>
+        <p class="muted">{t('fw.hn1')}</p>
+        <p class="muted">{t('fw.hn2')}</p>
+      </div>
+      </CardDetail>
+    </div>
+  </section>
+
+  <section class="block" id="from-node-red">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('fw.nrl')}</span>
+        <h2>{t('fw.nrh')}</h2>
+        <p class="lede" set:html={t('fw.nrlede')} />
+      </div>
+      <div class="grid grid-2">
+        <LeadCard cls="t-md" h={t('fw.l1h')} b={t('fw.l1b')} />
+        <article class="card reveal"><h3 class="t-md">{t('fw.l2h')}</h3><p>{t('fw.l2b')}</p></article>
+        <article class="card reveal"><h3 class="t-md">{t('fw.l3h')}</h3><p>{t('fw.l3b')}</p></article>
+        <article class="card reveal"><h3 class="t-md">{t('fw.l4h')}</h3><p>{t('fw.l4b')}</p></article>
+      </div>
+      <CardDetail label={t('fw.ndLabel')}>
+        <div id="node-red-detail" class="stack">
+          <div><h4>{t('fw.nd1h')}</h4><p>{t('fw.nd1b')}</p></div>
+          <div><h4>{t('fw.nd2h')}</h4><p>{t('fw.nd2b')}</p></div>
+          <div><h4>{t('fw.nd3h')}</h4><p set:html={t('fw.nd3b')} /></div>
+          <div><h4>{t('fw.nd4h')}</h4><p>{t('fw.nd4b')}</p></div>
+        </div>
+      </CardDetail>
+      <Backpressure />
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('fw.cl')}</span>
+        <h2>{t('fw.ch')}</h2>
+      </div>
+      <div class="table-wrap">
+        <table class="data stack">
+          <thead><tr><th>{t('fw.cArea')}</th><th>Node-RED</th><th>Flow</th></tr></thead>
+          <tbody>
+            {different.map(([k, a, b]) => <tr><td>{k}</td><td data-label="Node-RED">{a}</td><td data-label="Flow">{b}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <p class="prose muted after">{t('fw.cAfter')}</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('fw.kl')}</span>
+        <h2>{t('fw.kh', { n: nodes.length })}</h2>
+        <p class="lede">{t('fw.klede')}</p>
+      </div>
+      <div class="grid grid-4">
+        <div class="card"><div class="mono big">{level('full')}</div><h3 class="t-md">{t('fw.k1h')}</h3><p>{t('fw.k1p')}</p></div>
+        <div class="card"><div class="mono big">{level('partial')}</div><h3 class="t-md">{t('fw.k2h')}</h3><p>{t('fw.k2p')}</p></div>
+        <div class="card"><div class="mono big">{level('divergent')}</div><h3 class="t-md">{t('fw.k3h')}</h3><p>{t('fw.k3p')}</p></div>
+        <div class="card"><div class="mono big">{level('flow-only')}</div><h3 class="t-md">{t('fw.k4h')}</h3><p>{t('fw.k4p')}</p></div>
+      </div>
+      <div class="grid grid-2 after">
+        <div class="card"><h3 class="t-md">{t('fw.k5h')}</h3><p>{t('fw.k5p')}</p></div>
+        <div class="card"><h3 class="t-md">{t('fw.k6h')}</h3><p set:html={t('fw.k6p')} /></div>
+      </div>
+      <p class="after"><a class="btn" href={to('/integrations/') + '#flow-nodes'}>{t('fw.btnAll', { n: nodes.length })}</a></p>
+    </div>
+  </section>
+
+  <section class="block" id="release-notes">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('fw.rl')}</span>
+        <h2>{t('fw.rh')}</h2>
+      </div>
+      <div class="cluster">
+        <a class="btn" href="/releases/flow/">{t('fl.notes')}</a>
+        <a class="btn" href="https://docs.hotloop.io/flow/roadmap/">{t('fl.roadmap')}</a>
+        <a class="btn" href="https://docs.hotloop.io/flow/migrating-from-node-red/">{t('fw.btnMig')}</a>
+        <a class="btn" href="https://docs.hotloop.io/flow/compatibility/">{t('fw.btnMat')}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="label">{t('fw.sl')}</span>
+        <h2>{t('fw.sh')}</h2>
+        <p class="lede" set:html={t('fw.slede')} />
+      </div>
+      <ul class="notdone">
+        {notDone.map(([h, b]) => <li><strong>{h}</strong> {b}</li>)}
+        <li>
+          <strong>{t('fw.n6h')}</strong> {t('fw.n6b')}
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="card cta reveal">
+        <div class="stack">
+          <span class="label">{t('fw.ll')}</span>
+          <h2>{t('fw.lh')}</h2>
+          <p class="muted" set:html={rich('fw.lp')} />
+        </div>
+        <a class="btn primary" href="/license/">{t('iot.licBtn')}</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
+  .page-hero h1 { max-width: 20ch; }
+  .page-hero .notice { max-width: 68ch; }
+  .after { margin-top: var(--hl-s6); }
+  .group + .group { margin-top: var(--hl-s8); }
+  .group-title { font-size: var(--hl-fs-xl); }
+  .group-sub { color: var(--hl-ink-soft); margin: var(--hl-s2) 0 var(--hl-s5); max-width: 62ch; }
+
+
+  .pi5 { margin-top: var(--hl-s7); display: grid; gap: var(--hl-s4); }
+  .caveats { margin-top: var(--hl-s7); padding: var(--hl-s6); border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); background: var(--hl-card); display: grid; gap: var(--hl-s3); }
+  .caveats ol { padding-left: 1.3em; display: grid; gap: var(--hl-s3); color: var(--hl-ink-soft); }
+  .caveats li strong { color: var(--hl-ink); }
+
+  .big { font-size: var(--hl-fs-2xl); font-weight: 800; line-height: 1; margin-bottom: var(--hl-s2); }
+  ul.notdone { display: grid; gap: var(--hl-s4); padding-left: 1.2em; max-width: 78ch; color: var(--hl-ink-soft); }
+  ul.notdone strong { color: var(--hl-ink); }
+
+  .cta { display: flex; flex-wrap: wrap; gap: var(--hl-s6); justify-content: space-between; align-items: center; padding: clamp(var(--hl-s6), 5vw, var(--hl-s8)); }
+  .cta .stack { max-width: 62ch; }
+  .rows { list-style: none; padding: 0; margin: 0; display: grid; border-top: 1px solid var(--hl-border); }
+  .rows li { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(0, 2.4fr); gap: var(--hl-s2) var(--hl-s6); padding: var(--hl-s4) 0; border-bottom: 1px solid var(--hl-border); align-items: start; }
+  .rows .rh { display: flex; flex-direction: column; align-items: flex-start; gap: var(--hl-s1); }
+  .rows p { margin: 0; color: var(--hl-ink-soft); }
+  @media (max-width: 720px) { .rows li { grid-template-columns: 1fr; } }
+  .flow-shots { display: grid; gap: var(--hl-s7); }
+  .flow-shots figure { display: grid; gap: var(--hl-s3); margin: 0; }
+  .flow-shots figcaption { color: var(--hl-ink-soft); max-width: 70ch; }
+  .flow-shot { width: 100%; height: auto; border: 1px solid var(--hl-border); border-radius: var(--hl-r-card); }
+  .flow-shot.dark { display: none; }
+</style>
+<style is:global>
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .flow-shot.light { display: none; }
+    :root:not([data-theme="light"]) .flow-shot.dark { display: block; }
+  }
+  :root[data-theme="dark"] .flow-shot.light { display: none; }
+  :root[data-theme="dark"] .flow-shot.dark { display: block; }
+  :root[data-theme="light"] .flow-shot.light { display: block; }
+  :root[data-theme="light"] .flow-shot.dark { display: none; }
+</style>
