@@ -6,7 +6,10 @@
 //
 // With JavaScript off it is a static picture of the moment after the wire comes
 // out, so the point still lands.
+import { forPage } from '../i18n/page';
+const { t } = forPage(Astro.url.pathname);
 const W = 300, H = 120, LO = 40;
+const msgs = JSON.stringify(Object.fromEntries(['pull', 'plug', 'qGood', 'qBad', 'low', 'normal', 'held'].map((k) => [k, t(`bz.${k}`)])));
 const y = (v: number) => H - 8 - (v / 80) * (H - 16);
 const pts = (vals: number[]) => vals.map((v, i) => `${(i / 59) * W},${y(v).toFixed(1)}`).join(' ');
 const seed = Array.from({ length: 44 }, (_, i) => 61 + Math.sin(i / 4) * 1.6);
@@ -14,31 +17,28 @@ const naive = [...seed, ...Array(16).fill(0)];
 const good = seed;
 ---
 
-<section class="bnz card" data-bnz aria-labelledby="bnz-title">
+<section class="bnz card" data-bnz data-msgs={msgs} aria-labelledby="bnz-title">
   <div class="top">
-    <h3 id="bnz-title">Pull the wire on TT-101.</h3>
-    <button type="button" class="btn primary" data-pull hidden>Pull the wire</button>
+    <h3 id="bnz-title">{t('bz.heading')}</h3>
+    <button type="button" class="btn primary" data-pull hidden>{t('bz.pull')}</button>
   </div>
-  <p class="muted">
-    Same sensor, same moment, two systems. Low alarm at {LO} degC. Pull the wire and watch which one wakes somebody
-    up for nothing.
-  </p>
+  <p class="muted">{t('bz.intro', { lo: LO })}</p>
 
   <div class="pair">
     <figure class="side" data-side="naive">
-      <figcaption>Calls a failed read zero</figcaption>
-      <svg viewBox={`0 0 ${W} ${H}`} class="trend" role="img" aria-label="Trend where a failed read is recorded as zero">
+      <figcaption>{t('bz.capNaive')}</figcaption>
+      <svg viewBox={`0 0 ${W} ${H}`} class="trend" role="img" aria-label={t('bz.aNaive')}>
         <line class="lim" x1="0" x2={W} y1={y(LO)} y2={y(LO)}></line>
         <text class="lim-t" x={W - 4} y={y(LO) - 4} text-anchor="end">LO {LO}</text>
         <polyline class="line" data-line points={pts(naive)}></polyline>
       </svg>
-      <div class="read"><span class="pv mono" data-pv>0.0</span><span class="q mono" data-q>quality: good</span></div>
-      <p class="state danger" data-state role="status">LOW TEMPERATURE. Paging on-call.</p>
+      <div class="read"><span class="pv mono" data-pv>0.0</span><span class="q mono" data-q>{t('bz.qGood')}</span></div>
+      <p class="state danger" data-state role="status">{t('bz.low')}</p>
     </figure>
 
     <figure class="side" data-side="hotloop">
       <figcaption>HotLoop Gateway</figcaption>
-      <svg viewBox={`0 0 ${W} ${H}`} class="trend" role="img" aria-label="Trend where a failed read is marked bad quality">
+      <svg viewBox={`0 0 ${W} ${H}`} class="trend" role="img" aria-label={t('bz.aHl')}>
         <defs>
           <pattern id="bnz-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
             <line x1="0" y1="0" x2="0" y2="6" class="hatch-l"></line>
@@ -49,16 +49,13 @@ const good = seed;
         <text class="lim-t" x={W - 4} y={y(LO) - 4} text-anchor="end">LO {LO}</text>
         <polyline class="line" data-line points={pts(good)}></polyline>
       </svg>
-      <div class="read"><span class="pv mono stale" data-pv>61.3</span><span class="q mono bad" data-q>quality: bad</span></div>
-      <p class="state held" data-state role="status">Normal, held. The reading is bad, so the alarm isn't evaluated on it.</p>
+      <div class="read"><span class="pv mono stale" data-pv>61.3</span><span class="q mono bad" data-q>{t('bz.qBad')}</span></div>
+      <p class="state held" data-state role="status">{t('bz.held')}</p>
     </figure>
   </div>
 
-  <p class="verdict" data-verdict>
-    The left one just paged somebody at 3am for a process event that never happened. The right one told the truth:
-    nobody knows the temperature right now, and the problem is the instrument, not the tank.
-  </p>
-  <p class="foot">A simulation in your browser. The quality rule and the held alarm are the Gateway's.</p>
+  <p class="verdict" data-verdict>{t('bz.verdict')}</p>
+  <p class="foot">{t('bz.foot')}</p>
 </section>
 
 <style>
@@ -96,6 +93,7 @@ const good = seed;
     if (root.dataset.bound) return;
     root.dataset.bound = '1';
 
+    const M: Record<string, string> = JSON.parse(root.dataset.msgs || '{}');
     const btn = root.querySelector<HTMLButtonElement>('[data-pull]')!;
     const verdict = root.querySelector<HTMLElement>('[data-verdict]')!;
     const side = (s: string) => {
@@ -144,17 +142,17 @@ const good = seed;
 
       const nowA = a[a.length - 1];
       naive.pv.textContent = nowA.toFixed(1);
-      naive.q.textContent = 'quality: good';
+      naive.q.textContent = M.qGood;
       const low = nowA < 40;
       naive.state.className = 'state ' + (low ? 'danger' : 'ok');
-      naive.state.textContent = low ? 'LOW TEMPERATURE. Paging on-call.' : 'Normal.';
+      naive.state.textContent = low ? M.low : M.normal;
 
       hl.pv.textContent = lastGood.toFixed(1);
       hl.pv.classList.toggle('stale', pulled);
-      hl.q.textContent = pulled ? 'quality: bad' : 'quality: good';
+      hl.q.textContent = pulled ? M.qBad : M.qGood;
       hl.q.classList.toggle('bad', pulled);
       hl.state.className = 'state ' + (pulled ? 'held' : 'ok');
-      hl.state.textContent = pulled ? 'Normal, held. The reading is bad, so the alarm isn\'t evaluated on it.' : 'Normal.';
+      hl.state.textContent = pulled ? M.held : M.normal;
       verdict.hidden = !(pulled && t - pulledAt > 4);
     }
 
@@ -164,7 +162,7 @@ const good = seed;
     btn.addEventListener('click', () => {
       pulled = !pulled;
       pulledAt = t;
-      btn.textContent = pulled ? 'Plug it back in' : 'Pull the wire';
+      btn.textContent = pulled ? M.plug : M.pull;
       render();
     });
 

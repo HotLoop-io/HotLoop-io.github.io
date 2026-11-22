@@ -60,6 +60,8 @@ for (const { code } of codes) {
     for (const n of NAMES) {
       // "Gateway mode" is a mode name, not the product; "Edge" alone is covered by Edge Relay and the product line names.
       if (n === 'Gateway' && k.startsWith('t.gateway-mode')) continue;
+      // "Go on, try ..." is the English phrase, not the Go language.
+      if (n === 'Go' && k === 'wg.heading') continue;
       if (n === 'Flow' && /\bFlow\b/.test(e) === false) continue;
       if (new RegExp(`(^|[^A-Za-z])${norm(n).replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}([^A-Za-z]|$)`).test(norm(e)) && !has(v, n)) err(code, k, `"${n}" is in the English and gone from the translation`);
     }
