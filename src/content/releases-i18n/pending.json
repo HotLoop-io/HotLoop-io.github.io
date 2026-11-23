@@ -2,105 +2,66 @@
  "es": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "fr": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "it": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "de": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "nb": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "bg": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "el": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "ko": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "ja": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "vi": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "hi": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "zh-Hans": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ],
  "ar": [
   "cascade/0.1.1",
   "cascade/0.1.2",
-  "cascade/1.0.0",
-  "flow/0.1.0",
-  "flow/2.0.0",
-  "flow/2.0.1"
+  "cascade/1.0.0"
  ]
 }
