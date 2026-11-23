@@ -13,7 +13,7 @@
 export type Status = 'released' | 'main' | 'building' | 'planned';
 
 // The one published version. Change it here when the next release ships.
-export const CURRENT = '4.23.6';
+export const CURRENT = '4.24.0';
 
 export const STATUS: Record<Status, { label: string; chip: 'ok' | 'info' | 'warn' | 'none' }> = {
   released: { label: 'Available now', chip: 'ok' },
