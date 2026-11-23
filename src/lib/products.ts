@@ -164,23 +164,23 @@ export const GATEWAY_FEATURES: Feature[] = [
 export const CASCADE = '1.4.1';
 
 // HotLoop Transmitter is its own release line: a CODESYS library (HotLoop-io/hotloop-transmitter)
-// that publishes PLC values as OPC UA PubSub. 1.1.0 shipped on 2026-11-04 (1.0.0 the same day). The repository is private,
+// that publishes PLC values as OPC UA PubSub. 1.2.0 shipped on 2026-11-23 (1.1.0 on 2026-11-04). The repository is private,
 // so the files are served from hotloop.io/hotloop-transmitter/<version>/ the way the charts are
 // (that repository's gh-pages branch). Change `version` here and in the release note when the next one ships.
 export const TRANSMITTER = {
-  version: '1.1.0',
+  version: '1.2.0',
   downloads: 'https://hotloop.io/hotloop-transmitter/',
 };
 
 // HotLoop for CODESYS is its own release line: a chart and a provisioner
 // (HotLoop-io/hotloop-codesys) around HotLoop Edge, for a CODESYS runtime on the same node.
-// 0.3.8 is the newest chart in the index at hotloop.io/hotloop-codesys/ (published 2026-11-19),
-// and it wraps HotLoop 4.22.0. The repository is private, the chart index and the provisioner
+// 0.3.10 is the newest chart in the index at hotloop.io/hotloop-codesys/ (published 2026-11-23),
+// and it wraps HotLoop 4.24.0. The repository is private, the chart index and the provisioner
 // image are public. The EmberCORE App Store lists it for staff. Change `version` here and in
 // the release note (src/content/releases/codesys/) when the next chart ships.
 export const CODESYS = {
-  version: '0.3.8',
-  needsCore: '4.22.0',
+  version: '0.3.10',
+  needsCore: '4.24.0',
   chart: 'hotloop-codesys',
   chartRepo: 'https://hotloop.io/hotloop-codesys/',
   image: 'ghcr.io/hotloop-io/hotloop-provision',
