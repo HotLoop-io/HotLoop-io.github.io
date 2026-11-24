@@ -694,7 +694,7 @@
   "fw.h1": "Wire the plant. Review it like code.",
   "fw.lede": "A flow engine for the plant floor, in one static Go binary with its own editor. Every deploy is a record you can diff and roll back, a trace shows where a message went, and a wire can ride out an outage. It reads your existing <code>flows.json</code> too, so you can bring what you have.",
   "fw.nStrong": "HotLoop Flow {version} is out. One odd value can no longer take your plant's Flow down, function nodes run await and promises, and all 62 of Node-RED's own example flows give what Node-RED gives. Nothing in your flows, settings or chart changes.",
-  "fw.nBody": "The code is at <a href=\"https://github.com/HotLoop-io/hotloop-flow\">github.com/HotLoop-io/hotloop-flow</a>. It runs on amd64 and arm64, so every box pulls its own ({version} is amd64 only, so on arm64 stay on {stay} until the small bump that brings arm64 back), and there is a chart for Kubernetes. Upgrading is a plain image bump, and the <a href=\"/releases/flow/#flow-{version}\">release notes</a> say what each version changes before you do it. Flow is under the HotLoop Source License Agreement 1.0, and home and lab use is free.",
+  "fw.nBody": "The code is at <a href=\"https://github.com/HotLoop-io/hotloop-flow\">github.com/HotLoop-io/hotloop-flow</a>. It runs on amd64 and arm64, so every box pulls its own, and there is a chart for Kubernetes. Upgrading is a plain image bump, and the <a href=\"/releases/flow/#flow-{version}\">release notes</a> say what each version changes before you do it. Flow is under the HotLoop Source License Agreement 1.0, and home and lab use is free.",
   "fw.btnNodes": "Browse the {n} nodes",
   "fw.wl": "What Flow does",
   "fw.wh": "Ship it, watch it, and let it ride out a bad hour.",

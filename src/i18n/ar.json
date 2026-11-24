@@ -694,7 +694,7 @@
   "fw.h1": "اربط المصنع. وراجعه كما تراجع الشيفرة.",
   "fw.lede": "محرك تدفقات لأرض المصنع، في ملف Go ثابت واحد مع محرره الخاص. كل نشر هو سجل يمكنك مقارنته والتراجع عنه، والتتبع يريك أين ذهبت الرسالة، والسلك يتحمل الانقطاع. وهو يقرأ ملف <code>flows.json</code> الموجود لديك أيضًا، فتحمل معك ما عندك.",
   "fw.nStrong": "صدر HotLoop Flow {version}. لم تعد قيمة شاذة واحدة قادرة على إسقاط Flow في مصنعك، وتشغّل عقد function الأمر await والوعود، وتعطي جميع تدفقات Node-RED النموذجية الاثنان والستون ما يعطيه Node-RED. لا يتغير شيء في تدفقاتك أو إعداداتك أو الـ chart.",
-  "fw.nBody": "الشيفرة على <a href=\"https://github.com/HotLoop-io/hotloop-flow\">github.com/HotLoop-io/hotloop-flow</a>. يعمل على amd64 وarm64، فيسحب كل جهاز صورته ({version} لمعمارية amd64 فقط، لذا ابقَ على {stay} في arm64 حتى يصدر الإصدار الصغير الذي يعيد arm64)، وتتوفر chart لـ Kubernetes. الترقية مجرد تبديل للصورة، و<a href=\"/releases/flow/#flow-{version}\">ملاحظات الإصدار</a> تقول ما يغيّره كل إصدار قبل أن تفعل ذلك. يخضع Flow لاتفاقية HotLoop Source License Agreement 1.0، والاستخدام المنزلي وفي المختبر مجاني.",
+  "fw.nBody": "الشيفرة على <a href=\"https://github.com/HotLoop-io/hotloop-flow\">github.com/HotLoop-io/hotloop-flow</a>. يعمل على amd64 وarm64، فيسحب كل جهاز صورته، وتتوفر chart لـ Kubernetes. الترقية مجرد تبديل للصورة، و<a href=\"/releases/flow/#flow-{version}\">ملاحظات الإصدار</a> تقول ما يغيّره كل إصدار قبل أن تفعل ذلك. يخضع Flow لاتفاقية HotLoop Source License Agreement 1.0، والاستخدام المنزلي وفي المختبر مجاني.",
   "fw.btnNodes": "تصفّح {n} عقدة",
   "fw.wl": "ما يفعله Flow",
   "fw.wh": "انشره، وراقبه، ودعه يتجاوز ساعة سيئة.",

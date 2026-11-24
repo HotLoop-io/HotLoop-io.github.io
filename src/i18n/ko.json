@@ -694,7 +694,7 @@
   "fw.h1": "공장을 연결하세요. 코드처럼 검토하세요.",
   "fw.lede": "공장 현장을 위한 플로 엔진으로, 자체 편집기를 갖춘 Go 정적 바이너리 하나입니다. 모든 배포는 비교하고 되돌릴 수 있는 기록으로 남고, 추적으로 메시지가 어디로 갔는지 볼 수 있으며, 배선은 장애를 견딜 수 있습니다. 기존 <code>flows.json</code>도 그대로 읽으니 지금 가진 것을 가져오면 됩니다.",
   "fw.nStrong": "HotLoop Flow {version}이 나왔습니다. 이상한 값 하나가 더 이상 공장의 Flow를 멈출 수 없고, function 노드가 await와 promise를 실행하며, Node-RED가 제공하는 예제 플로 62개 모두 Node-RED와 같은 결과를 냅니다. 플로, 설정, 차트는 바뀌는 것이 없습니다.",
-  "fw.nBody": "코드는 <a href=\"https://github.com/HotLoop-io/hotloop-flow\">github.com/HotLoop-io/hotloop-flow</a>에 있습니다. amd64와 arm64에서 실행되어 각 장비가 자기 이미지를 받고({version}은 amd64 전용이므로 arm64에서는 arm64를 되살리는 작은 버전이 나올 때까지 {stay}에 머무르세요), Kubernetes용 차트도 있습니다. 업그레이드는 이미지 교체만 하면 되고, <a href=\"/releases/flow/#flow-{version}\">릴리스 노트</a>가 버전마다 무엇이 바뀌는지 미리 알려 줍니다. Flow는 HotLoop Source License Agreement 1.0을 따르며 가정과 실험실에서는 무료입니다.",
+  "fw.nBody": "코드는 <a href=\"https://github.com/HotLoop-io/hotloop-flow\">github.com/HotLoop-io/hotloop-flow</a>에 있습니다. amd64와 arm64에서 실행되어 각 장비가 자기 이미지를 받고, Kubernetes용 차트도 있습니다. 업그레이드는 이미지 교체만 하면 되고, <a href=\"/releases/flow/#flow-{version}\">릴리스 노트</a>가 버전마다 무엇이 바뀌는지 미리 알려 줍니다. Flow는 HotLoop Source License Agreement 1.0을 따르며 가정과 실험실에서는 무료입니다.",
   "fw.btnNodes": "노드 {n}개 보기",
   "fw.wl": "Flow가 하는 일",
   "fw.wh": "배포하고, 지켜보고, 힘든 시간을 견디게 하세요.",

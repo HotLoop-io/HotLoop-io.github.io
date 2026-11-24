@@ -694,7 +694,7 @@
   "fw.h1": "连接工厂，像审代码一样审它。",
   "fw.lede": "面向车间的流程引擎，一个静态 Go 二进制文件，自带编辑器。每次部署都是一条可以比对、可以回滚的记录，追踪能看到消息去了哪里，连线能扛住中断。它还能直接读取您现有的 <code>flows.json</code>，已有的内容可以原样带过来。",
   "fw.nStrong": "HotLoop Flow {version} 已发布。一个异常值不再能拖垮工厂的 Flow，function 节点支持 await 和 promise，Node-RED 自带的 62 个示例流程也都与 Node-RED 的结果一致。您的流程、设置和 chart 都不用改。",
-  "fw.nBody": "代码在 <a href=\"https://github.com/HotLoop-io/hotloop-flow\">github.com/HotLoop-io/hotloop-flow</a>。它同时支持 amd64 和 arm64，每台设备拉取自己架构的镜像（{version} 只有 amd64，所以 arm64 请先停留在 {stay}，等恢复 arm64 的小版本发布），并提供 Kubernetes 的 chart。升级只是换一个镜像，<a href=\"/releases/flow/#flow-{version}\">发布说明</a>会在您动手之前讲清每个版本改了什么。Flow 遵循 HotLoop Source License Agreement 1.0，家庭和实验室使用免费。",
+  "fw.nBody": "代码在 <a href=\"https://github.com/HotLoop-io/hotloop-flow\">github.com/HotLoop-io/hotloop-flow</a>。它同时支持 amd64 和 arm64，每台设备拉取自己架构的镜像，并提供 Kubernetes 的 chart。升级只是换一个镜像，<a href=\"/releases/flow/#flow-{version}\">发布说明</a>会在您动手之前讲清每个版本改了什么。Flow 遵循 HotLoop Source License Agreement 1.0，家庭和实验室使用免费。",
   "fw.btnNodes": "浏览 {n} 个节点",
   "fw.wl": "Flow 能做什么",
   "fw.wh": "部署它，盯住它，让它扛过糟糕的一小时。",
