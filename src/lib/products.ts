@@ -164,11 +164,11 @@ export const GATEWAY_FEATURES: Feature[] = [
 export const CASCADE = '1.4.1';
 
 // HotLoop Transmitter is its own release line: a CODESYS library (HotLoop-io/hotloop-transmitter)
-// that publishes PLC values as OPC UA PubSub. 1.2.0 shipped on 2026-11-23 (1.1.0 on 2026-11-04). The repository is private,
+// that publishes PLC values as OPC UA PubSub. 1.3.0 shipped on 2026-11-24 (1.2.0 on 2026-11-23). The repository is private,
 // so the files are served from hotloop.io/hotloop-transmitter/<version>/ the way the charts are
 // (that repository's gh-pages branch). Change `version` here and in the release note when the next one ships.
 export const TRANSMITTER = {
-  version: '1.2.0',
+  version: '1.3.0',
   downloads: 'https://hotloop.io/hotloop-transmitter/',
 };
 
