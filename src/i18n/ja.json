@@ -694,7 +694,7 @@
   "fw.h1": "工場をつなぐ。コードのようにレビューする。",
   "fw.lede": "現場のためのフローエンジンです。専用エディタを備えた、Goの静的バイナリ1つで動きます。デプロイは毎回、差分を見て元に戻せる記録になり、トレースでメッセージの行き先がわかり、配線は障害にも耐えます。既存の <code>flows.json</code> もそのまま読み込めるので、今あるものを持ち込めます。",
   "fw.nStrong": "HotLoop Flow {version} を公開しました。おかしな値が1つあっても工場のFlowが落ちることはなくなり、functionノードでawaitとpromiseが使え、Node-RED自身のサンプルフロー62本すべてがNode-REDと同じ結果になります。お使いのフロー、設定、チャートは何も変わりません。",
-  "fw.nBody": "コードは <a href=\"https://github.com/HotLoop-io/hotloop-flow\">github.com/HotLoop-io/hotloop-flow</a> にあります。amd64とarm64で動き、各マシンが自分用のイメージを取得します({version}はamd64のみのため、arm64ではarm64を戻す小さな版が出るまで {stay} のままにしてください)。Kubernetes用のチャートもあります。アップグレードはイメージの入れ替えだけで、<a href=\"/releases/flow/#flow-{version}\">リリースノート</a>で各バージョンの変更点を事前に確認できます。FlowはHotLoop Source License Agreement 1.0のもとで提供され、家庭とラボでの利用は無料です。",
+  "fw.nBody": "コードは <a href=\"https://github.com/HotLoop-io/hotloop-flow\">github.com/HotLoop-io/hotloop-flow</a> にあります。amd64とarm64で動き、各マシンが自分用のイメージを取得します。Kubernetes用のチャートもあります。アップグレードはイメージの入れ替えだけで、<a href=\"/releases/flow/#flow-{version}\">リリースノート</a>で各バージョンの変更点を事前に確認できます。FlowはHotLoop Source License Agreement 1.0のもとで提供され、家庭とラボでの利用は無料です。",
   "fw.btnNodes": "{n}個のノードを見る",
   "fw.wl": "Flowでできること",
   "fw.wh": "デプロイし、見守り、つらい時間を乗り切る。",
