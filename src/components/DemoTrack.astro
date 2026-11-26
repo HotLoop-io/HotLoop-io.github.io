@@ -1,0 +1,37 @@
+---
+// One delegated listener for every interactive demo on the site. Each real click,
+// key press, slider move or selection inside a demo is recorded in Microsoft
+// Clarity as a demo_<name>_<action> event, the session is tagged demo: engaged,
+// and the control answers with a short visible pulse, so Clarity reads a demo
+// click as the engagement it is and never as a dead or rage click.
+---
+
+<script>
+  import { track, ack } from '../lib/track';
+  const w = window as unknown as { __hlDemoTrack?: boolean };
+  if (!w.__hlDemoTrack) {
+    w.__hlDemoTrack = true;
+    const DEMOS = '[data-wordorder],[data-writegate],[data-loop],[data-bp],[data-bnz],[data-demo]';
+    const name = (root: Element) => {
+      for (const k of ['wordorder', 'writegate', 'loop', 'bp', 'bnz']) if (root.hasAttribute(`data-${k}`)) return k;
+      return root.getAttribute('data-demo') ?? 'demo';
+    };
+    const hit = (e: Event, kind: string) => {
+      const t = e.target as Element | null;
+      const root = t?.closest?.(DEMOS);
+      if (!root || !t) return;
+      const ctl = t.closest('button, input, select, label, a') ?? t;
+      const raw = ctl.getAttribute('data-preset') ?? ctl.getAttribute('data-sw') ?? ctl.getAttribute('name') ?? ctl.id ?? ctl.tagName;
+      const label = String(raw).toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 24) || 'control';
+      track(`demo_${name(root)}_${kind}_${label}`);
+      ack(ctl);
+    };
+    document.addEventListener('click', (e) => hit(e, 'click'));
+    document.addEventListener('input', (e) => hit(e, 'input'));
+    document.addEventListener('change', (e) => hit(e, 'change'));
+    document.addEventListener('keydown', (e) => {
+      const k = (e as KeyboardEvent).key;
+      if (k === 'Enter' || k === ' ' || k.startsWith('Arrow')) hit(e, 'key');
+    });
+  }
+</script>

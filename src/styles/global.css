@@ -298,3 +298,8 @@
 
 /* Numbers, tag paths and code read left to right in every language, so "66.4" stays 66.4 inside right-to-left text. */
 .mono, .pv { direction: ltr; unicode-bidi: isolate; }
+
+/* A visible answer to every demo control, so a click is never read as dead. */
+.ack { animation: hl-ack 0.45s ease-out; }
+@keyframes hl-ack { 0% { box-shadow: 0 0 0 0 var(--hl-orange); } 100% { box-shadow: 0 0 0 8px transparent; } }
+@media (prefers-reduced-motion: reduce) { .ack { animation: none; outline: 2px solid var(--hl-orange); } }
