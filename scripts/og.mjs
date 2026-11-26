@@ -144,6 +144,9 @@ const pages = [
   ['transmitter', 'HotLoop Transmitter', 'OPC UA PubSub from inside the PLC, in Structured Text. 1.1.0 is out.', 'Product'],
   ['integrations', 'What it speaks, and how far each one has been proven.', `${nativeCount} Gateway protocols and ${nodeCount} Flow nodes, each listed with what it was tested against.`, 'Integrations'],
   ['license', 'Which license applies to you?', 'One license for every HotLoop product, free for home and lab, AGPL after four years.', 'License'],
+  ['contact', 'Contact HotLoop', 'Tell us what you run. A person who works on HotLoop answers.', 'Contact'],
+  ['about', 'About HotLoop', 'Automation software that closes the loop between what a sensor says and what a machine does.', 'About'],
+  ['privacy', 'HotLoop Privacy', 'What HotLoop collects through its sites, why, and how to reach us about it.', 'Privacy'],
   ['terms', 'HotLoop Terms of Service', 'What you can do with HotLoop, what we do for you, and what happens when something goes wrong.', 'Terms'],
   ['releases', 'Release notes', 'What changed in HotLoop core, Flow, Cascade, HotLoop for CODESYS, and Transmitter, including which versions are actually published.', 'Releases'],
   ['releases-core', 'HotLoop core release notes', 'IoT, Edge, Gateway, and Edge Relay on one version. Which versions are published, and which are only merged. Every entry says which.', 'Releases'],
@@ -179,6 +182,15 @@ const FLAT = T.lightBg;
 
 // 32px uses the 16px cut, whose terminal dot survives at that size.
 await render(svgFile('logo-mark-16.svg'), 32, CLEAR).toFile(resolve(pub, 'icon-32.png'));
+// /favicon.ico: browsers and crawlers ask for it by habit. A one-image ICO holding the 32 px PNG.
+{
+  const png = readFileSync(resolve(pub, 'icon-32.png'));
+  const head = Buffer.alloc(22);
+  head.writeUInt16LE(0, 0); head.writeUInt16LE(1, 2); head.writeUInt16LE(1, 4);
+  head.writeUInt8(32, 6); head.writeUInt8(32, 7); head.writeUInt8(0, 8); head.writeUInt8(0, 9);
+  head.writeUInt16LE(1, 10); head.writeUInt16LE(32, 12); head.writeUInt32LE(png.length, 14); head.writeUInt32LE(22, 18);
+  writeFileSync(resolve(pub, 'favicon.ico'), Buffer.concat([head, png]));
+}
 // iOS composites transparency onto black, so the touch icon is opaque.
 await render(svgFile('logo-mark.svg'), 180, FLAT, 0.16).toFile(resolve(pub, 'apple-touch-icon.png'));
 await render(svgFile('logo-mark.svg'), 192, CLEAR, 0.04).toFile(resolve(pub, 'icon-192.png'));
