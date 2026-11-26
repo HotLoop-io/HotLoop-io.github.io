@@ -46,7 +46,7 @@ const note = (type: string, fallback: string) => (other && fallback ? t(`nd.${ty
     </div>
   </section>
 
-  <section class="wrap-wide tiers">
+  <section class="wrap-wide tiers" data-demo="integrations_tiers">
     <div class="grid grid-4">
       {TIER_ORDER.filter((x) => count(x) > 0).map((tier) => (
         <div class="card tier">
@@ -101,7 +101,7 @@ const note = (type: string, fallback: string) => (other && fallback ? t(`nd.${ty
     </div>
   </section>
 
-  <section class="wrap-wide flow" id="flow-nodes">
+  <section class="wrap-wide flow" id="flow-nodes" data-demo="integrations_nodes">
     <div class="section-head">
       <span class="label">HotLoop Flow</span>
       <h2>{t('int.h2b', { nodes: nodes.length })}</h2>
