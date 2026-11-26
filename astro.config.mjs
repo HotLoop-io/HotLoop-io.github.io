@@ -1,6 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import { copyFileSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 // English plus the thirteen languages the HotLoop products ship in. English has no folder, so every
 // English URL is exactly where it always was. The same list lives in src/i18n/locales.ts, which the
@@ -34,5 +36,18 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false },
   },
   // The sitemap carries the same hreflang alternates the pages do, for the pages that exist in every language.
-  integrations: [sitemap({ filter: (page) => !/\/404\/?$/.test(page), i18n: { defaultLocale: 'en', locales: LANGS } })],
+  integrations: [
+    sitemap({ filter: (page) => !/\/404\/?$/.test(page), i18n: { defaultLocale: 'en', locales: LANGS } }),
+    // Crawlers and monitors ask for /sitemap.xml by habit. The plugin writes sitemap-0.xml (one file at this
+    // size) and an index; this copies the list to /sitemap.xml so all three addresses answer.
+    {
+      name: 'sitemap-xml-alias',
+      hooks: {
+        'astro:build:done': ({ dir }) => {
+          const from = fileURLToPath(new URL('sitemap-0.xml', dir));
+          if (existsSync(from)) copyFileSync(from, fileURLToPath(new URL('sitemap.xml', dir)));
+        },
+      },
+    },
+  ],
 });

@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+const EMAIL = 'helpdesk@fireballz.ai';
+---
+
+<Base
+  title="HotLoop Privacy"
+  description="What HotLoop collects through hotloop.io and docs.hotloop.io, why, and how to reach us about it. We collect very little and we never sell it."
+  ogAlt="HotLoop privacy."
+>
+  <section class="page-hero">
+    <div class="wrap stack">
+      <span class="label">Privacy</span>
+      <h1>Privacy</h1>
+      <p class="lede">This page covers hotloop.io and docs.hotloop.io, run by HotLoop LLC. We collect very little, and we never sell it.</p>
+    </div>
+  </section>
+  <section class="wrap body stack">
+    <h2>What we collect</h2>
+    <p><strong>What you send us.</strong> If you use the contact form or email us, we receive your name, work email, company, and your message. We use it to answer you.</p>
+    <p><strong>How the sites are used.</strong> We use Microsoft Clarity to see how visitors move through these sites, so we can make them clearer. It records interactions such as clicks and scrolling.</p>
+    <h2>What we do not do</h2>
+    <p>We do not sell your information, and we do not use what you send us to market to you unless you ask.</p>
+    <h2>The software</h2>
+    <p>The terms for the software are on the <a href="/terms/">Terms</a> page. The software itself does not send your plant data to us.</p>
+    <h2>Your choices</h2>
+    <p>Ask to see, correct, or delete what we hold about you by writing to <a href={`mailto:${EMAIL}`}>{EMAIL}</a>. Your browser can also block analytics scripts.</p>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s6); }
+  .body { max-width: 860px; padding-bottom: var(--hl-s8); }
+  .body :global(h2) { font-size: var(--hl-fs-xl); margin-top: var(--hl-s6); }
+</style>

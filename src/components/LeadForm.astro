@@ -1,0 +1,127 @@
+---
+// The lead form. It posts to the Cascade webhook on flows.fireballz.ai that every
+// HotLoop form uses, with the same body fields, a honeypot, and a solved ALTCHA
+// proof of work (the webhook turns a post down without one). `source` names the
+// site so the lead lands sorted. Without JavaScript the plain post is refused, so
+// the address beside the form is the way in.
+interface Props { source: string; kinds: { value: string; label: string }[]; button?: string; fallback: string; }
+const { source, kinds, button = 'Send', fallback } = Astro.props;
+const CASCADE = 'https://flows.fireballz.ai/hook';
+const WEBHOOK = `${CASCADE}/01a199f8-712c-72be-9b68-b368d3ac4101/embernet-demo`;
+const CHALLENGE = `${CASCADE}/01a199f8-6eff-7e78-ad13-47f40f2fc025/altcha-challenge`;
+---
+
+<form id="lead-form" class="lead-form" action={WEBHOOK} method="post" data-lead-form data-source={source} data-fallback={fallback} novalidate>
+  <p class="lf-hint">Fields marked * are required.</p>
+  <div class="lf-field"><label for="lf-name">Name *</label><input type="text" id="lf-name" name="name" required autocomplete="name" /></div>
+  <div class="lf-field"><label for="lf-email">Work email *</label><input type="email" id="lf-email" name="email" required autocomplete="email" /></div>
+  <div class="lf-field"><label for="lf-company">Company *</label><input type="text" id="lf-company" name="company" required autocomplete="organization" /></div>
+  <div class="lf-field"><label for="lf-kind">What do you need? *</label>
+    <select id="lf-kind" name="kind" required>
+      <option value="" disabled selected>Choose one</option>
+      {kinds.map((k) => <option value={k.value}>{k.label}</option>)}
+    </select></div>
+  <div class="lf-field full"><label for="lf-message">Tell us about it *</label><textarea id="lf-message" name="message" required placeholder="What you run, what has to work, and when."></textarea></div>
+  <div class="lf-trap" aria-hidden="true"><label for="lf-website">Website</label><input type="text" id="lf-website" name="website" tabindex="-1" autocomplete="off" /></div>
+  <div class="lf-actions">
+    <altcha-widget challenge={CHALLENGE} auto="onfocus" name="altcha" configuration='{"hideFooter":true,"hideLogo":true}'></altcha-widget>
+    <button type="submit" class="btn primary">{button}</button>
+  </div>
+</form>
+
+<style is:global>
+  .lead-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 760px; }
+  .lead-form .full, .lead-form .lf-hint, .lead-form .lf-actions { grid-column: 1 / -1; }
+  .lf-hint { margin: 0; font-size: 0.875rem; opacity: 0.8; }
+  .lf-field { display: flex; flex-direction: column; gap: 0.4rem; }
+  .lf-field label { font-weight: 700; font-size: 0.9rem; }
+  .lf-field input, .lf-field select, .lf-field textarea { font: inherit; padding: 0.75rem; min-height: 44px; border-radius: 8px; border: 1px solid currentColor; background: transparent; color: inherit; }
+  .lf-field textarea { min-height: 140px; resize: vertical; }
+  .lf-field .lf-bad { border-color: #d92d20; box-shadow: 0 0 0 3px rgba(217, 45, 32, 0.25); }
+  .lf-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .lf-actions { display: grid; gap: 0.75rem; justify-items: start; }
+  .lf-actions .btn:disabled { opacity: 0.7; cursor: progress; }
+  .lf-err { margin: 0; color: #d92d20; font-weight: 600; }
+  .lf-done { grid-column: 1 / -1; padding: 2rem 0; }
+  .lf-done h2:focus { outline: none; }
+  altcha-widget { display: block; max-width: 100%; }
+  @media (max-width: 640px) { .lead-form { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  import 'altcha/external';
+  import 'altcha/altcha.css';
+  import ShaWorker from 'altcha/workers/sha?worker';
+  import Pbkdf2Worker from 'altcha/workers/pbkdf2?worker';
+  import { track } from '../lib/track';
+
+  for (const alg of ['SHA-256', 'SHA-384', 'SHA-512']) $altcha.algorithms.set(alg, () => new ShaWorker());
+  for (const alg of ['PBKDF2/SHA-256', 'PBKDF2/SHA-384', 'PBKDF2/SHA-512']) $altcha.algorithms.set(alg, () => new Pbkdf2Worker());
+
+  async function altchaPayload(form: HTMLFormElement): Promise<string | null> {
+    const widget: any = form.querySelector('altcha-widget');
+    if (!widget || typeof widget.verify !== 'function') return null;
+    const field = () => widget.querySelector('input[type="hidden"]')?.value || null;
+    let state = widget.getState();
+    if (state === 'verifying') {
+      state = await new Promise((resolve) => {
+        const on = (e: Event) => {
+          const next = (e as CustomEvent).detail.state;
+          if (next === 'verifying') return;
+          widget.removeEventListener('statechange', on);
+          resolve(next);
+        };
+        widget.addEventListener('statechange', on);
+      });
+    }
+    if (state === 'verified' && field()) return field();
+    const r = await widget.verify();
+    return r?.payload || null;
+  }
+
+  function init() {
+    const form = document.querySelector<HTMLFormElement>('[data-lead-form]');
+    if (!form || form.dataset.ready) return;
+    form.dataset.ready = '1';
+    form.noValidate = true;
+    const btn = form.querySelector<HTMLButtonElement>('[type="submit"]')!;
+    const label = btn.textContent ?? 'Send';
+    const f = (id: string) => document.getElementById(id) as HTMLInputElement;
+    const bad = (id: string, on: boolean) => { f(id).classList.toggle('lf-bad', on); on ? f(id).setAttribute('aria-invalid', 'true') : f(id).removeAttribute('aria-invalid'); };
+    const fail = () => {
+      (form.querySelector('altcha-widget') as any)?.reset?.();
+      btn.disabled = false; btn.textContent = label;
+      const p = document.createElement('p');
+      p.id = 'lf-err'; p.className = 'lf-err'; p.setAttribute('role', 'alert');
+      p.textContent = `Something went wrong. Please try again or email ${form.dataset.fallback} directly.`;
+      form.querySelector('.lf-actions')?.appendChild(p);
+    };
+    form.addEventListener('focusin', () => track('demo_form_focus'), { once: true });
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (f('lf-website').value) return;
+      const v = { name: f('lf-name').value.trim(), email: f('lf-email').value.trim(), company: f('lf-company').value.trim(), kind: f('lf-kind').value, message: f('lf-message').value.trim() };
+      const ids: [string, string][] = [['lf-name', v.name], ['lf-email', v.email], ['lf-company', v.company], ['lf-kind', v.kind], ['lf-message', v.message]];
+      let first: string | null = null;
+      for (const [id, val] of ids) { bad(id, !val); if (!val && !first) first = id; }
+      if (first) { f(first).focus(); return; }
+      btn.disabled = true; btn.textContent = 'Sending...';
+      document.getElementById('lf-err')?.remove();
+      const altcha = await altchaPayload(form).catch(() => null);
+      if (!altcha) { fail(); return; }
+      fetch(form.action, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name: v.name, work_email: v.email, company: v.company, industry: `${form.dataset.source}: ${v.kind}`, role: '', looking_to_do: `[${form.dataset.source}] ${v.message}`, website: f('lf-website').value, altcha }),
+      }).then((r) => {
+        if (!r.ok) throw new Error('server');
+        const done = document.createElement('div');
+        done.className = 'lf-done'; done.setAttribute('role', 'status');
+        const h = document.createElement('h2'); h.textContent = 'Request received.'; h.tabIndex = -1;
+        const p = document.createElement('p'); p.textContent = "We'll be in touch shortly.";
+        done.append(h, p); form.replaceChildren(done); h.focus();
+      }).catch(fail);
+    });
+  }
+  document.addEventListener('astro:page-load', init);
+  init();
+</script>

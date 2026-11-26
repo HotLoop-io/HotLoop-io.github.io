@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="About HotLoop: automation software"
+  description="HotLoop builds automation software that closes the loop between what a sensor says and what a machine does. Eight products, one family, free to start."
+  ogAlt="About HotLoop."
+>
+  <section class="page-hero">
+    <div class="wrap stack">
+      <span class="label">About</span>
+      <h1>Close the loop between what a sensor says and what a machine does.</h1>
+      <p class="lede">HotLoop is automation software for the plant floor, written in Go and built to keep running when the network does not. It is its own product family with its own source, its own releases, and its own docs.</p>
+    </div>
+  </section>
+  <section class="wrap body stack">
+    <h2>One family, eight products</h2>
+    <p>HotLoop IoT, Edge, Gateway, and Edge Relay ship from one codebase and one version. Flow, Cascade, HotLoop for CODESYS, and Transmitter each have their own release line. <a href="/products/">See every product</a>.</p>
+    <h2>Free to start</h2>
+    <p>Home and lab use is free, and so is use by schools, nonprofits, and government bodies. Business use through EmberNet is free too. <a href="/license/">Read which license applies to you</a>.</p>
+    <h2>Support you can call</h2>
+    <p>Fireball Industries is the official systems integrator for HotLoop and provides support, SLAs, and warranties. <a href="/contact/">Contact us</a>.</p>
+    <h2>Built in the open</h2>
+    <p>The source, the docs, and the release notes are public. Start at <a href="https://docs.hotloop.io">docs.hotloop.io</a> or <a href="https://github.com/HotLoop-io" rel="noopener">github.com/HotLoop-io</a>.</p>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s6); }
+  .body { max-width: 860px; padding-bottom: var(--hl-s8); }
+  .body :global(h2) { font-size: var(--hl-fs-xl); margin-top: var(--hl-s6); }
+</style>
