@@ -10,8 +10,7 @@
 # Checks: every built page answers 200 with the canonical it declares; every forwarding address answers one 301 to the
 # right place; www forwards; an unknown path is a real 404; HSTS with preload and the security headers are on; a
 # directory without its slash gets a 301; /sitemap.xml lists only pages that answer 200; the bot rules; and, with
-# CHARTS=1, the five Helm chart repositories answer (that needs GitHub Pages' project sites to be reachable on
-# hotloop-io.github.io, which is true once hotloop.io is no longer the Pages custom domain).
+# CHARTS=1, the five Helm chart repositories answer (through GitHub Pages, whether or not hotloop.io is still the org site's custom domain).
 # Exits non-zero if anything fails.
 set -u
 base=${1:?usage: serve-check.sh <base-url> [curl args]}; shift
