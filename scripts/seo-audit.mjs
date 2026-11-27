@@ -9,6 +9,7 @@
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, sep, posix } from 'node:path';
 import { parse } from 'node-html-parser';
+import { NOT_IN_SITEMAP } from './sitemap-exclude.mjs';
 
 const dist = process.argv[2] || 'dist';
 const SITE = process.env.SITE_URL || null;
@@ -280,6 +281,9 @@ for (const [route, links] of linksByRoute) {
 // sitemap + robots
 const sm = files.find((f) => f.endsWith('sitemap-index.xml'));
 if (!sm) err('/', 'no sitemap-index.xml was generated');
+for (const f of files.filter((f) => /sitemap-\d+\.xml$/.test(f))) {
+  for (const m of readFileSync(f, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)) if (NOT_IN_SITEMAP.test(m[1])) err('/sitemap', `lists a page that is not necessary: ${m[1]}`);
+}
 if (!exists.has('/robots.txt')) err('/', 'no robots.txt');
 else if (!/Sitemap:\s*https:\/\//i.test(readFileSync(join(dist, 'robots.txt'), 'utf8'))) err('/robots.txt', 'does not point at the sitemap');
 
