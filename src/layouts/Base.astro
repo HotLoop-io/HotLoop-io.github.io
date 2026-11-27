@@ -5,6 +5,8 @@ import JsonLd from '../components/JsonLd.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import DemoTrack from '../components/DemoTrack.astro';
+import Analytics from '../components/Analytics.astro';
+import CookieBanner from '../components/CookieBanner.astro';
 import LangRedirect from '../components/LangRedirect.astro';
 import { forPage } from '../i18n/page';
 
@@ -77,14 +79,7 @@ const website = {
       } catch (e) {}
     </script>
     <JsonLd data={[organization, website]} />
-    <!-- Microsoft Clarity, HotLoop project. In the shared head so every page, in every language, carries it. -->
-    <script is:inline>
-      (function (c, l, a, r, i, t, y) {
-        c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
-        t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i;
-        y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
-      })(window, document, 'clarity', 'script', 'zjwibbr2ia');
-    </script>
+    <Analytics />
     <LangRedirect />
     <slot name="head" />
     <ClientRouter />
@@ -97,5 +92,6 @@ const website = {
     </main>
     <Footer />
     <DemoTrack />
+    <CookieBanner />
   </body>
 </html>
