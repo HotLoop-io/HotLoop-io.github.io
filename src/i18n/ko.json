@@ -403,7 +403,7 @@
   "gw.btnNotes": "코어 릴리스 노트 읽기",
   "gw.l12": "라이선스",
   "gw.h2k": "가정과 실험실은 무료. 기업은 EmberNet에서 실행합니다.",
-  "gw.licP": "Gateway는 HotLoop Source License Agreement 1.0을 따릅니다. 무료로 사용할 수 있고 소스가 공개되어 있지만 OSI 기준의 오픈 소스는 아니며, 각 버전은 출시 4년 후 AGPL-3.0 이상으로 전환됩니다. 라이선스 키는 없고 실행 중에 잠금이 풀리는 것도 없습니다. 가정과 실험실 사용은 무료입니다. 기업은 <a href=\"https://embernet.ai\">EmberNet</a>에서 HotLoop을 실행하며, 평가, 개발, 교육, 사전 운영에는 무료 Pilot으로 시작합니다. 운영 중인 공장은 Starter 이상을 씁니다. 지원, SLA, 보증은 HotLoop의 Gold Licensee인 EmberNet이 <a href=\"mailto:helpdesk@fireballz.ai\">helpdesk@fireballz.ai</a>를 통해 제공합니다. CODESYS 공인 유통사이자 기술 파트너, 시스템 통합업체인 <a href=\"https://fireballindustries.com\">Fireball Industries</a>는 직접 하고 싶지 않으신 경우 도입을 설계하고 설치해 드립니다.",
+  "gw.licP": "Gateway는 HotLoop Source License Agreement 1.0을 따릅니다. 무료로 사용할 수 있고 소스가 공개되어 있지만 OSI 기준의 오픈 소스는 아니며, 각 버전은 출시 4년 후 AGPL-3.0 이상으로 전환됩니다. 라이선스 키는 없고 실행 중에 잠금이 풀리는 것도 없습니다. 가정과 실험실 사용은 무료입니다. 기업은 <a href=\"https://embernet.ai\">EmberNet</a>에서 HotLoop을 실행하며, 평가, 개발, 교육, 사전 운영에는 무료 Pilot으로 시작합니다. 운영 중인 공장은 Starter 이상을 씁니다. 지원, SLA, 보증은 HotLoop의 Gold Licensee인 EmberNet이 <a href=\"mailto:info@hotloop.ai\">info@hotloop.ai</a>를 통해 제공합니다. CODESYS 공인 유통사이자 기술 파트너, 시스템 통합업체인 <a href=\"https://fireballindustries.com\">Fireball Industries</a>는 직접 하고 싶지 않으신 경우 도입을 설계하고 설치해 드립니다.",
   "tx.title": "HotLoop Transmitter: PLC의 OPC UA PubSub",
   "tx.desc": "HotLoop Transmitter는 PLC 값을 UDP 기반 OPC UA PubSub으로 발행하는 CODESYS 라이브러리로, Structured Text로 작성되었습니다.",
   "tx.descNR": "HotLoop Transmitter는 PLC 값을 UDP 기반 OPC UA PubSub으로 발행하는 CODESYS 라이브러리로, Structured Text로 작성되었습니다. 아직 출시 전입니다.",
