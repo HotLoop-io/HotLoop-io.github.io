@@ -1439,5 +1439,12 @@
   "nd.influxdb out": "Flow's own node. The type name matches the community node-red-contrib-influxdb so an imported flow finds it, but the configuration is not identical, check the fields after importing.",
   "nd.postgres": "Flow's own node. Writes to and reads from PostgreSQL or TimescaleDB, with batch insert for message sequences.",
   "nd.postgresql": "Runs the query as a Mustache template against the message ({{{msg.topic}}} and {{{topic}}} both work, and put a value in as text, so prefer $1, $2 with msg.params, which go to the database as parameters). msg.payload is the list of rows and msg.pgsql is {command, rowCount}. With split on, the rows go out rowsPerMsg at a time (a row object when it is 1, else a list) with msg.parts, and a second output, when there are two, sends one message when the last group is out. msg.queryParameters (named parameters) is not supported. A failed query raises an error for a Catch node. networkInterface (not in Node-RED) sends this node's queries over one network interface.",
-  "nd.watch": "Reports files and directories appearing, changing and being removed, with the same message shape Node-RED produces. It polls rather than using the kernel's notification interface, so a change is seen within the poll interval rather than immediately, and two changes inside one interval are reported once. That is a deliberate trade: fsnotify means per-platform code and a filename suffix that is a build constraint, which has already cost this codebase a day. Same path scope as the other file nodes, and the number of watched entries is capped so a recursive watch on a large tree cannot stall the runtime."
+  "nd.watch": "Reports files and directories appearing, changing and being removed, with the same message shape Node-RED produces. It polls rather than using the kernel's notification interface, so a change is seen within the poll interval rather than immediately, and two changes inside one interval are reported once. That is a deliberate trade: fsnotify means per-platform code and a filename suffix that is a build constraint, which has already cost this codebase a day. Same path scope as the other file nodes, and the number of watched entries is capped so a recursive watch on a large tree cannot stall the runtime.",
+  "ck.text": "We'd like to use Microsoft Clarity to watch how people use this site, so we can fix what's broken. It loads only if you hit Accept. No ads, nothing sold.",
+  "ck.decline": "Decline",
+  "ck.accept": "Accept",
+  "ck.policy": "Privacy policy",
+  "ck.settings": "Cookie settings",
+  "ck.stateYes": "Your current choice: accepted.",
+  "ck.stateNo": "Your current choice: declined."
 }
