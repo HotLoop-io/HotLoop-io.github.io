@@ -290,12 +290,19 @@ helm install hotloop hotloop/hotloop --version {latest.data.version} \
       </div>
     </div>
   </section>
+  <AlsoSee id="historian" heading="PLC historian software that keeps every reading and its quality" intro={[
+    'The Gateway is PLC historian software and an industrial historian in one: every value from every PLC, with its quality, goes into TimescaleDB or plain PostgreSQL, with a per-tag deadband so a twitching sensor never fills the disk. You get a trend you can trust, and the same rows land in your own PostgreSQL, TimescaleDB, SQL Server, InfluxDB, MySQL or MariaDB if IT wants them there.',
+    'It is an MQTT historian too: values that arrive over MQTT and Sparkplug B are kept like any other tag. <a href="/integrations/mqtt-sparkplug/">See the Sparkplug B gateway driver</a>.',
+  ]} items={[{ label: "A PLC gateway for OPC UA, Modbus and S7", href: "/opc-ua-gateway/" }, { label: "A SCADA alternative built on the same historian", href: "/scada-alternative/" }]} />
+  <AlsoSee heading="Industrial alarm management software that follows ISA-18.2" intro={[
+    'ISA-18.2 alarm management in the Gateway keeps the trip that cleared on its own on the list until somebody has seen it, so the night shift never hands the morning shift a mystery. Acknowledged and cleared are separate states, a dead sensor holds its alarm instead of tripping every low limit, and a page reaches ntfy, Gotify, Discord, a webhook, or email.',
+  ]} items={[{ label: "A SCADA alternative with alarms and a wall screen", href: "/scada-alternative/" }, { label: "Start small with HotLoop IoT on a Raspberry Pi", href: "/iot/" }]} />
   <AlsoSee heading="Looking for a Kepware alternative or an OPC UA gateway?" items={[{ label: "An OPC UA gateway and Kepware alternative", href: "/opc-ua-gateway/" }, { label: "Modbus to MQTT, step by step", href: "/modbus-to-mqtt/" }, { label: "A unified namespace on Sparkplug B", href: "/unified-namespace/" }]} />
 </Base>
 
 <style>
   .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s7); }
-  .page-hero h1 { max-width: 20ch; }
+  .page-hero h1 { max-width: 26ch; }
   .page-hero .notice { max-width: 68ch; }
   .page-hero .notice code { overflow-wrap: anywhere; }
   .upgrade { margin-top: var(--hl-s7); display: grid; gap: var(--hl-s3); }

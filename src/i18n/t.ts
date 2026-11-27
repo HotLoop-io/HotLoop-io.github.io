@@ -17,6 +17,7 @@ import hi from './hi.json';
 import zhHans from './zh-Hans.json';
 import ar from './ar.json';
 import { DEFAULT, href, type Locale } from './locales';
+import { EN_SEO } from './seo-en';
 
 const CATALOGS: Record<string, Record<string, string>> = {
   en, es, fr, it, de, nb, bg, el, ko, ja, vi, hi, 'zh-Hans': zhHans, ar,
@@ -34,7 +35,7 @@ export function messages(locale: Locale): Record<string, string> {
 export function useT(locale: Locale) {
   const cat = CATALOGS[locale.code];
   const t = (key: string, vars?: Vars): string => {
-    const s = cat[key] ?? (locale === DEFAULT ? undefined : CATALOGS.en[key]);
+    const s = (locale === DEFAULT ? EN_SEO[key] : undefined) ?? cat[key] ?? (locale === DEFAULT ? undefined : CATALOGS.en[key]);
     if (s === undefined) throw new Error(`i18n: no "${key}" in ${locale.code}`);
     return fill(s, vars);
   };

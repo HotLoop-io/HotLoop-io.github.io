@@ -3,8 +3,8 @@ import AltPage from '../components/AltPage.astro';
 ---
 
 <AltPage
-  title="Node-RED alternative for plants | HotLoop Flow"
-  description="HotLoop Flow runs your existing Node-RED flows.json in one Go binary, with a ceiling on every queue, deploy records, tracing and signed plugins."
+  title="Node-RED alternatives for plants | HotLoop Flow"
+  description="Node-RED alternatives that run your flows.json: HotLoop Flow is one Go binary with a ceiling on every queue, deploy records, tracing and signed plugins."
   eyebrow="Node-RED alternative"
   h1="A Node-RED alternative that runs your flows and survives the plant."
   lede="You built it in Node-RED and it works. HotLoop Flow reads the same flows.json, runs it in one static Go binary, and adds the things a line needs when it is running at 3am: a ceiling on every queue, a record of every deploy, and a trace of where a message went."
@@ -12,10 +12,10 @@ import AltPage from '../components/AltPage.astro';
   cta={{ label: 'Install Flow', href: 'https://docs.hotloop.io/flow/install/' }}
   faq={[
     { q: 'What is the best Node-RED alternative for industrial automation?', a: 'If you want to keep your flows, HotLoop Flow: it runs the same flows.json and adds a ceiling on every queue, a record of every deploy, and a sealed Function node. Among the Node-RED alternatives for industrial plants, it is the one that reads your file as it is.' },
-    { q: 'Can I import my Node-RED flows into HotLoop Flow?', a: 'Yes. Flow reads the flat flows.json that every Node-RED export is written in and runs it. A file loads and saves byte for byte, so your diff in git stays one line when you change one property. Flow also lists what it will refuse to run before you deploy anything.' },
+    { q: 'Can I import my Node-RED flows into HotLoop Flow?', a: 'Flow reads the flat flows.json that every Node-RED export is written in and runs it. A file loads and saves byte for byte, so your diff in git stays one line when you change one property. Flow also lists what it will refuse to run before you deploy anything.' },
     { q: 'Do all Node-RED nodes work in Flow?', a: 'The core nodes do, and each one is marked full, partial, divergent, or Flow only in the compatibility matrix. Community nodes are npm packages that need Node.js, so they do not run in Flow. The plant nodes most flows lean on, like Modbus, OPC UA, MQTT, S7, EtherNet/IP and Sparkplug B, run natively.' },
     { q: 'Is HotLoop Flow faster than Node-RED?', a: 'On the same five-node flow file, the same load, the same machine, and the same sitting, Flow came out smaller, faster, and quicker to start. The table and every condition behind it are on the Flow page, and you can run the same benchmark on your own hardware.' },
-    { q: 'Does Flow run on a Raspberry Pi?', a: 'Yes. Flow is a self-contained 41.7 MB program for amd64 and arm64, and it has been measured on a Raspberry Pi 5.' },
+    { q: 'Does Flow run on a Raspberry Pi?', a: 'Flow is a self-contained 41.7 MB program for amd64 and arm64, and it has been measured on a Raspberry Pi 5.' },
     { q: 'What does HotLoop Flow cost?', a: 'Home and lab use is free, and so is use by schools, nonprofits, and government bodies. Business use goes through EmberNet, where it is free as well. The source is public under the HotLoop Source License Agreement 1.0.' },
   ]}
   more={[

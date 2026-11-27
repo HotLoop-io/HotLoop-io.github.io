@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import AlsoSee from '../components/AlsoSee.astro';
 import CardDetail from '../components/CardDetail.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
@@ -145,6 +146,9 @@ helm install hotloop hotloop/hotloop-iot --version {CURRENT} \
       </div>
     </div>
   </section>
+  <AlsoSee heading="A Raspberry Pi PLC gateway, ready tonight" intro={[
+    'A Raspberry Pi PLC setup needs a box that talks to the equipment and acts on what it hears. HotLoop IoT runs on a Raspberry Pi, reads your PLCs and meters, keeps the history, raises ISA-18.2 alarms, runs your automations, and writes only to the tags you arm. It is about 29 MB on a Pi and installs with no login and no license key.',
+  ]} items={[{ label: "Use it as a SCADA alternative", href: "/scada-alternative/" }, { label: "Move up to the Gateway when the site grows", href: "/gateway/" }, { label: "Every protocol it reads", href: "/integrations/" }]} />
 </Base>
 
 <style>

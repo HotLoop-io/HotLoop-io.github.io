@@ -40,6 +40,17 @@ const protocols = defineCollection({
       trap: z.string().default(''),
       configKeys: z.array(z.string()).default([]),
       body: z.array(z.string()).default([]),
+      // English only: the search title, description and H1, a short intro, questions and related links.
+      seo: z
+        .object({
+          title: z.string(),
+          description: z.string(),
+          h1: z.string(),
+          intro: z.array(z.string()),
+          faq: z.array(z.object({ q: z.string(), a: z.string() })),
+          links: z.array(z.object({ label: z.string(), href: z.string() })),
+        })
+        .optional(),
     })
     .superRefine((p, ctx) => {
       if (p.verification === 'live' && p.verifiedAgainst.length === 0) {

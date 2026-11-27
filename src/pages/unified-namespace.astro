@@ -3,10 +3,10 @@ import AltPage from '../components/AltPage.astro';
 ---
 
 <AltPage
-  title="Unified namespace with Sparkplug B | HotLoop"
-  description="Build a unified namespace on Sparkplug B: Edge Relays publish from the machines, an MQTT broker is the hub, and the HotLoop Gateway is the primary host."
+  title="Unified namespace software on Sparkplug B | HotLoop"
+  description="Unified namespace software on Sparkplug B: Edge Relays publish from the machines, an MQTT broker is the hub, and the HotLoop Gateway is the primary host."
   eyebrow="Unified namespace"
-  h1="A unified namespace on Sparkplug B, built from parts that already ship."
+  h1="Unified namespace software on Sparkplug B, built from parts that already ship."
   lede="A unified namespace is one place where every machine's data lands with a name and a state. HotLoop gives you the pieces: Edge Relays that publish from the machine, an MQTT broker as the hub, and a Gateway that acts as the Sparkplug primary host with the history and the alarms."
   path="/unified-namespace/"
   cta={{ label: 'Read the guide', href: 'https://docs.hotloop.io/guides/unified-namespace/' }}
@@ -14,8 +14,8 @@ import AltPage from '../components/AltPage.astro';
     { q: 'Is HotLoop unified namespace software?', a: 'It gives you the parts of a UNS: the Edge Relay as the Sparkplug B edge node, an MQTT broker as the hub, and the Gateway as the primary host that keeps the history and the alarms. Used together they make UNS software you can install with Helm or Podman Quadlet.' },
     { q: 'How does Sparkplug B work on MQTT?', a: 'Sparkplug B puts a structure on MQTT topics and payloads, with births that announce what a node has, deaths when it goes away, and sequence numbers that let a host notice a gap and ask for a rebirth. HotLoop implements both sides.' },
     { q: 'What is a unified namespace?', a: 'A unified namespace is a single, structured place, usually an MQTT broker, where every machine and system publishes its data under a consistent naming scheme, so anything that needs a value reads it from there and not from the device.' },
-    { q: 'Does HotLoop support Sparkplug B?', a: 'Yes, in both roles. The Edge Relay and the Gateway publish as Sparkplug B edge nodes, with births, sequence numbers, and deaths the way the spec says, and the Gateway driver acts as a full primary host application, with a retained STATE birth and rebirth requests.' },
-    { q: 'Can I use HotLoop with my own broker?', a: 'Yes. Point the Gateway and Edge Relays at Mosquitto, EMQX, or any other MQTT broker. HotLoop also runs an embedded broker, on by default, for a single plant and a handful of relays.' },
+    { q: 'Does HotLoop support Sparkplug B?', a: 'The Edge Relay and the Gateway publish as Sparkplug B edge nodes, with births, sequence numbers, and deaths the way the spec says, and the Gateway driver acts as a full primary host application, with a retained STATE birth and rebirth requests.' },
+    { q: 'Can I use HotLoop with my own broker?', a: 'Point the Gateway and Edge Relays at Mosquitto, EMQX, or any other MQTT broker. HotLoop also runs an embedded broker, on by default, for a single plant and a handful of relays.' },
     { q: 'What if the network between the machine and the broker drops?', a: 'The Edge Relay queues readings to disk and replays them in order when the broker returns, each marked historical, so the namespace ends up with the gap backfilled.' },
     { q: 'How do I get PLC data into the namespace?', a: 'The Edge Relay polls OPC UA, Modbus, EtherNet/IP, S7comm, MTConnect, and HTTP devices with the same drivers the Gateway uses and forwards them as Sparkplug B.' },
   ]}
@@ -23,6 +23,7 @@ import AltPage from '../components/AltPage.astro';
     { label: 'Build it: the step-by-step guide', href: 'https://docs.hotloop.io/guides/unified-namespace/' },
     { label: 'HotLoop Edge Relay', href: '/edge-relay/' },
     { label: 'Modbus to MQTT', href: '/modbus-to-mqtt/' },
+    { label: 'The Sparkplug B gateway driver', href: '/integrations/mqtt-sparkplug/' },
     { label: 'An OPC UA gateway for the whole plant', href: '/opc-ua-gateway/' },
   ]}
 >

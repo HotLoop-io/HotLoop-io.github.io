@@ -20,7 +20,52 @@
     "body": [
       "The driver subscribes rather than polls. The server sends a value when it changes, at a rate it can sustain, instead of being asked the same question every scan by a client with no idea whether anything moved. If a server refuses a subscription, the driver falls back to batched reads rather than failing the device.",
       "Addresses use the stable name of a node, not its position, so a server reload or a firmware upgrade never quietly points a tag at the wrong thing. A typo is caught when you save it, not three weeks later when a tag reads bad forever."
-    ]
+    ],
+    "seo": {
+      "title": "OPC UA gateway driver: subscriptions and Ignition | HotLoop",
+      "description": "The OPC UA gateway driver in HotLoop subscribes instead of polling, addresses nodes by name, and was run against Ignition 8.3.9 in both directions.",
+      "h1": "OPC UA gateway driver: it subscribes instead of polling",
+      "intro": [
+        "Point the HotLoop Gateway at any OPC UA server and it takes values when they change, not on every scan. That is less polling traffic on your network. Ignition 8.3.9 was run in both directions with a user name and password over a secured channel.",
+        "Edge and the Gateway also run a read-only, secured OPC UA server of their own, so the SCADA you already own reads everything the Gateway collects from Modbus, S7 and EtherNet/IP devices. <a href=\"/opc-ua-gateway/\">See the full OPC UA gateway and Kepware alternative page</a>."
+      ],
+      "faq": [
+        {
+          "q": "How does the HotLoop OPC UA gateway read values?",
+          "a": "It subscribes. The server sends a value when it changes, at a rate it can sustain. If a server refuses a subscription, the driver falls back to batched reads instead of failing the device."
+        },
+        {
+          "q": "Does the OPC UA gateway work with Ignition?",
+          "a": "The driver was run against Ignition 8.3.9 in both directions with a user name and password over a secured channel."
+        },
+        {
+          "q": "How are OPC UA nodes addressed?",
+          "a": "By the stable name of the node, not its position, so a server reload or a firmware upgrade never points a tag at the wrong thing. A typo is caught when you save it."
+        },
+        {
+          "q": "Can HotLoop serve OPC UA to my SCADA?",
+          "a": "Edge and the Gateway run a read-only, secured OPC UA server, and Ignition reads it end to end."
+        }
+      ],
+      "links": [
+        {
+          "label": "OPC UA gateway and Kepware alternative",
+          "href": "/opc-ua-gateway/"
+        },
+        {
+          "label": "HotLoop Gateway, the whole-site gateway",
+          "href": "/gateway/"
+        },
+        {
+          "label": "OPC UA to MQTT as Sparkplug B, step by step",
+          "href": "https://docs.hotloop.io/guides/opc-ua-to-mqtt/"
+        },
+        {
+          "label": "Every integration and how far it has been proven",
+          "href": "/integrations/"
+        }
+      ]
+    }
   },
   {
     "id": "modbus",
@@ -44,7 +89,52 @@
       "Addressing follows your drawings: if they use the traditional 40001-style numbering, one setting lets you write the numbers straight from them. Getting this wrong by one is the oldest Modbus bug there is.",
       "Reads are merged into blocks, so neighboring registers become one request and a busy serial line gets some peace.",
       "Writing a single bit of a holding register keeps the other fifteen bits intact, because Modbus has no atomic bit-set there."
-    ]
+    ],
+    "seo": {
+      "title": "Modbus TCP gateway and RTU driver | HotLoop",
+      "description": "A Modbus TCP gateway and RTU driver for PLCs, drives and meters: all four word orders, 40001-style numbering, merged reads, and publishing to MQTT.",
+      "h1": "Modbus TCP gateway: read PLCs, drives and meters without the word-order guesswork",
+      "intro": [
+        "HotLoop reads Modbus TCP and RTU devices and puts the values on OPC UA, MQTT and Sparkplug B, so a 1979 protocol feeds a modern plant. Pick the word order your manual prints and the float you read is the float the device holds.",
+        "Want the values on a broker? <a href=\"/modbus-to-mqtt/\">Modbus to MQTT, step by step</a>."
+      ],
+      "faq": [
+        {
+          "q": "What is a Modbus TCP gateway?",
+          "a": "A Modbus TCP gateway reads the registers of PLCs, drives and meters and passes them on to the systems that need them. HotLoop does it with a native Modbus driver and serves the values over OPC UA, MQTT and Sparkplug B."
+        },
+        {
+          "q": "Which word orders does the Modbus driver support?",
+          "a": "All four, under the names vendor manuals print: ABCD, CDAB, BADC and DCBA. Set a device default and override it per tag."
+        },
+        {
+          "q": "Does it handle 40001-style register numbers?",
+          "a": "One setting lets you write the numbers straight from your drawings."
+        },
+        {
+          "q": "Does the Modbus gateway support RTU as well as TCP?",
+          "a": "The same driver covers Modbus TCP and RTU."
+        }
+      ],
+      "links": [
+        {
+          "label": "Modbus to MQTT gateway, step by step",
+          "href": "/modbus-to-mqtt/"
+        },
+        {
+          "label": "HotLoop Edge Relay, the headless Modbus to MQTT box",
+          "href": "/edge-relay/"
+        },
+        {
+          "label": "OPC UA gateway for the whole plant",
+          "href": "/opc-ua-gateway/"
+        },
+        {
+          "label": "Every integration and how far it has been proven",
+          "href": "/integrations/"
+        }
+      ]
+    }
   },
   {
     "id": "mqtt-sparkplug",
@@ -68,7 +158,52 @@
     "body": [
       "As a Sparkplug B primary host, the driver does the things the specification asks for and most integrations skip.",
       "Edge nodes can see the host drop instead of guessing from a timeout. The host tracks every node's sequence, asks a node to re-announce itself when it skips or after the host's own reconnect, and matches a death to the right birth, so a stale death certificate from a previous session can't kill the current one."
-    ]
+    ],
+    "seo": {
+      "title": "Sparkplug B gateway: MQTT primary host | HotLoop",
+      "description": "A Sparkplug B gateway and MQTT driver: HotLoop acts as a full primary host, keeps message order, and publishes Sparkplug B from the Edge Relay.",
+      "h1": "Sparkplug B gateway: a primary host that keeps your nodes honest",
+      "intro": [
+        "Bring plain MQTT topics and Sparkplug B nodes into one place, with the history and the alarms next to them. HotLoop plays the primary host the way the spec says, so a dropped node shows as a dropped node, not a quiet one.",
+        "Publishing from the machine instead? The <a href=\"/edge-relay/\">Edge Relay</a> polls equipment and forwards it as Sparkplug B."
+      ],
+      "faq": [
+        {
+          "q": "What is a Sparkplug B gateway?",
+          "a": "A Sparkplug B gateway moves plant data on and off an MQTT broker in the Sparkplug B format, with births, deaths and sequence numbers. HotLoop reads Sparkplug B as a primary host, and the Edge Relay publishes it from the machine."
+        },
+        {
+          "q": "Does HotLoop work as a Sparkplug B primary host?",
+          "a": "It tracks every node's sequence, asks a node to re-announce itself when it skips or after the host's own reconnect, and matches a death to the right birth."
+        },
+        {
+          "q": "Does it keep message order?",
+          "a": "Delivering Sparkplug messages concurrently reorders them, so HotLoop keeps the order."
+        },
+        {
+          "q": "Can I use plain MQTT too?",
+          "a": "The same driver reads plain MQTT topics as well as Sparkplug B metrics."
+        }
+      ],
+      "links": [
+        {
+          "label": "A unified namespace on Sparkplug B",
+          "href": "/unified-namespace/"
+        },
+        {
+          "label": "HotLoop Edge Relay, a Sparkplug B edge node",
+          "href": "/edge-relay/"
+        },
+        {
+          "label": "Modbus to MQTT gateway",
+          "href": "/modbus-to-mqtt/"
+        },
+        {
+          "label": "Every integration and how far it has been proven",
+          "href": "/integrations/"
+        }
+      ]
+    }
   },
   {
     "id": "ethernet-ip",
@@ -96,7 +231,43 @@
       "The data type comes from the tag, or from an explicit suffix, which wins.",
       "Reads are batched, falling back to single reads when a batch fails, so one bad tag path does not blind the other nineteen."
     ],
-    "notVerifiedNote": "Check a value you already know on the controller at commissioning before trusting a screen."
+    "notVerifiedNote": "Check a value you already know on the controller at commissioning before trusting a screen.",
+    "seo": {
+      "title": "EtherNet/IP gateway for Allen-Bradley | HotLoop",
+      "description": "An EtherNet/IP gateway for ControlLogix, CompactLogix and Micro820: read tags by name, batched reads, and the values on OPC UA and MQTT.",
+      "h1": "EtherNet/IP gateway: read Allen-Bradley tags by name",
+      "intro": [
+        "Ask the controller what it holds and read the tags by the names your programmers gave them. HotLoop batches the reads and falls back to single reads, so one bad tag path never blinds the other nineteen."
+      ],
+      "faq": [
+        {
+          "q": "Which controllers does the EtherNet/IP gateway read?",
+          "a": "Allen-Bradley ControlLogix, CompactLogix and Micro820."
+        },
+        {
+          "q": "How are EtherNet/IP tags addressed?",
+          "a": "By name. The data type comes from the tag, or from an explicit suffix, which wins."
+        },
+        {
+          "q": "What if one tag path is wrong?",
+          "a": "Reads are batched and fall back to single reads when a batch fails, so one bad tag path does not blind the other nineteen."
+        }
+      ],
+      "links": [
+        {
+          "label": "OPC UA gateway for the whole plant",
+          "href": "/opc-ua-gateway/"
+        },
+        {
+          "label": "HotLoop Gateway",
+          "href": "/gateway/"
+        },
+        {
+          "label": "Every integration and how far it has been proven",
+          "href": "/integrations/"
+        }
+      ]
+    }
   },
   {
     "id": "s7comm",
@@ -126,7 +297,43 @@
       "HotLoop uses the plain connection type, so it does not occupy the connection an engineer wants for TIA Portal.",
       "There is no browse: a CPU does not publish the layout of its data blocks, because that lives in the TIA Portal project."
     ],
-    "notVerifiedNote": "Check a value you already know on the PLC at commissioning before trusting a screen. Set the type of anything wider than a byte from the PLC program."
+    "notVerifiedNote": "Check a value you already know on the PLC at commissioning before trusting a screen. Set the type of anything wider than a byte from the PLC program.",
+    "seo": {
+      "title": "Siemens S7 gateway: S7-300 to S7-1500 | HotLoop",
+      "description": "A Siemens S7 gateway for S7-300, S7-400, S7-1200 and S7-1500 over ISO-on-TCP, with the values on OPC UA and MQTT and no TIA Portal connection taken.",
+      "h1": "Siemens S7 gateway: S7-300 to S7-1500 without taking TIA Portal's connection",
+      "intro": [
+        "Read S7-300, S7-400, S7-1200 and S7-1500 data blocks, merkers, inputs and outputs by rack and slot. HotLoop uses the plain connection type, so an engineer can still go online with TIA Portal while the data keeps flowing."
+      ],
+      "faq": [
+        {
+          "q": "Which Siemens PLCs does the S7 gateway read?",
+          "a": "S7-300, S7-400, S7-1200 and S7-1500, over ISO-on-TCP by rack and slot."
+        },
+        {
+          "q": "Will it block TIA Portal?",
+          "a": "HotLoop uses the plain connection type, so it does not occupy the connection an engineer wants for TIA Portal."
+        },
+        {
+          "q": "Can it browse data blocks?",
+          "a": "A CPU does not publish the layout of its data blocks, because that lives in the TIA Portal project, so you list the addresses you want."
+        }
+      ],
+      "links": [
+        {
+          "label": "OPC UA gateway for the whole plant",
+          "href": "/opc-ua-gateway/"
+        },
+        {
+          "label": "HotLoop Gateway",
+          "href": "/gateway/"
+        },
+        {
+          "label": "Every integration and how far it has been proven",
+          "href": "/integrations/"
+        }
+      ]
+    }
   },
   {
     "id": "mtconnect",
@@ -304,7 +511,43 @@
       "A lost message, a gap in the sequence numbers, marks that writer's tags uncertain until its next full update, because a change may have gone with it. A writer that goes silent reads bad, and a field the publisher marks bad or uncertain is that.",
       "Edge and the Gateway can also publish the tags you choose as OPC UA PubSub, switched off until you switch it on. A bad tag goes out as its status, never as its last value.",
       "The subscriber is read-only. HotLoop Transmitter is the publisher that runs inside a CODESYS PLC, and this is the driver that listens to it."
-    ]
+    ],
+    "seo": {
+      "title": "OPC UA PubSub subscriber and publisher | HotLoop",
+      "description": "OPC UA PubSub (UADP) in HotLoop: subscribe as a device, publish chosen tags, and pair it with HotLoop Transmitter inside a CODESYS PLC.",
+      "h1": "OPC UA PubSub: subscribe to a PLC's UADP stream, publish your own",
+      "intro": [
+        "Listen to a publisher's DataSets over UDP, unicast or multicast, and keep them with their quality. A lost message marks the tags uncertain, and a silent writer reads bad. Pair it with <a href=\"/transmitter/\">HotLoop Transmitter</a> to publish straight from inside a CODESYS PLC."
+      ],
+      "faq": [
+        {
+          "q": "What does the OPC UA PubSub driver do?",
+          "a": "It subscribes, as a device, to DataSets published as UADP over UDP, unicast or multicast. Edge and the Gateway can also publish the tags you choose."
+        },
+        {
+          "q": "Does it work with CODESYS?",
+          "a": "It was run against HotLoop Transmitter, publishing from inside a CODESYS PLC, and against an independent OPC UA stack in both directions."
+        },
+        {
+          "q": "What happens when a message is lost?",
+          "a": "A gap in the sequence numbers marks that writer's tags uncertain until its next full update, and a writer that goes silent reads bad."
+        }
+      ],
+      "links": [
+        {
+          "label": "HotLoop Transmitter, OPC UA PubSub from the PLC",
+          "href": "/transmitter/"
+        },
+        {
+          "label": "OPC UA gateway for the whole plant",
+          "href": "/opc-ua-gateway/"
+        },
+        {
+          "label": "Every integration and how far it has been proven",
+          "href": "/integrations/"
+        }
+      ]
+    }
   },
   {
     "id": "gateway-mode",

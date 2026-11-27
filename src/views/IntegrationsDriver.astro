@@ -12,16 +12,18 @@ const other = locale !== DEFAULT;
 const ps = (field: string, fallback: string) => (other ? t(`pr.${entry.id}.${field}`) : fallback);
 const p = entry.data;
 const tier = TIERS[p.verification];
+const seo = other ? undefined : p.seo;
 
 // Search engines truncate a description near 160 characters. Prefer the summary
 // with its verification tier, and fall back to the summary alone when that is too long.
 const summary = ps('sum', p.summary);
 const withTier = `${summary} ${other ? t('int.pVer', { label: t(`t.${p.verification}.label`) }) : `Verification: ${tier.label}.`}`;
-const description = withTier.length <= 160 ? withTier : summary;
+const description = seo ? seo.description : withTier.length <= 160 ? withTier : summary;
 
 // "Everything else" is not a useful page title, so the gateway-mode page says what it covers.
-const title =
-  entry.id === 'gateway-mode'
+const title = seo
+  ? seo.title
+  : entry.id === 'gateway-mode'
     ? t('int.pTitleGm')
     : t('int.pTitle', { name: p.name });
 
@@ -37,15 +39,16 @@ const breadcrumbs = {
 ---
 
 <Base title={title} description={description} ogAlt={t('int.pOgAlt', { name: p.name })}>
-  <JsonLd slot="head" data={breadcrumbs} />
+  <JsonLd slot="head" data={seo ? [breadcrumbs, { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: seo.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }] : breadcrumbs} />
   <section class="page-hero">
     <div class="wrap stack">
       <p class="crumb"><a href={to('/integrations/')}>{t('int.crumb')}</a> <span aria-hidden="true">/</span> {p.name}</p>
       <div class="cluster">
-        <h1>{p.name}</h1>
+        <h1>{seo ? seo.h1 : p.name}</h1>
         <span class={`chip ${tier.chip}`}>{t(`t.${p.verification}.label`)}</span>
       </div>
       <p class="lede">{summary}</p>
+      {seo && seo.intro.map((x) => <p class="lede" set:html={x} />)}
 
       {(p.verification === 'decode' || p.notVerifiedNote.trim() !== '') && (
         <div class="notice">
@@ -91,6 +94,19 @@ const breadcrumbs = {
 
     {entry.id === 'modbus' && (<><h2>{t('int.wordOrder')}</h2><WordOrder /></>)}
 
+    {seo && (
+      <>
+        <h2>Questions people ask</h2>
+        {seo.faq.map((f) => (<details class="faq"><summary>{f.q}</summary><p>{f.a}</p></details>))}
+        <h2>Keep reading</h2>
+        <ul class="more">{seo.links.map((m) => <li><a href={m.href}>{m.label}</a></li>)}</ul>
+        <div class="cluster">
+          <a class="btn primary" href="/contact/">Request a quote</a>
+          <a class="btn" href="/talk-to-an-engineer/">Talk to an engineer</a>
+        </div>
+      </>
+    )}
+
     <nav class="pager" aria-label={t('int.pagerAria')}>
       {prev ? <a href={to(`/integrations/${prev.id}/`)}>&larr; {prev.data.name}</a> : <span></span>}
       {next ? <a href={to(`/integrations/${next.id}/`)}>{next.data.name} &rarr;</a> : <span></span>}
@@ -111,6 +127,10 @@ const breadcrumbs = {
   .body { max-width: 78ch; padding-bottom: var(--hl-s7); }
   .body > p { color: var(--hl-ink-soft); }
   .body h2 { font-size: var(--hl-fs-xl); margin-top: var(--hl-s7); }
+  .faq { border-bottom: 1px solid var(--hl-border); padding-block: var(--hl-s3); }
+  .faq summary { cursor: pointer; font-weight: 600; }
+  .faq p { margin-top: var(--hl-s2); }
+  .more { display: grid; gap: var(--hl-s2); padding-left: var(--hl-s4); }
   .keys { display: flex; flex-wrap: wrap; gap: var(--hl-s2); }
   .pager { display: flex; justify-content: space-between; margin-top: var(--hl-s8); padding-top: var(--hl-s5); border-top: 1px solid var(--hl-border); font-weight: 600; }
 </style>
