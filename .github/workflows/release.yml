@@ -1,0 +1,90 @@
+name: Release
+
+# hotloop.io is served by nginx on the mothership. A pull request builds the site, runs the audits, builds the image and
+# checks the running container against the build (every page, every redirect, the headers). A version tag (v*) does the
+# same and then pushes the image to GHCR. A pull request to embernet-iac (sites.tf) then rolls it onto the mothership.
+# A plain push to main builds and releases nothing here. docs.hotloop.io is a separate site and is not touched.
+on:
+  pull_request:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  image:
+    name: Build, check, and push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+
+      - run: npm ci
+
+      # src/styles/tokens.css is a vendored copy of the canonical file in
+      # HotLoop-io/HotLoop-io. If they drift, fail here rather than ship a site
+      # whose colors quietly disagree with the brand standard.
+      - name: Design tokens match the canonical copy
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/HotLoop-io/HotLoop-io/main/brand/tokens.css -o "$RUNNER_TEMP/canonical-tokens.css"
+          diff -u --strip-trailing-cr "$RUNNER_TEMP/canonical-tokens.css" src/styles/tokens.css
+
+      # src/legal/LICENSE.md is a vendored copy of the canonical license. Fail here
+      # rather than render a license the org does not publish.
+      - name: License and terms match the canonical copies
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/HotLoop-io/HotLoop-io/main/LICENSE.md -o "$RUNNER_TEMP/canonical-license.md"
+          diff -u --strip-trailing-cr "$RUNNER_TEMP/canonical-license.md" src/legal/LICENSE.md
+          curl -fsSL https://raw.githubusercontent.com/HotLoop-io/HotLoop-io/main/TERMS.md -o "$RUNNER_TEMP/canonical-terms.md"
+          diff -u --strip-trailing-cr "$RUNNER_TEMP/canonical-terms.md" src/legal/TERMS.md
+
+      # Regenerates the social cards and icons, builds, and runs the SEO, sales-lens and card audits. The build also
+      # fails if a protocol or node row claims more than it can back up.
+      - run: npm run build
+
+      - name: Stage the image
+        env:
+          VERSION: ${{ github.ref_type == 'tag' && github.ref_name || 'dev' }}
+          REVISION: ${{ github.sha }}
+        run: node scripts/stage-image.mjs dist stage
+
+      - name: Build the image
+        run: docker build -t hotloop-io-site:check .
+
+      - name: Check the running container against the build
+        run: |
+          docker run -d --name site -p 3000:3000 hotloop-io-site:check
+          for i in $(seq 1 20); do curl -sf -H 'Host: hotloop.io' http://localhost:3000/healthz >/dev/null && break; sleep 1; done
+          WWW_BASE=http://localhost:3000 WWW_ARGS='-H Host:www.hotloop.io' \
+            scripts/serve-check.sh http://localhost:3000 -H 'Host: hotloop.io'
+
+      - name: Login to GHCR
+        if: github.ref_type == 'tag'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # No :latest. A pod restarting at 3am must come back as the exact image that was running at 2am.
+      - name: Push the image
+        if: github.ref_type == 'tag'
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          for t in "$version" "$GITHUB_SHA"; do
+            docker tag hotloop-io-site:check "ghcr.io/hotloop-io/hotloop-io-site:$t"
+            docker push "ghcr.io/hotloop-io/hotloop-io-site:$t"
+          done
+
+  # There is no deploy job. The image pushed above is what a release PR to Embernet-ai/embernet-iac (sites.tf, the hotloop
+  # entry) names, and the merge rolls it. Nothing in this repository touches the cluster.

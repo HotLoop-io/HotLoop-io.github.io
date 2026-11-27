@@ -1,6 +1,6 @@
 # hotloop.io
 
-Source for [hotloop.io](https://hotloop.io), built with [Astro](https://astro.build) and published to GitHub Pages by a workflow on every push to `main`.
+Source for [hotloop.io](https://hotloop.io), built with [Astro](https://astro.build) and served by nginx on the mothership. A version tag (`v*`) runs `.github/workflows/release.yml`: build, the audits, an image, a check of the running container against the build, then the push to `ghcr.io/hotloop-io/hotloop-io-site`. A pull request to `Embernet-ai/embernet-iac` (`sites.tf`, the hotloop entry) rolls the image, applied by CI on merge. A pull request builds and checks everything and publishes nothing. docs.hotloop.io is a separate site.
 
 ```
 npm install
@@ -27,3 +27,10 @@ Node 22.12 or newer is required, and `.nvmrc` pins the version CI uses.
 ## Writing
 
 No em-dashes as connectors, Oxford commas, American spelling. The reasoning is in the [brand standard](https://github.com/HotLoop-io/HotLoop-io/blob/main/brand/BRAND.md).
+
+## Serving and releasing
+
+- **Image.** `Dockerfile` puts `stage/` (made by `node scripts/stage-image.mjs dist stage` after the build) on nginx-unprivileged with `docker/nginx.conf`. The stage step leaves out the pages that only forward (the old Gateway release notes address) and the Pages `CNAME`, and writes an nginx map so each of those addresses answers one real 301. Every response carries `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`.
+- **Chart repositories.** `hotloop.io/hotloop/`, `/hotloop-flow/`, `/hotloop-cascade/`, `/hotloop-codesys/` and `/hotloop-transmitter/` are the Helm repositories (`helm repo add`), each published to the `gh-pages` branch of its own repository. The index files name `https://hotloop.io/<repo>/<chart>.tgz`, so nginx answers those five paths by proxying to `hotloop-io.github.io/<repo>/`, with a minute of cache. They need no change in the product repositories. `scripts/release-fresh.mjs` reads them through the same address.
+- **Check.** `scripts/serve-check.sh http://localhost:3000 -H 'Host: hotloop.io'` checks every built page, every forwarding address, the 404, the headers, the sitemap and the bot rules. With `CHARTS=1` it also checks the five chart repositories, which needs hotloop.io to no longer be the GitHub Pages custom domain.
+- **Release.** Merge to main (a plain merge builds and releases nothing), the lead pushes `vX.Y.Z`, the run pushes the image, and a pull request to embernet-iac changes the image in `sites.tf`. Nobody runs helm or kubectl by hand.
