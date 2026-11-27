@@ -119,6 +119,14 @@ const CHALLENGE = `${CASCADE}/01a199f8-6eff-7e78-ad13-47f40f2fc025/altcha-challe
         const h = document.createElement('h2'); h.textContent = 'Request received.'; h.tabIndex = -1;
         const p = document.createElement('p'); p.textContent = "We'll be in touch shortly.";
         done.append(h, p); form.replaceChildren(done); h.focus();
+        // A sent request is the sale's first step: tell Google Analytics (a key event there) and Clarity. Both exist
+        // only after the visitor pressed Accept, so a visitor who declined sends nothing.
+        try {
+          const w = window as unknown as { gtag?: (...a: unknown[]) => void; clarity?: (...a: unknown[]) => void; __hlClarityNow?: () => void };
+          if (typeof w.gtag !== 'function') w.__hlClarityNow?.();
+          w.gtag?.('event', 'generate_lead', { form_id: 'lead-form', form_name: form.dataset.source ?? 'Contact' });
+          w.clarity?.('event', 'lead_form_sent');
+        } catch { /* analytics must never break the page */ }
       }).catch(fail);
     });
   }
