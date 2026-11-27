@@ -149,6 +149,7 @@ const pages = [
   ['about', 'About HotLoop', 'Automation software that closes the loop between what a sensor says and what a machine does.', 'About'],
   ['node-red-alternative', 'A Node-RED alternative for plants', 'HotLoop Flow runs your flows.json with a ceiling on every queue and a record of every deploy.', 'Flow'],
   ['labview-alternative', 'A LabVIEW alternative for test benches', 'FlowLab draws the diagram, runs the bench, and reads your VIs.', 'FlowLab'],
+  ['scada-alternative', 'A SCADA alternative that starts on a Pi', 'Drivers, a historian, ISA-18.2 alarms, and a wall screen in one program.', 'Gateway'],
   ['codesys-webvisu-alternative', 'A CODESYS HMI outside the runtime', 'HotLoop for CODESYS reads your PLC over OPC UA and imports your visualization.', 'CODESYS'],
   ['opc-ua-gateway', 'An OPC UA gateway and Kepware alternative', 'Twelve native drivers, an OPC UA server, a write gate, and a historian.', 'Gateway'],
   ['modbus-to-mqtt', 'Modbus to MQTT, as Sparkplug B', 'Poll Modbus TCP and RTU and publish to MQTT, with a disk buffer for the outage.', 'Edge Relay'],

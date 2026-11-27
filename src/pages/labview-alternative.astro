@@ -3,20 +3,21 @@ import AltPage from '../components/AltPage.astro';
 ---
 
 <AltPage
-  title="LabVIEW alternative for test benches | HotLoop FlowLab"
-  description="FlowLab draws the diagram, runs the bench, and opens a panel on your phone. A LabVIEW-style data flow for test benches and data loggers, with a TDMS log."
+  title="LabVIEW alternatives for test benches | HotLoop FlowLab"
+  description="FlowLab, a LabVIEW alternative: draw the diagram, run the bench, and open a panel on your phone. Data flow for test benches and loggers, with a TDMS log."
   eyebrow="LabVIEW alternative"
   h1="A LabVIEW alternative that draws the diagram and runs the bench."
   lede="FlowLab is the part of HotLoop Flow built for test benches and data loggers. Wire a diagram, press Run, watch the values move on the wires, and open the same panel on a phone. It runs on a Linux box or a Raspberry Pi 5, and it reads your LabVIEW VIs."
   path="/labview-alternative/"
   cta={{ label: 'Install Flow and open FlowLab', href: 'https://docs.hotloop.io/flow/install/' }}
   faq={[
-    { q: 'Is there a LabVIEW alternative for Linux?', a: 'Yes. FlowLab runs on Linux, on an amd64 box or a Raspberry Pi 5, and you open its editor and panel in a browser, so the bench does not need Windows.' },
+    { q: 'What are the best LabVIEW alternatives for a test bench?', a: 'If you want to keep your VIs and draw data flow in a browser, FlowLab: it imports a .vi, runs on a Linux box or a Raspberry Pi 5, and writes a TDMS log you can open in NI\'s own tools.' },
+    { q: 'Is there a LabVIEW alternative for Linux?', a: 'FlowLab runs on Linux, on an amd64 box or a Raspberry Pi 5, and you open its editor and panel in a browser, so the bench does not need Windows.' },
     { q: 'Is FlowLab a free LabVIEW alternative?', a: 'Home and lab use of HotLoop is free, and so is use by schools, nonprofits, and government bodies. Business use goes through EmberNet, where it is free as well. The HotLoop Source License Agreement 1.0 has the exact terms.' },
-    { q: 'Can FlowLab open a LabVIEW VI?', a: 'Yes. Choose the .vi in the Flow editor Import dialog. FlowLab reads the front panel names and the block diagram, with constants, terminals, calls of other VIs, loops, case structures, and the wires between them, and lists what did not come across before anything is added.' },
+    { q: 'Can FlowLab open a LabVIEW VI?', a: 'Choose the .vi in the Flow editor Import dialog. FlowLab reads the front panel names and the block diagram, with constants, terminals, calls of other VIs, loops, case structures, and the wires between them, and lists what did not come across before anything is added.' },
     { q: 'What does FlowLab not import from a VI?', a: 'What a LabVIEW primitive does is not stored in the VI file, so a primitive arrives as a named node wired as it was, and you swap it for the FlowLab node that does the same job. The settings inside nodes, the front panel layout, and the contents of the VIs it calls are not read either, and the dialog says so every time.' },
-    { q: 'Does FlowLab have loops, an error wire, and a debugger?', a: 'Yes. While and for loops carry a value from one pass to the next, an error travels on a wire of its own, and a run bar gives you highlight execution, probes, breakpoints, and step.' },
-    { q: 'Can FlowLab log data for NI tools?', a: 'Yes. A TDMS log node writes a file you can open in NI\'s own tools, and a node reads NI hardware.' },
+    { q: 'Does FlowLab have loops, an error wire, and a debugger?', a: 'While and for loops carry a value from one pass to the next, an error travels on a wire of its own, and a run bar gives you highlight execution, probes, breakpoints, and step.' },
+    { q: 'Can FlowLab log data for NI tools?', a: 'A TDMS log node writes a file you can open in NI\'s own tools, and a node reads NI hardware.' },
   ]}
   more={[
     { label: 'FlowLab in the docs', href: 'https://docs.hotloop.io/flow/flowlab/' },

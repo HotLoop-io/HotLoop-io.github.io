@@ -115,7 +115,7 @@ const active = (href: string) => path === href || path.startsWith(href);
   }
   /* Translated labels run longer than the English ones, so the full bar needs more room before it folds into the menu. */
   @media (max-width: 1520px) {
-    :global(html:not(:lang(en))) nav.desktop, :global(html:not(:lang(en))) .gh { display: none; }
-    :global(html:not(:lang(en))) .menu { display: block; }
+    nav.desktop, .gh { display: none; }
+    .menu { display: block; }
   }
 </style>

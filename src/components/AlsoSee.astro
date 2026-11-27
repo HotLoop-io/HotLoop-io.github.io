@@ -3,15 +3,16 @@
 // It renders on the English page and nowhere else, so a translated page never links to a page that
 // has no translation.
 import { forPage } from '../i18n/page';
-interface Props { heading: string; items: { label: string; href: string }[] }
-const { heading, items } = Astro.props;
+interface Props { id?: string; heading: string; items: { label: string; href: string }[]; intro?: string[] }
+const { id, heading, items, intro = [] } = Astro.props;
 const { locale } = forPage(Astro.url.pathname);
 ---
 
 {locale.tag === 'en' && (
-  <section class="block also">
+  <section class="block also" id={id}>
     <div class="wrap">
       <h2>{heading}</h2>
+      {intro.map((p) => <p class="muted" set:html={p} />)}
       <ul>
         {items.map((i) => <li><a href={i.href}>{i.label}</a></li>)}
       </ul>
@@ -21,5 +22,6 @@ const { locale } = forPage(Astro.url.pathname);
 
 <style>
   .also h2 { font-size: var(--hl-fs-xl); }
+  .also p { max-width: 78ch; margin-top: var(--hl-s3); }
   .also ul { display: grid; gap: var(--hl-s2); padding-left: var(--hl-s4); margin-top: var(--hl-s3); }
 </style>

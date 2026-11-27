@@ -63,6 +63,10 @@ const { title, description, eyebrow, h1, lede, path, faq, cta, more } = Astro.pr
     <ul class="more">
       {more.map((m) => <li><a href={m.href}>{m.label}</a></li>)}
     </ul>
+    <div class="cluster asks">
+      <a class="btn primary" href="/contact/">Request a quote</a>
+      <a class="btn" href="/talk-to-an-engineer/">Talk to an engineer</a>
+    </div>
     <p class="family">{FAMILY_SENTENCE} <a href="/products/">See every product</a>. Home and lab use is free, and so is use by schools, nonprofits, and government bodies. <a href="/license/">Read which license applies to you</a>.</p>
   </article>
 </Base>
@@ -80,5 +84,6 @@ const { title, description, eyebrow, h1, lede, path, faq, cta, more } = Astro.pr
   .faq summary { cursor: pointer; font-weight: 600; }
   .faq p { margin-top: var(--hl-s2); }
   .more { display: grid; gap: var(--hl-s2); padding-left: var(--hl-s4); }
+  .asks { margin-top: var(--hl-s5); }
   .family { margin-top: var(--hl-s6); color: var(--hl-ink-soft); }
 </style>

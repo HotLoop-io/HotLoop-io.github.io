@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import AlsoSee from '../components/AlsoSee.astro';
 import LoopInstrument from '../components/LoopInstrument.astro';
 import CardDetail from '../components/CardDetail.astro';
 import { TIERS, TIER_ORDER } from '../lib/tiers';
@@ -214,6 +215,9 @@ const fmt = (d: Date) =>
       </div>
     </div>
   </section>
+  <AlsoSee heading="ISA-18.2 alarm management software and a PLC historian, in one box" intro={[
+    'HotLoop is ISA-18.2 alarm management software and a PLC historian that run on a Raspberry Pi beside one machine or across every site. You see what tripped, what cleared on its own, and what every tag did before it, all in one place. <a href="/gateway/">Meet the Gateway</a>.',
+  ]} items={[{ label: "PLC historian software and industrial alarm management", href: "/gateway/#historian" }, { label: "A SCADA alternative that starts on a Pi", href: "/scada-alternative/" }, { label: "An OPC UA gateway and Kepware alternative", href: "/opc-ua-gateway/" }]} />
 </Base>
 
 <style>

@@ -3,24 +3,27 @@ import AltPage from '../components/AltPage.astro';
 ---
 
 <AltPage
-  title="Modbus to MQTT gateway: Sparkplug B | HotLoop"
-  description="Poll Modbus TCP or RTU devices and publish them to MQTT as Sparkplug B, on a Raspberry Pi or a small industrial PC, with a disk buffer for when the link drops."
+  title="Modbus to MQTT gateway and Sparkplug B | HotLoop"
+  description="A Modbus to MQTT gateway: poll Modbus TCP or RTU and publish to MQTT as Sparkplug B from a Raspberry Pi, with a disk buffer for when the link drops."
   eyebrow="Modbus to MQTT"
   h1="Modbus to MQTT, without a pile of glue code."
   lede="HotLoop polls Modbus TCP and RTU devices and publishes them to an MQTT broker as plain topics or as Sparkplug B. Put the headless Edge Relay on a Pi next to the machine, and the readings queue to disk when the uplink dies and replay when it comes back."
   path="/modbus-to-mqtt/"
   cta={{ label: 'Install the Edge Relay', href: 'https://docs.hotloop.io/edge-relay/install/' }}
   faq={[
+    { q: 'What is a Modbus to MQTT gateway?', a: 'A Modbus to MQTT gateway polls Modbus devices and publishes every reading to an MQTT broker. Call it a converter or a bridge if you like: HotLoop does the job with its native Modbus driver, as plain topics or as Sparkplug B.' },
     { q: 'How do I send Modbus TCP to MQTT?', a: 'Add the device with its protocol set to modbus and its address as host and port, such as 10.0.1.50:502, list the registers you want, and the HotLoop Edge Relay publishes them. Modbus RTU to MQTT is covered by the same Modbus driver.' },
     { q: 'How do I convert Modbus to MQTT?', a: 'Describe the device and its registers in one JSON file, start the HotLoop Edge Relay, and point it at your broker. It polls the device and publishes every reading as a Sparkplug B edge node. The step-by-step guide is in the HotLoop docs.' },
-    { q: 'Does it support Modbus RTU as well as Modbus TCP?', a: 'Yes. The Modbus driver covers both, with all four word orders (ABCD, CDAB, BADC, DCBA) and an option for the traditional 40001-style numbering.' },
+    { q: 'Does it support Modbus RTU as well as Modbus TCP?', a: 'The Modbus driver covers both, with all four word orders (ABCD, CDAB, BADC, DCBA) and an option for the traditional 40001-style numbering.' },
     { q: 'What happens to the data when the network is down?', a: 'Readings queue to a file on disk, capped at 64 MiB by default. When the broker returns, the queue drains oldest first before live readings go out, each marked as historical so the host upstream does not mistake a replay for a current value.' },
-    { q: 'Do I need my own MQTT broker?', a: 'No. HotLoop can run an MQTT broker in the same process, on by default, so a small install has nothing extra to deploy. For many sites or heavy fan-out, point it at Mosquitto, EMQX, or another dedicated broker.' },
-    { q: 'Can I do Modbus to MQTT in Node-RED style?', a: 'Yes. HotLoop Flow reads Node-RED flow files and has Modbus read and write nodes and MQTT 5 nodes, so a Modbus-to-MQTT flow is two nodes and a wire.' },
+    { q: 'Do I need my own MQTT broker?', a: 'HotLoop can run an MQTT broker in the same process, on by default, so a small install has nothing extra to deploy. For many sites or heavy fan-out, point it at Mosquitto, EMQX, or another dedicated broker.' },
+    { q: 'Can I do Modbus to MQTT in Node-RED style?', a: 'HotLoop Flow reads Node-RED flow files and has Modbus read and write nodes and MQTT 5 nodes, so a Modbus-to-MQTT flow is two nodes and a wire.' },
   ]}
   more={[
     { label: 'Modbus to MQTT, step by step in the docs', href: 'https://docs.hotloop.io/guides/modbus-to-mqtt/' },
     { label: 'HotLoop Edge Relay', href: '/edge-relay/' },
+    { label: 'The Modbus TCP gateway driver', href: '/integrations/modbus/' },
+    { label: 'The Sparkplug B gateway driver', href: '/integrations/mqtt-sparkplug/' },
     { label: 'An OPC UA gateway for the whole plant', href: '/opc-ua-gateway/' },
     { label: 'Sparkplug B and a unified namespace', href: '/unified-namespace/' },
     { label: 'HotLoop Flow, if you would rather wire it', href: '/node-red-alternative/' },
@@ -35,6 +38,9 @@ import AltPage from '../components/AltPage.astro';
       <tr><td><a href="/flow/">Flow</a></td><td>You want to wire it yourself, with transforms between the register and the topic.</td></tr>
     </tbody>
   </table>
+
+  <h2>A Modbus TCP gateway for the registers you already have</h2>
+  <p>Call it a converter, a bridge, or a gateway: the job is the same. Read the registers, name them, and publish them where the rest of the plant can use them. The <a href="/integrations/modbus/">Modbus TCP gateway driver</a> covers TCP and RTU, and the <a href="/gateway/">Gateway</a> can keep the history too.</p>
 
   <h2>Registers the way the manual prints them</h2>
   <p>A float across two registers is a plausible number even when the word order is wrong, and that is the Modbus mistake that costs people days. HotLoop names every order the vendor manuals print, sets a device default, and lets each tag override it. Addressing is raw and zero-based, with a switch for the 40001 style, so the numbers in your drawings go straight in.</p>
