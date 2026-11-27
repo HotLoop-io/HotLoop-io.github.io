@@ -5,30 +5,32 @@ const EMAIL = 'info@hotloop.ai';
 ---
 
 <Base
-  title="Contact HotLoop"
-  description="Ask about HotLoop, get help with an install, or talk about a plant. Tell us what you run and a person who builds HotLoop answers."
-  ogAlt="Contact HotLoop."
+  title="Request a HotLoop quote"
+  description="Contact HotLoop and request a quote. Tell us what you run and a person who builds HotLoop sends back a quote."
+  ogAlt="Request a HotLoop quote."
 >
   <section class="page-hero">
     <div class="wrap stack">
       <span class="label">Contact</span>
-      <h1>Tell us what you run.</h1>
-      <p class="lede">A question, a stuck install, or a plant you want to close the loop on. Write it down and a person who works on HotLoop answers.</p>
+      <h1>Request a quote</h1>
+      <p class="lede">Tell us what you run and what you want to close the loop on. Sales reads it and sends you a quote.</p>
     </div>
   </section>
   <section class="wrap body stack">
     <LeadForm
       source="HotLoop"
+      kind="quote"
       fallback={EMAIL}
-      button="Send it"
+      button="Request a quote"
+      messageLabel="What would you like quoted? *"
       kinds={[
-        { value: 'Question', label: 'A question about HotLoop' },
-        { value: 'Support', label: 'Help with an install' },
         { value: 'Plant', label: 'A plant I want to automate' },
+        { value: 'Licensing', label: 'HotLoop licensing' },
         { value: 'Partner', label: 'Working together' },
         { value: 'Other', label: 'Something else' },
       ]}
     />
+    <p>Have a question or a stuck install? <a href="/talk-to-an-engineer/">Talk to an engineer</a>.</p>
     <p>Prefer email? Write to <a href={`mailto:${EMAIL}`}>{EMAIL}</a>. Support, SLAs, and warranties come through Fireball Industries, the official systems integrator.</p>
   </section>
 </Base>

@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+const EMAIL = 'info@hotloop.ai';
+---
+
+<Base
+  title="Talk to a HotLoop engineer"
+  description="Ask about HotLoop or get help with an install. Tell us what you run and a person who builds HotLoop answers by email."
+  ogAlt="Talk to a HotLoop engineer."
+>
+  <section class="page-hero">
+    <div class="wrap stack">
+      <span class="label">Support</span>
+      <h1>Talk to an engineer</h1>
+      <p class="lede">A question or a stuck install. Write it down, we file it with support, and a person who works on HotLoop answers by email.</p>
+    </div>
+  </section>
+  <section class="wrap body stack">
+    <LeadForm
+      source="HotLoop"
+      kind="support"
+      fallback={EMAIL}
+      button="Talk to an engineer"
+      messageLabel="What do you need help with? *"
+      messagePlaceholder="What you run, what you are trying to do, and what you see instead."
+      kinds={[
+        { value: 'Question', label: 'A question about HotLoop' },
+        { value: 'Install', label: 'Help with an install' },
+        { value: 'Other', label: 'Something else' },
+      ]}
+    />
+    <p>Looking for pricing? <a href="/contact/">Request a quote</a>.</p>
+    <p>Prefer email? Write to <a href={`mailto:${EMAIL}`}>{EMAIL}</a>. Support, SLAs, and warranties come through Fireball Industries, the official systems integrator.</p>
+  </section>
+</Base>
+
+<style>
+  .page-hero { padding-block: clamp(var(--hl-s7), 7vw, var(--hl-s9)) var(--hl-s6); }
+  .body { max-width: 860px; padding-bottom: var(--hl-s8); }
+</style>

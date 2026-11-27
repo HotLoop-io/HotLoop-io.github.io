@@ -1,17 +1,22 @@
 ---
-// The lead form. It posts to the Cascade webhook on flows.fireballz.ai that every
-// HotLoop form uses, with the same body fields, a honeypot, and a solved ALTCHA
-// proof of work (the webhook turns a post down without one). `source` names the
-// site so the lead lands sorted. Without JavaScript the plain post is refused, so
-// the address beside the form is the way in.
-interface Props { source: string; kinds: { value: string; label: string }[]; button?: string; fallback: string; }
-const { source, kinds, button = 'Send', fallback } = Astro.props;
+// The lead form, one component for both asks. It posts to a Cascade webhook on flows.fireballz.ai, with a honeypot and a solved ALTCHA
+// proof of work (the webhook turns a post down without one). "Request a quote" (kind quote) goes to sales: the Quote Request to Sales flow
+// makes the Hearth contact, note and deal and emails sales. "Talk to an engineer" (kind support) files a support ticket: the Support
+// Request to Thoth flow makes the requester and the ticket in Thoth (help.fireballz.ai), where support answers by email. `source` names the
+// site so the lead lands sorted. Each is its own lead event, quote_request (a quote also sends generate_lead) and support_request.
+// Without JavaScript the plain post is refused, so the address beside the form is the way in.
+interface Props { source: string; kind: 'quote' | 'support'; kinds: { value: string; label: string }[]; button: string; fallback: string; messageLabel?: string; messagePlaceholder?: string; }
+const { source, kind, kinds, button, fallback, messageLabel = 'Tell us about it *', messagePlaceholder = 'What you run, what has to work, and when.' } = Astro.props;
 const CASCADE = 'https://flows.fireballz.ai/hook';
-const WEBHOOK = `${CASCADE}/01a199f8-712c-72be-9b68-b368d3ac4101/embernet-demo`;
+const FLOW = {
+  quote: `${CASCADE}/01a21e13-3cfc-7e71-b336-2acf0d5a7c29/quote-request`,
+  support: `${CASCADE}/01a21e13-3fa7-7bc7-8373-ca7a3a0dc4c2/support-request`,
+};
+const WEBHOOK = FLOW[kind];
 const CHALLENGE = `${CASCADE}/01a199f8-6eff-7e78-ad13-47f40f2fc025/altcha-challenge`;
 ---
 
-<form id="lead-form" class="lead-form" action={WEBHOOK} method="post" data-lead-form data-source={source} data-fallback={fallback} novalidate>
+<form id="lead-form" class="lead-form" action={WEBHOOK} method="post" data-lead-form data-lead-kind={kind} data-lead-name={button} data-source={source} data-fallback={fallback} novalidate>
   <p class="lf-hint">Fields marked * are required.</p>
   <div class="lf-field"><label for="lf-name">Name *</label><input type="text" id="lf-name" name="name" required autocomplete="name" /></div>
   <div class="lf-field"><label for="lf-email">Work email *</label><input type="email" id="lf-email" name="email" required autocomplete="email" /></div>
@@ -21,7 +26,7 @@ const CHALLENGE = `${CASCADE}/01a199f8-6eff-7e78-ad13-47f40f2fc025/altcha-challe
       <option value="" disabled selected>Choose one</option>
       {kinds.map((k) => <option value={k.value}>{k.label}</option>)}
     </select></div>
-  <div class="lf-field full"><label for="lf-message">Tell us about it *</label><textarea id="lf-message" name="message" required placeholder="What you run, what has to work, and when."></textarea></div>
+  <div class="lf-field full"><label for="lf-message">{messageLabel}</label><textarea id="lf-message" name="message" required placeholder={messagePlaceholder}></textarea></div>
   <div class="lf-trap" aria-hidden="true"><label for="lf-website">Website</label><input type="text" id="lf-website" name="website" tabindex="-1" autocomplete="off" /></div>
   <div class="lf-actions">
     <altcha-widget challenge={CHALLENGE} auto="onfocus" name="altcha" configuration='{"hideFooter":true,"hideLogo":true}'></altcha-widget>
@@ -85,7 +90,8 @@ const CHALLENGE = `${CASCADE}/01a199f8-6eff-7e78-ad13-47f40f2fc025/altcha-challe
     form.dataset.ready = '1';
     form.noValidate = true;
     const btn = form.querySelector<HTMLButtonElement>('[type="submit"]')!;
-    const label = btn.textContent ?? 'Send';
+    const label = btn.textContent ?? '';
+    const kind = form.dataset.leadKind === 'support' ? 'support' : 'quote';
     const f = (id: string) => document.getElementById(id) as HTMLInputElement;
     const bad = (id: string, on: boolean) => { f(id).classList.toggle('lf-bad', on); on ? f(id).setAttribute('aria-invalid', 'true') : f(id).removeAttribute('aria-invalid'); };
     const fail = () => {
@@ -111,21 +117,26 @@ const CHALLENGE = `${CASCADE}/01a199f8-6eff-7e78-ad13-47f40f2fc025/altcha-challe
       if (!altcha) { fail(); return; }
       fetch(form.action, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ full_name: v.name, work_email: v.email, company: v.company, industry: `${form.dataset.source}: ${v.kind}`, role: '', looking_to_do: `[${form.dataset.source}] ${v.message}`, website: f('lf-website').value, altcha }),
+        body: JSON.stringify({ full_name: v.name, work_email: v.email, company: v.company, topic: v.kind, message: `[${form.dataset.source}] ${v.message}`, site: 'hotloop.io', website: f('lf-website').value, altcha }),
       }).then((r) => {
         if (!r.ok) throw new Error('server');
         const done = document.createElement('div');
         done.className = 'lf-done'; done.setAttribute('role', 'status');
-        const h = document.createElement('h2'); h.textContent = 'Request received.'; h.tabIndex = -1;
-        const p = document.createElement('p'); p.textContent = "We'll be in touch shortly.";
+        const h = document.createElement('h2'); h.textContent = kind === 'support' ? 'Request received. An engineer will reply by email.' : 'Request received.'; h.tabIndex = -1;
+        const p = document.createElement('p'); p.textContent = kind === 'support' ? 'We filed a support ticket for you and support will get back to you.' : "We'll be in touch shortly.";
         done.append(h, p); form.replaceChildren(done); h.focus();
-        // A sent request is the sale's first step: tell Google Analytics (a key event there) and Clarity. Both exist
-        // only after the visitor pressed Accept, so a visitor who declined sends nothing.
+        // A sent request is a lead event of its own: quote_request (a sale's first step; Google Analytics also gets generate_lead, so the
+        // lead key event keeps counting sales leads) or support_request (a ticket, which is not a sales lead). Both exist only after the
+        // visitor pressed Accept, so a visitor who declined sends nothing.
         try {
           const w = window as unknown as { gtag?: (...a: unknown[]) => void; clarity?: (...a: unknown[]) => void; __hlClarityNow?: () => void };
           if (typeof w.gtag !== 'function') w.__hlClarityNow?.();
-          w.gtag?.('event', 'generate_lead', { form_id: 'lead-form', form_name: form.dataset.source ?? 'Contact' });
-          w.clarity?.('event', 'lead_form_sent');
+          const event = kind === 'support' ? 'support_request' : 'quote_request';
+          const params = { form_id: kind + '-form', form_name: form.dataset.leadName ?? '', lead_type: kind, form_source: form.dataset.source ?? '' };
+          w.gtag?.('event', event, params);
+          if (kind === 'quote') w.gtag?.('event', 'generate_lead', params);
+          w.clarity?.('event', event);
+          w.clarity?.('set', 'lead_type', kind);
         } catch { /* analytics must never break the page */ }
       }).catch(fail);
     });
