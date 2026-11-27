@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import AlsoSee from '../components/AlsoSee.astro';
 import { TIERS, TIER_ORDER, splitCode } from '../lib/tiers';
 import { forPage } from '../i18n/page';
 import { DEFAULT } from '../i18n/locales';
@@ -149,6 +150,7 @@ const note = (type: string, fallback: string) => (other && fallback ? t(`nd.${ty
 
     <p class="fine muted">{t('int.fine')}</p>
   </section>
+  <AlsoSee heading="Pick a gateway, then read the guides" items={[{ label: "An OPC UA gateway and Kepware alternative", href: "/opc-ua-gateway/" }, { label: "Modbus to MQTT, step by step", href: "/modbus-to-mqtt/" }, { label: "A unified namespace on Sparkplug B", href: "/unified-namespace/" }]} />
 </Base>
 
 <style>

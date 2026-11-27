@@ -1,0 +1,54 @@
+---
+import AltPage from '../components/AltPage.astro';
+---
+
+<AltPage
+  title="Node-RED alternative for plants | HotLoop Flow"
+  description="HotLoop Flow runs your existing Node-RED flows.json in one Go binary, with a ceiling on every queue, deploy records, tracing and signed plugins."
+  eyebrow="Node-RED alternative"
+  h1="A Node-RED alternative that runs your flows and survives the plant."
+  lede="You built it in Node-RED and it works. HotLoop Flow reads the same flows.json, runs it in one static Go binary, and adds the things a line needs when it is running at 3am: a ceiling on every queue, a record of every deploy, and a trace of where a message went."
+  path="/node-red-alternative/"
+  cta={{ label: 'Install Flow', href: 'https://docs.hotloop.io/flow/install/' }}
+  faq={[
+    { q: 'What is the best Node-RED alternative for industrial automation?', a: 'If you want to keep your flows, HotLoop Flow: it runs the same flows.json and adds a ceiling on every queue, a record of every deploy, and a sealed Function node. Among the Node-RED alternatives for industrial plants, it is the one that reads your file as it is.' },
+    { q: 'Can I import my Node-RED flows into HotLoop Flow?', a: 'Yes. Flow reads the flat flows.json that every Node-RED export is written in and runs it. A file loads and saves byte for byte, so your diff in git stays one line when you change one property. Flow also lists what it will refuse to run before you deploy anything.' },
+    { q: 'Do all Node-RED nodes work in Flow?', a: 'The core nodes do, and each one is marked full, partial, divergent, or Flow only in the compatibility matrix. Community nodes are npm packages that need Node.js, so they do not run in Flow. The plant nodes most flows lean on, like Modbus, OPC UA, MQTT, S7, EtherNet/IP and Sparkplug B, run natively.' },
+    { q: 'Is HotLoop Flow faster than Node-RED?', a: 'On the same five-node flow file, the same load, the same machine, and the same sitting, Flow came out smaller, faster, and quicker to start. The table and every condition behind it are on the Flow page, and you can run the same benchmark on your own hardware.' },
+    { q: 'Does Flow run on a Raspberry Pi?', a: 'Yes. Flow is a self-contained 41.7 MB program for amd64 and arm64, and it has been measured on a Raspberry Pi 5.' },
+    { q: 'What does HotLoop Flow cost?', a: 'Home and lab use is free, and so is use by schools, nonprofits, and government bodies. Business use goes through EmberNet, where it is free as well. The source is public under the HotLoop Source License Agreement 1.0.' },
+  ]}
+  more={[
+    { label: 'HotLoop Flow: the full tour', href: '/flow/' },
+    { label: 'Migrate from Node-RED to Flow, step by step', href: 'https://docs.hotloop.io/guides/node-red-to-flow/' },
+    { label: 'Bring your Node-RED flows, the long form', href: 'https://docs.hotloop.io/flow/migrating-from-node-red/' },
+    { label: 'Node-RED compatibility, node by node', href: 'https://docs.hotloop.io/flow/compatibility/' },
+    { label: 'FlowLab, the LabVIEW-class side of Flow', href: '/labview-alternative/' },
+    { label: 'Modbus to MQTT with Flow or the Edge Relay', href: '/modbus-to-mqtt/' },
+  ]}
+>
+  <h2>Why people look for Node-RED alternatives, and what Flow keeps</h2>
+  <p>Flow reads Node-RED's v1 <code>flows.json</code>, the flat JSON array behind every Node-RED export and flow library entry. Point it at your file and it runs. A node type this build has never heard of survives a load and save with every property intact, so you can run a flow here and hand it back to Node-RED afterward.</p>
+  <p>We ran Node-RED's own 62 recorded example flows through both runtimes, and Flow gives what Node-RED gives on all 62. Anything that will not run is listed before you deploy, so the surprise happens at your desk and not on the line.</p>
+  <p><a href="https://docs.hotloop.io/flow/migrating-from-node-red/">Read the migration guide</a> or <a href="https://docs.hotloop.io/flow/compatibility/">check every node in the compatibility matrix</a>.</p>
+
+  <h2>What changes when the plant depends on it</h2>
+  <table>
+    <thead><tr><th>You get</th><th>What it means on the floor</th></tr></thead>
+    <tbody>
+      <tr><td>A ceiling on every queue</td><td>Every inbox is bounded with a policy per node: block, drop the newest, drop the oldest, or raise it to a Catch node. A chatty sensor and a slow database cannot run the box out of memory.</td></tr>
+      <tr><td>A thread for every node</td><td>A CPU-heavy Function node costs you a core, not the editor and every other flow on the box.</td></tr>
+      <tr><td>Every deploy is a record</td><td>Who, when, why, and the flow file byte for byte. A diff reads node by node and rollback redeploys an old record. "Who changed line 3 and put it back" is a command, not an archaeology project.</td></tr>
+      <tr><td>Tracing and replay</td><td>Click a message and the path it took lights up, with timing and payload at every hop. Replay it into a draft, or turn the trace into a test.</td></tr>
+      <tr><td>Durable wires</td><td>Mark a wire durable and messages go to disk in order when the node behind it stops answering, then drain when it returns. We killed a real InfluxDB for ten minutes and no rows went missing or doubled.</td></tr>
+      <tr><td>A sealed Function node</td><td>Function code runs with no access to the host, its files, or the network. Plugins are signed, sandboxed files, and an unsigned one refuses to load.</td></tr>
+      <tr><td>Locked down by default</td><td>Flow will not start without a login in front of it, and two-factor sign-in is free.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>It talks to the plant out of the box</h2>
+  <p>Modbus TCP, OPC UA read, subscribe and write, S7 and EtherNet/IP, MQTT 5 with properties and the last will, TLS, and Sparkplug B as an edge node and as a host. The S7 and EtherNet/IP nodes were tested on bare metal. A new controller is still a commissioning job, so check one value you already know.</p>
+
+  <h2>One small program</h2>
+  <p>Flow is a 41.7 MB self-contained program that idles at about 16 MiB and answers its first request in 0.05 seconds. It runs on amd64 and arm64, there is a chart for Kubernetes, and upgrading is a plain image bump. <a href="/flow/#head-to-head">See the head-to-head against Node-RED</a>, same flow file on both runtimes.</p>
+</AltPage>

@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import AlsoSee from '../components/AlsoSee.astro';
 import CardMore from '../components/CardMore.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
@@ -215,6 +216,7 @@ const proven = [1, 2, 3].map((n) => [t(`cy.t${n}k`), t(`cy.t${n}`)]);
       </div>
     </div>
   </section>
+  <AlsoSee heading="Looking for a CODESYS WebVisu alternative?" items={[{ label: "A CODESYS HMI outside the runtime", href: "/codesys-webvisu-alternative/" }, { label: "Move a WebVisu screen to HotLoop, step by step", href: "https://docs.hotloop.io/guides/webvisu-to-hotloop/" }, { label: "OPC UA gateway for the rest of the plant", href: "/opc-ua-gateway/" }]} />
 </Base>
 
 <style>

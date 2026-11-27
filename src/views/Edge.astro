@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import AlsoSee from '../components/AlsoSee.astro';
 import CardDetail from '../components/CardDetail.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
@@ -164,6 +165,7 @@ helm install hotloop hotloop/hotloop-edge --version {CURRENT} \
       </div>
     </div>
   </section>
+  <AlsoSee heading="Looking for an edge gateway with an OPC UA server?" items={[{ label: "An OPC UA gateway and Kepware alternative", href: "/opc-ua-gateway/" }, { label: "Modbus to MQTT, step by step", href: "/modbus-to-mqtt/" }]} />
 </Base>
 
 <style>

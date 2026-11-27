@@ -1,0 +1,51 @@
+---
+import AltPage from '../components/AltPage.astro';
+import { CODESYS } from '../lib/products';
+---
+
+<AltPage
+  title="CODESYS WebVisu alternative: HotLoop for CODESYS"
+  description="A CODESYS HMI outside the runtime. HotLoop reads your PLC over its own OPC UA server, imports your visualization, and nothing is installed in CODESYS."
+  eyebrow="CODESYS WebVisu alternative"
+  h1="A CODESYS HMI that lives outside the runtime."
+  lede="HotLoop for CODESYS runs beside your CODESYS runtime and reads the PLC through its own OPC UA server. Operators get screens on a panel PC, a phone, or a wall. The PLC gets a second set of eyes and keeps its cycle to itself."
+  path="/codesys-webvisu-alternative/"
+  cta={{ label: 'Install HotLoop for CODESYS', href: 'https://docs.hotloop.io/codesys/install/' }}
+  faq={[
+    { q: 'What is the best CODESYS HMI software besides WebVisu?', a: 'HotLoop for CODESYS is CODESYS HMI software that lives outside the runtime: it reads the PLC over its own OPC UA server, imports your CODESYS visualization, and keeps the history and the alarms.' },
+    { q: 'Can HotLoop replace CODESYS WebVisu?', a: 'It is the screen you would otherwise build in WebVisu, drawn outside the runtime. HotLoop reads the PLC variables through the runtime\'s OPC UA server, puts them on screens, raises alarms, and keeps the history.' },
+    { q: 'Do I install anything in my CODESYS project?', a: 'No library, no task, and no agent goes into the runtime. The only change to the PLC project is a Symbol Configuration in the CODESYS IDE that publishes the variables you want seen.' },
+    { q: 'Can I import my existing CODESYS visualization?', a: 'Yes. Export the visualization from the IDE with Project, Export, import the file on the HotLoop Dashboards screen, and it opens as a HotLoop screen on the same variables. Every element that could not be placed is listed before anything is saved.' },
+    { q: 'Will HotLoop write to my PLC?', a: 'Not unless you arm a tag. Every tag the provisioner sets up is read-only. When a person arms one, HotLoop\'s write gate and the PLC\'s own symbol rights both get a say.' },
+    { q: 'Which CODESYS runtime was it run against?', a: 'CODESYS Control for Linux SL 4.22.0.0, including a program of over 100,000 variables read in 2.4 seconds.' },
+    { q: 'How do I install it?', a: `From the EmberCORE App Store or with Helm. The newest chart is ${CODESYS.version}, and it wraps HotLoop ${CODESYS.needsCore}.` },
+  ]}
+  more={[
+    { label: 'HotLoop for CODESYS: the product page', href: '/codesys/' },
+    { label: 'Move a WebVisu screen to HotLoop, step by step', href: 'https://docs.hotloop.io/guides/webvisu-to-hotloop/' },
+    { label: 'Import a CODESYS screen, every element', href: 'https://docs.hotloop.io/iot/codesys-screen-import/' },
+    { label: 'HotLoop Transmitter: OPC UA PubSub from inside the PLC', href: '/transmitter/' },
+    { label: 'An OPC UA gateway for the rest of the plant', href: '/opc-ua-gateway/' },
+  ]}
+>
+  <h2>Why take the HMI out of the runtime</h2>
+  <p>Operators get a screen without a download to the PLC, and the PLC gets a second set of eyes that does not depend on anything else on the node. A screen in a browser tab on a phone or a wall is a screen your PLC does not have to render.</p>
+
+  <h2>How it reads your PLC</h2>
+  <p>CODESYS documents one way for a third party to read a controller's variables, and it is the runtime's own OPC UA server. You publish what you want seen with a Symbol Configuration, and HotLoop reads the variables by the names the programmer gave them, like <code>Application.GVL_Line.rTemp</code>. Arrays and structures are walked into one point per field, and a restart or a download reconnects with no hands on it.</p>
+
+  <h2>What you get</h2>
+  <table>
+    <thead><tr><th>Part</th><th>What it does for you</th></tr></thead>
+    <tbody>
+      <tr><td>Screens</td><td>A default interface for a panel PC, a phone, or a wall, drawn from one profile file.</td></tr>
+      <tr><td>Alarms</td><td>Alarms on your PLC variables, with the history kept next to them.</td></tr>
+      <tr><td>Your existing screen</td><td>Import a CODESYS visualization export and it opens on the same variables.</td></tr>
+      <tr><td>Hands off the PLC</td><td>Read-only by default, nothing in the runtime, and a write gate if you ever arm a tag.</td></tr>
+      <tr><td>Keeps its screens through a lost link</td><td>The pods tolerate an unreachable node with no time limit, and the screens come back when it does.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Pair it with the Transmitter</h2>
+  <p>If the PLC should push values out instead of waiting to be read, <a href="/transmitter/">HotLoop Transmitter</a> is a CODESYS library that publishes them as OPC UA PubSub over UDP, written in Structured Text.</p>
+</AltPage>

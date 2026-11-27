@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import AlsoSee from '../components/AlsoSee.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
 import CardDetail from '../components/CardDetail.astro';
@@ -135,6 +136,7 @@ helm install press-line-3 hotloop/hotloop-edge-relay \
       </div>
     </div>
   </section>
+  <AlsoSee heading="Modbus to MQTT and a unified namespace" items={[{ label: "Modbus to MQTT, step by step", href: "/modbus-to-mqtt/" }, { label: "A unified namespace on Sparkplug B", href: "/unified-namespace/" }, { label: "An OPC UA gateway for the whole plant", href: "/opc-ua-gateway/" }]} />
 </Base>
 
 <style>

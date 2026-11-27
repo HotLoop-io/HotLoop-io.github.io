@@ -1,0 +1,54 @@
+---
+import AltPage from '../components/AltPage.astro';
+---
+
+<AltPage
+  title="Kepware alternative: OPC UA gateway | HotLoop Gateway"
+  description="An industrial OPC UA gateway with twelve native drivers, an OPC UA server for your SCADA, a write gate, ISA-18.2 alarms, and a historian. A Kepware alternative."
+  eyebrow="OPC UA gateway"
+  h1="An OPC UA gateway for the whole plant, and a Kepware alternative."
+  lede="HotLoop Gateway talks to your PLCs with twelve native drivers, serves what it reads through an OPC UA server, keeps the history, raises ISA-18.2 alarms, and puts one write gate in front of every command. Every driver says exactly what it was proven against."
+  path="/opc-ua-gateway/"
+  cta={{ label: 'Install the Gateway', href: 'https://docs.hotloop.io/gateway/install/' }}
+  faq={[
+    { q: 'Is there an OPC UA to MQTT gateway that also keeps history?', a: 'Yes. HotLoop reads devices with native drivers, publishes them to MQTT and Sparkplug B, serves them as OPC UA, and keeps the history, all from one Gateway binary. The Edge Relay is the headless version of the MQTT side for a small box at the machine.' },
+    { q: 'What are the Kepware alternatives for a plant that wants one binary?', a: 'HotLoop Gateway is one of the Kepware alternatives that adds the historian, the alarms, and the write gate beside the drivers, and it has a free tier for home and lab use. Business use goes through EmberNet, where it is free as well.' },
+    { q: 'What protocols does HotLoop Gateway speak?', a: 'Twelve natively: OPC UA, Modbus TCP and RTU, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP and REST, CODESYS, BACnet/IP, SNMP, UniFi Network, and OPC UA PubSub (UADP). Kafka is available as an output. Each one is listed with what it was verified against.' },
+    { q: 'Is HotLoop a Kepware alternative?', a: 'If you use an OPC server to put PLC data in front of SCADA, historians, and MQTT, the Gateway does that job: native drivers on one side, an OPC UA server and MQTT on the other, with the history and the alarms in the same box.' },
+    { q: 'Does the Gateway work with Ignition?', a: 'Yes. The OPC UA driver was run against Ignition 8.3.9 in both directions with a user name and password over a secured channel.' },
+    { q: 'How does the OPC UA driver read values?', a: 'It subscribes. The server sends a value when it changes, at a rate it can sustain, instead of being asked the same question every scan. If a server refuses a subscription, the driver falls back to batched reads rather than failing the device.' },
+    { q: 'Can the Gateway write to a PLC?', a: 'Yes, through one write gate that nothing can route around. A refused write never reaches the equipment, and a failed read is bad quality, never a zero.' },
+    { q: 'Where does the history go?', a: 'HotLoop keeps its own, and it can write every reading out to your PostgreSQL, TimescaleDB, SQL Server, InfluxDB, or MySQL and MariaDB as well.' },
+  ]}
+  more={[
+    { label: 'HotLoop Gateway: the product page', href: '/gateway/' },
+    { label: 'Every integration and how far it has been proven', href: '/integrations/' },
+    { label: 'The write gate', href: 'https://docs.hotloop.io/gateway/write-gate/' },
+    { label: 'Modbus to MQTT, step by step', href: '/modbus-to-mqtt/' },
+    { label: 'OPC UA to MQTT as Sparkplug B', href: 'https://docs.hotloop.io/guides/opc-ua-to-mqtt/' },
+    { label: 'Sparkplug B and a unified namespace', href: '/unified-namespace/' },
+  ]}
+>
+  <h2>An industrial gateway OPC server with drivers for the equipment you already own</h2>
+  <p>The Gateway speaks OPC UA, Modbus TCP and RTU, MQTT and Sparkplug B, EtherNet/IP, S7comm, MTConnect, HTTP, CODESYS, BACnet/IP, SNMP, UniFi Network, and OPC UA PubSub. The list is read from the drivers compiled into the binary, so a protocol cannot be advertised that is not there. Each protocol has moved real values off a real server or device and has been run on bare metal.</p>
+  <p>The CODESYS driver reads and writes, and read a program of over 100,000 variables in 2.4 seconds. <a href="/integrations/">See every driver and what it was proven against</a>.</p>
+
+  <h2>OPC UA in, OPC UA out</h2>
+  <p>HotLoop Edge and the Gateway run an OPC UA server, so your SCADA reads what the Gateway collects from the Modbus, S7, and EtherNet/IP devices that never spoke OPC UA. It is the same job an OPC server does, with the historian and the alarms in the same process.</p>
+
+  <h2>Looking for a Kepware alternative?</h2>
+  <table>
+    <thead><tr><th>What you use the OPC server for</th><th>In HotLoop</th></tr></thead>
+    <tbody>
+      <tr><td>Reaching PLCs and meters</td><td>Twelve native drivers, each with its verification status listed.</td></tr>
+      <tr><td>Feeding SCADA over OPC UA</td><td>An OPC UA server in Edge and the Gateway.</td></tr>
+      <tr><td>Publishing to MQTT</td><td>MQTT and Sparkplug B, with the Edge Relay for a headless node at the machine.</td></tr>
+      <tr><td>Keeping history</td><td>A built-in historian, plus writes out to your own database.</td></tr>
+      <tr><td>Alarms</td><td>ISA-18.2 alarms with notifications.</td></tr>
+      <tr><td>Safe writes</td><td>One write gate. A refused write never reaches the equipment.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Small enough for the machine, big enough for the site</h2>
+  <p>The same code runs from a Raspberry Pi beside one machine to a Gateway that runs the whole site, with fleet management, multi-site roll-ups, and scheduled reports. It installs with Helm or Podman Quadlet and follows the stable release on its own.</p>
+</AltPage>
