@@ -1,0 +1,51 @@
+---
+import AltPage from '../components/AltPage.astro';
+---
+
+<AltPage
+  title="LabVIEW alternative for test benches | HotLoop FlowLab"
+  description="FlowLab draws the diagram, runs the bench, and opens a panel on your phone. A LabVIEW-style data flow for test benches and data loggers, with a TDMS log."
+  eyebrow="LabVIEW alternative"
+  h1="A LabVIEW alternative that draws the diagram and runs the bench."
+  lede="FlowLab is the part of HotLoop Flow built for test benches and data loggers. Wire a diagram, press Run, watch the values move on the wires, and open the same panel on a phone. It runs on a Linux box or a Raspberry Pi 5, and it reads your LabVIEW VIs."
+  path="/labview-alternative/"
+  cta={{ label: 'Install Flow and open FlowLab', href: 'https://docs.hotloop.io/flow/install/' }}
+  faq={[
+    { q: 'Is there a LabVIEW alternative for Linux?', a: 'Yes. FlowLab runs on Linux, on an amd64 box or a Raspberry Pi 5, and you open its editor and panel in a browser, so the bench does not need Windows.' },
+    { q: 'Is FlowLab a free LabVIEW alternative?', a: 'Home and lab use of HotLoop is free, and so is use by schools, nonprofits, and government bodies. Business use goes through EmberNet, where it is free as well. The HotLoop Source License Agreement 1.0 has the exact terms.' },
+    { q: 'Can FlowLab open a LabVIEW VI?', a: 'Yes. Choose the .vi in the Flow editor Import dialog. FlowLab reads the front panel names and the block diagram, with constants, terminals, calls of other VIs, loops, case structures, and the wires between them, and lists what did not come across before anything is added.' },
+    { q: 'What does FlowLab not import from a VI?', a: 'What a LabVIEW primitive does is not stored in the VI file, so a primitive arrives as a named node wired as it was, and you swap it for the FlowLab node that does the same job. The settings inside nodes, the front panel layout, and the contents of the VIs it calls are not read either, and the dialog says so every time.' },
+    { q: 'Does FlowLab have loops, an error wire, and a debugger?', a: 'Yes. While and for loops carry a value from one pass to the next, an error travels on a wire of its own, and a run bar gives you highlight execution, probes, breakpoints, and step.' },
+    { q: 'Can FlowLab log data for NI tools?', a: 'Yes. A TDMS log node writes a file you can open in NI\'s own tools, and a node reads NI hardware.' },
+  ]}
+  more={[
+    { label: 'FlowLab in the docs', href: 'https://docs.hotloop.io/flow/flowlab/' },
+    { label: 'Import a LabVIEW VI, step by step', href: 'https://docs.hotloop.io/guides/labview-vi-import/' },
+    { label: 'HotLoop Flow: the full tour', href: '/flow/' },
+    { label: 'A Node-RED alternative that runs your flows', href: '/node-red-alternative/' },
+  ]}
+>
+  <h2>Data flow, the way a bench thinks</h2>
+  <p>In a FlowLab diagram each node runs once, when every wired input has a value. Two nodes with no wire between them run at the same time. That is how you build a test bench: read a device, parse it, decide whether it is steady, show it, write it down. NI describes LabVIEW as a graphical programming environment for automated production, validation, and research test systems (<a href="https://www.ni.com/en/shop/labview.html" rel="noopener">ni.com</a>), and that is the job FlowLab takes on, from the same side of the table.</p>
+
+  <h2>What is on the bench</h2>
+  <table>
+    <thead><tr><th>Need</th><th>FlowLab</th></tr></thead>
+    <tbody>
+      <tr><td>Loops and errors</td><td>While and for loops carry a value from one pass to the next. An error travels on a wire of its own.</td></tr>
+      <tr><td>A front panel</td><td>Controls, indicators, and charts on a panel that opens on a phone.</td></tr>
+      <tr><td>A debugger</td><td>Highlight execution, probes, breakpoints, and step.</td></tr>
+      <tr><td>Analysis</td><td>Statistics, integral, derivative, and filter nodes.</td></tr>
+      <tr><td>Instruments</td><td>Serial ports and SCPI instruments. Instrument writes are off until someone turns them on, and every write is audited.</td></tr>
+      <tr><td>Data out</td><td>A TDMS log you can open in NI's tools, a node that reads NI hardware, and a durable MQTT output.</td></tr>
+    </tbody>
+  </table>
+  <p>FlowLab has 37 node types of its own beside the ones for messages, and the other tabs in the same flow file keep running exactly as they did.</p>
+
+  <h2>Bring your LabVIEW VIs</h2>
+  <p>Import a <code>.vi</code> and FlowLab opens it as a diagram tab with the VI's own wires: the constants with their values, each front panel terminal as a control or an indicator, calls of other VIs by name, loops, and case structures with their bodies. We ran all 425 VIs of NI's open source icon editor through the reader, and the wire count matched the independent reference reader on every one.</p>
+  <p>LabVIEW keeps what a primitive does in NI's own table, not in the VI file, so a primitive arrives as a named node wired where it was. Swap it for the FlowLab node that does the same job and the diagram runs. A diagram that guessed would give numbers that look right and are wrong, and on a test bench that is the worst answer there is. <a href="https://docs.hotloop.io/guides/labview-vi-import/">Read the import guide</a>.</p>
+
+  <h2>A bench that is also a plant</h2>
+  <p>FlowLab lives inside HotLoop Flow, so the same diagram can read Modbus, OPC UA, EtherNet/IP, S7, and Sparkplug B, and the same deploy records, tracing, and bounded queues cover it. The bench stops being a laptop in a drawer.</p>
+</AltPage>

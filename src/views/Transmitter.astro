@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import AlsoSee from '../components/AlsoSee.astro';
 import JsonLd from '../components/JsonLd.astro';
 import LeadCard from '../components/LeadCard.astro';
 import FamilyLine from '../components/FamilyLine.astro';
@@ -216,6 +217,7 @@ const planned = pair('pl', 2, 'k', 'v');
       </div>
     </div>
   </section>
+  <AlsoSee heading="Moving from CODESYS WebVisu to a HotLoop screen?" items={[{ label: "A CODESYS HMI outside the runtime", href: "/codesys-webvisu-alternative/" }, { label: "An OPC UA gateway for the rest of the plant", href: "/opc-ua-gateway/" }]} />
 </Base>
 
 <style>

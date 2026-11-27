@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import AlsoSee from '../components/AlsoSee.astro';
 import LeadCard from '../components/LeadCard.astro';
 import FamilyLine from '../components/FamilyLine.astro';
 import JsonLd from '../components/JsonLd.astro';
@@ -382,6 +383,7 @@ const groups = [
       </div>
     </div>
   </section>
+  <AlsoSee heading="Looking for a Node-RED or LabVIEW alternative?" items={[{ label: "A Node-RED alternative that runs your flows", href: "/node-red-alternative/" }, { label: "A LabVIEW alternative: FlowLab", href: "/labview-alternative/" }, { label: "Modbus to MQTT with Flow", href: "/modbus-to-mqtt/" }]} />
 </Base>
 
 

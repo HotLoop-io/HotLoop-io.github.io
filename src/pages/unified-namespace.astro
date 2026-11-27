@@ -1,0 +1,44 @@
+---
+import AltPage from '../components/AltPage.astro';
+---
+
+<AltPage
+  title="Unified namespace with Sparkplug B | HotLoop"
+  description="Build a unified namespace on Sparkplug B: Edge Relays publish from the machines, an MQTT broker is the hub, and the HotLoop Gateway is the primary host."
+  eyebrow="Unified namespace"
+  h1="A unified namespace on Sparkplug B, built from parts that already ship."
+  lede="A unified namespace is one place where every machine's data lands with a name and a state. HotLoop gives you the pieces: Edge Relays that publish from the machine, an MQTT broker as the hub, and a Gateway that acts as the Sparkplug primary host with the history and the alarms."
+  path="/unified-namespace/"
+  cta={{ label: 'Read the guide', href: 'https://docs.hotloop.io/guides/unified-namespace/' }}
+  faq={[
+    { q: 'Is HotLoop unified namespace software?', a: 'It gives you the parts of a UNS: the Edge Relay as the Sparkplug B edge node, an MQTT broker as the hub, and the Gateway as the primary host that keeps the history and the alarms. Used together they make UNS software you can install with Helm or Podman Quadlet.' },
+    { q: 'How does Sparkplug B work on MQTT?', a: 'Sparkplug B puts a structure on MQTT topics and payloads, with births that announce what a node has, deaths when it goes away, and sequence numbers that let a host notice a gap and ask for a rebirth. HotLoop implements both sides.' },
+    { q: 'What is a unified namespace?', a: 'A unified namespace is a single, structured place, usually an MQTT broker, where every machine and system publishes its data under a consistent naming scheme, so anything that needs a value reads it from there and not from the device.' },
+    { q: 'Does HotLoop support Sparkplug B?', a: 'Yes, in both roles. The Edge Relay and the Gateway publish as Sparkplug B edge nodes, with births, sequence numbers, and deaths the way the spec says, and the Gateway driver acts as a full primary host application, with a retained STATE birth and rebirth requests.' },
+    { q: 'Can I use HotLoop with my own broker?', a: 'Yes. Point the Gateway and Edge Relays at Mosquitto, EMQX, or any other MQTT broker. HotLoop also runs an embedded broker, on by default, for a single plant and a handful of relays.' },
+    { q: 'What if the network between the machine and the broker drops?', a: 'The Edge Relay queues readings to disk and replays them in order when the broker returns, each marked historical, so the namespace ends up with the gap backfilled.' },
+    { q: 'How do I get PLC data into the namespace?', a: 'The Edge Relay polls OPC UA, Modbus, EtherNet/IP, S7comm, MTConnect, and HTTP devices with the same drivers the Gateway uses and forwards them as Sparkplug B.' },
+  ]}
+  more={[
+    { label: 'Build it: the step-by-step guide', href: 'https://docs.hotloop.io/guides/unified-namespace/' },
+    { label: 'HotLoop Edge Relay', href: '/edge-relay/' },
+    { label: 'Modbus to MQTT', href: '/modbus-to-mqtt/' },
+    { label: 'An OPC UA gateway for the whole plant', href: '/opc-ua-gateway/' },
+  ]}
+>
+  <h2>Three roles, one namespace</h2>
+  <table>
+    <thead><tr><th>Role</th><th>HotLoop part</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>Edge node</td><td><a href="/edge-relay/">Edge Relay</a></td><td>Polls the machines and publishes them as Sparkplug B, with a disk queue for outages.</td></tr>
+      <tr><td>Hub</td><td>The embedded broker, or your own</td><td>Carries the namespace. The embedded one is on by default and fits a single plant.</td></tr>
+      <tr><td>Primary host</td><td><a href="/gateway/">Gateway</a></td><td>Tracks every node's births and deaths, keeps the history, raises the alarms, and writes readings out to your database.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>States, not guesses</h2>
+  <p>As a primary host the Gateway publishes a retained STATE birth with a matching will, so edge nodes can see the host drop and not infer it from a timeout. It tracks each node's sequence number and asks for a rebirth when one goes missing. That is the part of Sparkplug most integrations skip, and it is why a value in the namespace means something.</p>
+
+  <h2>Start with one machine</h2>
+  <p>Put one Edge Relay on one machine, point it at the broker, and watch the node come alive in the Gateway. Add the next machine the same way. A pushed device file applies live, so adding a device is not a visit to the box.</p>
+</AltPage>
