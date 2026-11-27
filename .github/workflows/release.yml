@@ -86,5 +86,17 @@ jobs:
             docker push "ghcr.io/hotloop-io/hotloop-io-site:$t"
           done
 
+      # A push that stored the layers but was refused the tag (v1.0.0 on 2026-11-27: every layer pushed, then
+      # "error from registry: denied" on the first manifest, leaving an untagged version) must fail here, naming
+      # the tag, and both tags must resolve to the same digest before the run counts as a release.
+      - name: Both tags resolve to the image that was checked
+        if: github.ref_type == 'tag'
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          a=$(docker buildx imagetools inspect "ghcr.io/hotloop-io/hotloop-io-site:$version" --format '{{.Manifest.Digest}}')
+          b=$(docker buildx imagetools inspect "ghcr.io/hotloop-io/hotloop-io-site:$GITHUB_SHA" --format '{{.Manifest.Digest}}')
+          echo "$version $a"; echo "$GITHUB_SHA $b"
+          [ -n "$a" ] && [ "$a" = "$b" ]
+
   # There is no deploy job. The image pushed above is what a release PR to Embernet-ai/embernet-iac (sites.tf, the hotloop
   # entry) names, and the merge rolls it. Nothing in this repository touches the cluster.
