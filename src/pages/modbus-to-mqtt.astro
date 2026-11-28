@@ -9,6 +9,7 @@ import AltPage from '../components/AltPage.astro';
   h1="Modbus to MQTT, without a pile of glue code."
   lede="HotLoop polls Modbus TCP and RTU devices and publishes them to an MQTT broker as plain topics or as Sparkplug B. Put the headless Edge Relay on a Pi next to the machine, and the readings queue to disk when the uplink dies and replay when it comes back."
   path="/modbus-to-mqtt/"
+  proof="Twelve native drivers, each listed with what it was tested against. Free to use, no license keys."
   cta={{ label: 'Install the Edge Relay', href: 'https://docs.hotloop.io/edge-relay/install/' }}
   faq={[
     { q: 'What is a Modbus to MQTT gateway?', a: 'A Modbus to MQTT gateway polls Modbus devices and publishes every reading to an MQTT broker. Call it a converter or a bridge if you like: HotLoop does the job with its native Modbus driver, as plain topics or as Sparkplug B.' },

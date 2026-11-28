@@ -49,6 +49,7 @@ const breadcrumbs = {
       </div>
       <p class="lede">{summary}</p>
       {seo && seo.intro.map((x) => <p class="lede" set:html={x} />)}
+      {!other && <p class="lede"><strong>Twelve native drivers, each listed with what it was tested against. Free to use, no license keys.</strong></p>}
 
       {(p.verification === 'decode' || p.notVerifiedNote.trim() !== '') && (
         <div class="notice">

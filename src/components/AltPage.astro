@@ -16,8 +16,9 @@ interface Props {
   faq: { q: string; a: string }[];
   cta: { label: string; href: string };
   more: { label: string; href: string }[];
+  proof?: string;
 }
-const { title, description, eyebrow, h1, lede, path, faq, cta, more } = Astro.props;
+const { title, description, eyebrow, h1, lede, path, faq, cta, more, proof } = Astro.props;
 ---
 
 <Base title={title} description={description} ogAlt={h1}>
@@ -44,6 +45,7 @@ const { title, description, eyebrow, h1, lede, path, faq, cta, more } = Astro.pr
       <span class="label">{eyebrow}</span>
       <h1>{h1}</h1>
       <p class="lede">{lede}</p>
+      {proof && <p class="proof"><strong>{proof}</strong></p>}
       <div class="cluster">
         <a class="btn primary" href={cta.href}>{cta.label}</a>
         <a class="btn" href="/products/">Compare all eight products</a>
@@ -84,6 +86,7 @@ const { title, description, eyebrow, h1, lede, path, faq, cta, more } = Astro.pr
   .faq summary { cursor: pointer; font-weight: 600; }
   .faq p { margin-top: var(--hl-s2); }
   .more { display: grid; gap: var(--hl-s2); padding-left: var(--hl-s4); }
+  .proof { max-width: 68ch; }
   .asks { margin-top: var(--hl-s5); }
   .family { margin-top: var(--hl-s6); color: var(--hl-ink-soft); }
 </style>
