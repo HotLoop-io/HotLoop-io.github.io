@@ -3,14 +3,15 @@ import AltPage from '../components/AltPage.astro';
 ---
 
 <AltPage
-  title="SCADA alternatives and open source SCADA | HotLoop"
-  description="SCADA alternatives that read your PLCs, keep the history, raise ISA-18.2 alarms and put a screen on the wall. Cheap SCADA software, free for home and lab."
+  title="Ignition SCADA Alternatives and Open Source SCADA | HotLoop"
+  description="Ignition SCADA alternatives and cheap SCADA software that read your PLCs, keep history and raise ISA-18.2 alarms. Open source SCADA, free for home and lab."
   eyebrow="SCADA alternative"
-  h1="A SCADA alternative that starts on a Raspberry Pi and grows to the whole site."
+  h1="Ignition SCADA alternatives and cheap SCADA software that start on a Raspberry Pi"
   lede="HotLoop reads your PLCs, keeps the history, raises ISA-18.2 alarms, draws the screen for the wall, and puts one write gate in front of every command. You get the parts of SCADA a plant uses every day in one program, and you can start on a Raspberry Pi."
   path="/scada-alternative/"
   cta={{ label: 'Install the Gateway', href: 'https://docs.hotloop.io/gateway/install/' }}
   faq={[
+    { q: 'Is HotLoop one of the Ignition SCADA alternatives?', a: 'Yes. HotLoop replaces SCADA on small sites and runs beside Ignition on larger ones.' },
     { q: 'What are the best SCADA alternatives for a small plant?', a: 'If you need drivers for the PLCs you already own, a historian, alarms, and a screen, HotLoop does all four in one program. It starts on a Raspberry Pi and moves up to Edge or the Gateway without losing your devices, tags or history.' },
     { q: 'Is there an open source SCADA?', a: 'HotLoop\'s source is public under the HotLoop Source License Agreement 1.0, so you can read every line that touches your plant. Home and lab use is free, and so is use by schools, nonprofits, and government bodies. Business use goes through EmberNet, where it is free as well.' },
     { q: 'What is the cheapest SCADA software that still keeps history and alarms?', a: 'HotLoop IoT installs with no login and no license key, runs on a Raspberry Pi, keeps the history, and raises ISA-18.2 alarms. Home and lab use is free.' },
@@ -44,8 +45,12 @@ import AltPage from '../components/AltPage.astro';
   <p>Most people who search for open source SCADA want two things: no license meter running, and code they can read when something breaks at 3am. HotLoop's source is public under the HotLoop Source License Agreement 1.0, home and lab use is free, and <a href="/license/">the license page says which terms apply to you</a>.</p>
 
   <h2>Cheap SCADA software that starts on a shelf</h2>
+  <p>A SCADA quote can end a small project before it starts. HotLoop reads your PLCs, keeps the history, raises ISA-18.2 alarms and puts a screen on the wall for the cost of a Raspberry Pi. Grow to the whole site when you are ready.</p>
+  <p><a href="/gateway/">Try HotLoop free this afternoon.</a></p>
   <p><a href="/iot/">HotLoop IoT</a> runs on a Raspberry Pi, installs with no login and no license key, and keeps your devices, tags and history when you move up to <a href="/edge/">Edge</a> or the <a href="/gateway/">Gateway</a>. You buy hardware once and grow into the site, with no migration weekend.</p>
 
   <h2>Ignition SCADA alternatives, or Ignition and HotLoop side by side</h2>
+  <p>Run HotLoop beside Ignition for the sites that need a lighter footprint, or choose it on its own for the sites that need no license. Both read the same PLCs.</p>
+  <p><a href="/gateway/">Download HotLoop and compare it on your own PLC.</a></p>
   <p>Running Ignition already? The Gateway reads Ignition's OPC UA server and serves its own, and Ignition reads it end to end, so the HotLoop box at the machine feeds the SCADA you already own. Not running it? The Gateway runs a whole site from one box. <a href="/opc-ua-gateway/">See the OPC UA gateway page</a>.</p>
 </AltPage>

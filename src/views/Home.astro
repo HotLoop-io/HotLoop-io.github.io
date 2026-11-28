@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import AlsoSee from '../components/AlsoSee.astro';
+import KeywordBlock from '../components/KeywordBlock.astro';
 import LoopInstrument from '../components/LoopInstrument.astro';
 import CardDetail from '../components/CardDetail.astro';
 import { TIERS, TIER_ORDER } from '../lib/tiers';
@@ -79,6 +80,14 @@ const fmt = (d: Date) =>
     </div>
   </section>
 
+  <KeywordBlock
+    sections={[
+      { h2: 'ISA-18.2 alarm management that runs on a Raspberry Pi', body: ['Real alarm management used to cost a SCADA license. HotLoop gives you ISA-18.2 alarm management, a historian and a PLC gateway, free to use with no license keys.'], cta: { text: 'Try HotLoop free today.', href: '/gateway/#install' } },
+    ]}
+    faq={[
+      { q: 'Does HotLoop support ISA-18.2 alarm management?', a: 'Yes. ISA-18.2 alarm management is built into the HotLoop Gateway.' },
+    ]}
+  />
   <section class="block running" aria-labelledby="running-at">
     <div class="wrap">
       <div class="section-head">
@@ -217,7 +226,7 @@ const fmt = (d: Date) =>
   </section>
   <AlsoSee heading="ISA-18.2 alarm management software and a PLC historian, in one box" intro={[
     'HotLoop is ISA-18.2 alarm management software and a PLC historian that run on a Raspberry Pi beside one machine or across every site. You see what tripped, what cleared on its own, and what every tag did before it, all in one place. <a href="/gateway/">Meet the Gateway</a>.',
-  ]} items={[{ label: "PLC historian software and industrial alarm management", href: "/gateway/#historian" }, { label: "A SCADA alternative that starts on a Pi", href: "/scada-alternative/" }, { label: "An OPC UA gateway and Kepware alternative", href: "/opc-ua-gateway/" }]} />
+  ]} items={[{ label: "MQTT historian and PLC historian software", href: "/gateway/" }, { label: "PLC historian software and industrial alarm management", href: "/gateway/#historian" }, { label: "A SCADA alternative that starts on a Pi", href: "/scada-alternative/" }, { label: "An OPC UA gateway and Kepware alternative", href: "/opc-ua-gateway/" }]} />
 </Base>
 
 <style>

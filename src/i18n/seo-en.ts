@@ -1,11 +1,12 @@
 // English-only search copy: titles, descriptions and a few headings written around the words people
 // type. Translations keep their own catalogs, so nothing here changes a key in any other language.
 export const EN_SEO: Record<string, string> = {
-  'h.title': 'HotLoop: PLC gateway, historian and ISA-18.2 alarms',
-  'h.desc': 'A PLC gateway with a historian and ISA-18.2 alarm management software. OPC UA, Modbus, EtherNet/IP, S7 and MQTT, on a Raspberry Pi or across every site.',
-  'gw.title': 'HotLoop Gateway: PLC historian and alarm management software',
-  'gw.desc': 'A PLC gateway with a built-in historian and ISA-18.2 alarm management: OPC UA, Modbus and MQTT in, one write gate out. A Kepware alternative.',
-  'gw.h1': 'A PLC gateway and historian. Every reading is real. Every write is earned.',
+  'h.title': 'ISA-18.2 Alarm Management and PLC Gateway | HotLoop',
+  'h.desc': 'ISA-18.2 alarm management software and a PLC historian in one box. OPC UA, Modbus, EtherNet/IP, S7 and MQTT, on a Raspberry Pi or across every site.',
+  'h.h1': 'ISA-18.2 alarm management and a PLC historian in one box',
+  'gw.title': 'MQTT Historian and PLC Historian Software | HotLoop Gateway',
+  'gw.desc': 'MQTT historian and industrial historian software with industrial alarm management software and a PLC gateway. ISA-18.2 alarms, OPC UA, Modbus and MQTT.',
+  'gw.h1': 'Industrial alarm management software and industrial historian software: a PLC gateway with a PLC historian and MQTT historian in one box',
   'iot.title': 'HotLoop IoT: Raspberry Pi PLC gateway, built in Go for OT',
   'iot.desc': 'HotLoop IoT runs on a Raspberry Pi beside your PLC: it reads it, keeps the history, and raises alarms. Written in Go. {version} is out. Free for home and lab.',
   'tx.desc': 'OPC UA PubSub from your PLC: HotLoop Transmitter is a CODESYS library that publishes UADP over UDP, written in Structured Text.',

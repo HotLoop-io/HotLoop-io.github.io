@@ -9,6 +9,7 @@ import JsonLd from '../components/JsonLd.astro';
 import FeatureList from '../components/FeatureList.astro';
 import WriteGate from '../components/WriteGate.astro';
 import BadNotZero from '../components/BadNotZero.astro';
+import KeywordBlock from '../components/KeywordBlock.astro';
 import { TIERS } from '../lib/tiers';
 import { CURRENT, GATEWAY_FEATURES } from '../lib/products';
 import { forPage } from '../i18n/page';
@@ -67,6 +68,17 @@ const { locale, t, rich, to } = forPage(Astro.url.pathname);
     </div>
   </section>
 
+  <KeywordBlock
+    sections={[
+      { h2: 'Industrial alarm management software your operators trust', body: ['An alarm flood hides the one alarm that matters. HotLoop Gateway raises ISA-18.2 alarms and keeps every event in the record. Industrial alarm management stops being a spreadsheet and becomes a screen.'], cta: { text: 'Try HotLoop free and raise your first alarm today.', href: '#install' } },
+      { h2: 'Industrial historian software and MQTT historian in one box', body: ['History belongs next to the PLC. The industrial historian software inside Gateway stores every reading, and the MQTT historian stores every topic. No license key, no separate server.'], cta: { text: 'Download HotLoop and start recording.', href: '#install' } },
+      { h2: 'Every write goes through one gate', body: ['Reads are real and writes are earned. Every write is audited before the value goes out.'], cta: { text: 'Try HotLoop free on your PLC.', href: '#install' } },
+    ]}
+    faq={[
+      { q: 'Does HotLoop include industrial alarm management software?', a: 'Yes. Gateway includes ISA-18.2 alarm management.' },
+      { q: 'Is the HotLoop historian an MQTT historian?', a: 'Yes. It stores PLC tags and MQTT topics in one built-in historian.' },
+    ]}
+  />
   <section class="block">
     <div class="wrap grid grid-2 split">
       <div class="stack">
